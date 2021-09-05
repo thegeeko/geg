@@ -41,4 +41,7 @@ _deps
 # Executables
 *.exe
 *.out
-*.app
+*.App
+
+cmake-build-debug
+.idea
