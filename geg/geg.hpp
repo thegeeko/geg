@@ -1,8 +1,8 @@
 #pragma once
 
-#include "src/app.hpp"
-#include "src/logger.hpp"
+#include "src/core/app.hpp"
+#include "src/core/logger.hpp"
 
 //main
-#include "src/main-entry.hpp"
+#include "src/core/main-entry.hpp"
 
