@@ -2,8 +2,9 @@
 #define GEG_EVENT_HPP
 
 #define EVENT_CALLBACK std::function<void(Event&)>
+#define EVENT_LISTENER std::pair<EventType, EVENT_CALLBACK>
 
-#include "src/core/logger.hpp"
+#include "core/logger.hpp"
 
 #include <string>
 #include <queue>
@@ -11,6 +12,7 @@
 
 namespace Geg {
 
+	//@TODO implement events types
 	enum class EventType {
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -30,10 +32,10 @@ namespace Geg {
 
 	class Event {
 	public:
-		Event();
+		Event(){};
 
-		EventType eventType;
-		const char* name;
+		EventType eventType = EventType::None;
+		const char* name = "event";
 		int categoryFlags = -1;
 		bool isHandeled = false;
 
@@ -44,41 +46,16 @@ namespace Geg {
 		}
 	};
 
-	 class EventQueue {
-	 private:
-		 std::deque<Event> queue;
+	namespace EvMan {
+		static std::deque<Event> queue{};
+		static std::vector<std::pair<EventType, EVENT_CALLBACK>>* listeners[4] = {nullptr, nullptr, nullptr, nullptr};
 
-	 friend class EventDispatcher;
-	 friend class EventLoop;
-
-	 public:
-	 	EventQueue();
-	 };
-
-	class EventDispatcher {
-	public:
-		EventDispatcher(EventQueue& _eventQueue);
 		void pushEvent(Event& event);
-
-	protected:
-		EventQueue eventQueue;
-	};
-
-	class EventLoop {
-	public:
-		EventLoop(EventQueue& _eventQueue);
 		void addLayer(int layer);
 		void addEventListener(EventType event, int layer, EVENT_CALLBACK& callback);
-		void invokeListeners();
-
-	private:
-		//void pullEvent();
-
-	protected:
-		std::vector<std::pair<EventType, EVENT_CALLBACK>>* listeners[4] = {nullptr, nullptr, nullptr, nullptr};
-		EventQueue eventQueue;
-	};
-
+		//void removeEventListener(EventType event, int layer, EVENT_CALLBACK& callback){};
+		void cleanQueue();
+	}
 }
 
 #endif //GEG_EVENT_HPP

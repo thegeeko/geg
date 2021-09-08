@@ -1,31 +1,20 @@
 #include "event.hpp"
 
-namespace Geg {
-	// event queue ------------------------------------------------ //
-	EventQueue::EventQueue() {
-		std::deque<Event *> queue;
+namespace Geg::EvMan {
+
+	void pushEvent(Event &event) {
+		queue.push_back(event);
 	}
 
-	// event dispatcher ------------------------------------------- //
-	EventDispatcher::EventDispatcher(EventQueue &_eventQueue) : eventQueue(_eventQueue) {}
-
-	void EventDispatcher::pushEvent(Event &event) {
-		eventQueue.queue.push_back(event);
-	}
-
-	// event loop ------------------------------------------------ //
-	EventLoop::EventLoop(EventQueue &_eventQueue) : eventQueue(_eventQueue) {}
-
-	void EventLoop::addLayer(int layer) {
+	void addLayer(int layer) {
 		if (!listeners[layer]) {
-			std::vector<std::pair<EventType, EVENT_CALLBACK>> newLayer;
-			listeners[layer] = &newLayer;
+			auto* newLayer = new std::vector<EVENT_LISTENER>{};
+			listeners[layer] = newLayer;
 		} else {
 			GEG_CORE_WARN("this event already exist {}", layer);
 		}
 	}
-
-	void EventLoop::addEventListener(EventType eventType, int layer, EVENT_CALLBACK &callback) {
+	void addEventListener(EventType eventType, int layer, EVENT_CALLBACK &callback) {
 		if (listeners[layer]) {
 			if (callback) {
 				std::pair<EventType, EVENT_CALLBACK > listener{eventType, callback};
@@ -38,13 +27,27 @@ namespace Geg {
 		}
 	}
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "bugprone-too-small-loop-variable"
+	/* @TODO implement remove eventlistener function
+	void removeEventListener(EventType eventType, int layer, EVENT_CALLBACK &callback) {
+		if (listeners[layer]) {
+			if (callback) {
+				std::pair<EventType, EVENT_CALLBACK > listener{eventType, callback};
+				listeners[layer]->push_back(listener);
+			} else {
+				GEG_CORE_ERROR("invalid callback function");
+			}
+		} else {
+			GEG_CORE_ERROR("layer {} doesn't exist", layer);
+		}
+	}
+*/
 
-	void EventLoop::invokeListeners() {
+	//@TODO a better event system
+	//make it loop through listeners not event
+	void cleanQueue() {
 		//loop through events
-		while (!eventQueue.queue.empty()) {
-			auto currentEvent = eventQueue.queue.front();
+		while (!queue.empty()) {
+			auto currentEvent = queue.front();
 
 			//loop through layers
 			for (unsigned short i = 0; i < (sizeof(listeners) / sizeof(listeners[0])); i++) {
@@ -62,13 +65,9 @@ namespace Geg {
 				if (currentEvent.isHandeled) { break; }
 			}
 			//layers
-
-			eventQueue.queue.pop_front();
+			queue.pop_front();
 		}
 		//events
 	}
-
-#pragma clang diagnostic pop
-
 
 }
