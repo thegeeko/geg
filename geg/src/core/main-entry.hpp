@@ -1,7 +1,5 @@
 #pragma once
 #include "app.hpp"
-#include "logger.hpp"
-#include "events/event.hpp"
 
 #ifndef GEG_MAIN_ENTRY_HPP
 #define GEG_MAIN_ENTRY_HPP

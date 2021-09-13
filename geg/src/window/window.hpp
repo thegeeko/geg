@@ -1,13 +1,8 @@
 #ifndef GEG_WINDOW_HPP
 #define GEG_WINDOW_HPP
 
-#include <string>
 #include <utility>
-
-#include "core/logger.hpp"
 #include "GLFW/glfw3.h"
-#include "core/core.hpp"
-#include "events/event.hpp"
 
 namespace Geg {
 
@@ -31,6 +26,7 @@ namespace Geg {
 		unsigned int getHeight () const {return info.height;};
 		void setVsync (bool state);
 		bool getVSync() const {return info.VSync;}
+		void setEventCallback (const std::function<void(Event&)>& cb) {info.eventCallback = cb;}
 
 	private:
 		GLFWwindow* windowPtr;
@@ -39,6 +35,7 @@ namespace Geg {
 			unsigned int width, height;
 			bool VSync = true;
 			std::string name;
+			std::function<void(Event&)> eventCallback;
 		};
 
 		WindowInfo info;

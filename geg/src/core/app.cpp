@@ -1,26 +1,30 @@
 
+#include <iostream>
 #include "app.hpp"
 
 namespace Geg {
-	void callback (Event& e) {
-		GEG_CORE_INFO("hello {}", e.ToString());
-	}
 	App::App() {
-
-		std::function<void(Event&)> a = callback;
-		EvMan::addLayer(0);
-		EvMan::addEventListener(EventType::AppTick, 0, a);
-
+		running = true;
 		window = std::make_unique<Window>(WindowProps());
-
+		window->setEventCallback(GEG_BIND_CB(App::onEvent));
 	}
 	App::~App() {}
 
-	[[noreturn]]
+	void App::onEvent(Event& e) {
+		GEG_INFO("Event : {}", e.toString());
+		Dispatcher dispatch(e);
+		dispatch.dispatch<WindowCloseEvent>(GEG_BIND_CB(App::closeCallback));
+	}
+
 	void App::start() {
-		while (true) {
-			EvMan::cleanQueue();
+		while (running) {
 			window->onUpdate();
 		}
 	}
+
+	bool App::closeCallback(const WindowCloseEvent &e) {
+		running = false;
+		return true;
+	}
+
 }

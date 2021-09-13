@@ -2,7 +2,7 @@
 #include "window.hpp"
 
 namespace Geg {
-	//TODO add better event dispatching
+	//@TODO add better event dispatching
 	static uint8_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char *description) {
@@ -21,9 +21,15 @@ namespace Geg {
 			windowPtr = glfwCreateWindow((int) props.width, (int) props.height, props.name.c_str(), nullptr, nullptr);
 			++s_GLFWWindowCount;
 			glfwSetWindowUserPointer(windowPtr, &info);
+			setVsync(true);
 
 
 			GEG_CORE_INFO("window {} created", props.name);
+			glfwSetWindowCloseCallback(windowPtr, [](GLFWwindow* window){
+				WindowInfo wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
+				WindowCloseEvent e{};
+				wi.eventCallback(e);
+			});
 		}
 
 	}
@@ -40,9 +46,6 @@ namespace Geg {
 	}
 
 	void Window::onUpdate() {
-		Event e {};
-		e.eventType = EventType::AppTick;
-		EvMan::pushEvent(e);
 		glfwPollEvents();
 		//glClearColor(0.7, 0.3, 0.54, 1);
 		//glClear(GL_COLOR_BUFFER_BIT);
@@ -54,6 +57,6 @@ namespace Geg {
 		else
 			glfwSwapInterval(0);
 
-		info.VSync = true;
+		info.VSync = state;
 	}
 }
