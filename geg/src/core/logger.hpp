@@ -1,7 +1,7 @@
 #ifndef GEG_LOGGER_HPP
 #define GEG_LOGGER_HPP
 
-#include "memory"
+#include <memory>
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 

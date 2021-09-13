@@ -5,14 +5,13 @@ namespace Geg {
 	class Layer {
 	public:
 		Layer(const std::string &name = "Layer") : debugName(name){};
-		virtual ~Layer();
+		virtual ~Layer(){};
 
-		virtual void OnAttach() {}
-		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
-		virtual void OnImGuiRender() {}
-		virtual void OnEvent(Event &event) {}
-		const std::string &GetName() const { return debugName; }
+		virtual void onAttach() {}
+		virtual void onDetach() {}
+		virtual void onUpdate() {}
+		virtual void onEvent(Event &event) {}
+		const std::string &getName() const { return debugName; }
 
 	protected:
 		std::string debugName;

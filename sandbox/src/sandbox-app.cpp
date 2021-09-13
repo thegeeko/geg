@@ -3,6 +3,9 @@
 sandboxApp::sandboxApp() {};
 sandboxApp::~sandboxApp() {};
 
+
 Geg::App* Geg::createApp() {
-	return new sandboxApp();
+	Geg::App* a = new sandboxApp();
+	a->pushOverlay(new ImGuiLayer{});
+	return a;
 }

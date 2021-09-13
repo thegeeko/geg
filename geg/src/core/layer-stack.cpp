@@ -3,33 +3,33 @@
 namespace Geg {
 	LayerStack::~LayerStack() {
 		for (Layer *layer : layers) {
-			layer->OnDetach();
+			layer->onDetach();
 			delete layer;
 		}
 	}
 
-	void LayerStack::PushLayer(Layer *layer) {
+	void LayerStack::pushLayer(Layer *layer) {
 		layers.emplace(layers.begin() + layerInsertIndex, layer);
 		layerInsertIndex++;
 	}
 
-	void LayerStack::PushOverlay(Layer *overlay) {
+	void LayerStack::pushOverlay(Layer *overlay) {
 		layers.emplace_back(overlay);
 	}
 
-	void LayerStack::PopLayer(Layer *layer) {
+	void LayerStack::popLayer(Layer *layer) {
 		auto it = std::find(layers.begin(), layers.begin() + layerInsertIndex, layer);
 		if (it != layers.begin() + layerInsertIndex) {
-			layer->OnDetach();
+			layer->onDetach();
 			layers.erase(it);
 			layerInsertIndex--;
 		}
 	}
 
-	void LayerStack::PopOverlay(Layer *overlay) {
+	void LayerStack::popOverlay(Layer *overlay) {
 		auto it = std::find(layers.begin() + layerInsertIndex, layers.end(), overlay);
 		if (it != layers.end()) {
-			overlay->OnDetach();
+			overlay->onDetach();
 			layers.erase(it);
 		}
 	}

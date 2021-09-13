@@ -4,3 +4,6 @@
 [submodule "geg/vendor/glfw"]
 	path = geg/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "geg/vendor/imgui"]
+	path = geg/vendor/imgui
+	url = https://github.com/ocornut/imgui.git

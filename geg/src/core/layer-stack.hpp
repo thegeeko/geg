@@ -7,10 +7,10 @@ namespace Geg {
 		LayerStack() = default;
 		~LayerStack();
 
-		void PushLayer(Layer *layer);
-		void PushOverlay(Layer *overlay);
-		void PopLayer(Layer *layer);
-		void PopOverlay(Layer *overlay);
+		void pushLayer(Layer *layer);
+		void pushOverlay(Layer *overlay);
+		void popLayer(Layer *layer);
+		void popOverlay(Layer *overlay);
 
 		std::vector<Layer *>::iterator begin() { return layers.begin(); }
 		std::vector<Layer *>::iterator end() { return layers.end(); }
