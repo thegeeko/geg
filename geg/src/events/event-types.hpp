@@ -51,31 +51,24 @@ namespace Geg {
 	class AppTickEvent : public Event {
 	public:
 		IMPL_EVENT_TYPE(EventType::AppTick)
-
 		std::string name = "app tick";
 		char categoryFlags = EventCategoryApplication;
-
 		std::string toString() const override { return name; }
 	};
 
 	class AppUpdateEvent : public Event {
 	public:
 		IMPL_EVENT_TYPE(EventType::AppUpdate)
-
 		std::string name = "app update";
 		char categoryFlags = EventCategoryApplication;
-
 		std::string toString() const override { return name; }
-
 	};
 
 	class AppRenderEvent : public Event {
 	public:
 		IMPL_EVENT_TYPE(EventType::AppRender)
-
 		std::string name = "app rendered";
 		char categoryFlags = EventCategoryApplication;
-
 		std::string toString() const override { return name; }
 	};
 
@@ -128,9 +121,9 @@ namespace Geg {
 
 	class KeyTappedEvent : public Event {
 	public:
-		IMPL_EVENT_TYPE(EventType::KeyTapped);
-
 		KeyTappedEvent(int _keycode) : keyCode(_keycode) {}
+
+		IMPL_EVENT_TYPE(EventType::KeyTapped);
 		char categoryFlags = EventCategory::EventCategoryInput | EventCategory::EventCategoryKeyboard;
 		int getKeyCode() {return keyCode;}
 
@@ -157,9 +150,7 @@ namespace Geg {
 		IMPL_EVENT_TYPE(EventType::MouseMoved);
 		std::string name = "Mouse Moved event";
 		char categoryFlags = EventCategory::EventCategoryInput | EventCategory::EventCategoryMouse;
-
 		inline float getX() const { return x; }
-
 		inline float getY() const { return y; }
 
 		std::string toString() const override {
@@ -179,10 +170,9 @@ namespace Geg {
 		MouseScrolledEvent(float _xOffset, float _yOffset) : xOffset(_xOffset), yOffset(_yOffset) {}
 
 		IMPL_EVENT_TYPE(EventType::MouseScrolled);
-
 		inline float getXOffset() const { return xOffset; }
-
 		inline float getYOffset() const { return yOffset; }
+		char categoryFlags = EventCategoryMouse | EventCategoryInput;
 
 		std::string toString() const override {
 			std::string str;
@@ -191,8 +181,6 @@ namespace Geg {
 			str += ", y = " + std::to_string(yOffset);
 			return str;
 		}
-
-		char categoryFlags = EventCategoryMouse | EventCategoryInput;
 	private:
 		float xOffset, yOffset;
 	};
@@ -202,13 +190,11 @@ namespace Geg {
 		MouseButtonPressedEvent(int _button) : button(_button) {}
 
 		IMPL_EVENT_TYPE(EventType::MouseButtonPressed);
-
-		inline int GetMouseButton() const { return button; }
-
-		char categoryFlags = EventCategoryMouse | EventCategoryInput;
+		inline int getMouseButton() const { return button; }
+		char categoryFlags = EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton;
 
 		std::string toString() const override {
-			std::string str = "pressed" + std::to_string(button);
+			std::string str = "pressed : " + std::to_string(button);
 			return str;
 		}
 
@@ -220,14 +206,12 @@ namespace Geg {
 	public:
 		MouseButtonReleasedEvent(int _button) : button(_button) {}
 
-		IMPL_EVENT_TYPE(EventType::MouseButtonPressed);
-
-		inline int GetMouseButton() const { return button; }
-
-		char categoryFlags = EventCategoryMouse | EventCategoryInput;
+		IMPL_EVENT_TYPE(EventType::MouseButtonReleased);
+		inline int getMouseButton() const { return button; }
+		char categoryFlags = EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton;
 
 		std::string toString() const override {
-			std::string str = "pressed" + std::to_string(button);
+			std::string str = "released : " + std::to_string(button);
 			return str;
 		}
 

@@ -10,7 +10,7 @@ namespace Geg {
 		int width, height;
 		std::string name;
 
-		WindowProps(int w = 640, int h = 480, std::string n = "Hello OpenGL") : width(w), height(h), name(n) {};
+		WindowProps(int w = 640, int h = 480, std::string n = "Geg") : width(w), height(h), name(n) {};
 	};
 
 	class Window {

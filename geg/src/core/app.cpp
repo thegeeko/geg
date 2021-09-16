@@ -15,7 +15,7 @@ namespace Geg {
 	App::~App() {}
 
 	void App::onEvent(Event& e) {
-		GEG_INFO("Event : {}", e.toString());
+		//GEG_INFO("Event : {}", e.toString());
 		Dispatcher dispatch(e);
 		dispatch.dispatch<WindowCloseEvent>(GEG_BIND_CB(App::closeCallback));
 		for(Layer* l : layerStack) {
@@ -25,6 +25,7 @@ namespace Geg {
 
 	void App::start() {
 		while (running) {
+			if(Input::isKeyPressed(GEG_KEY_SPACE)) { GEG_CORE_TRACE("Hi!");}
 			for(Layer* l : layerStack) {
 				l->onUpdate();
 			}

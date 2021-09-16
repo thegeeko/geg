@@ -10,28 +10,28 @@ namespace Geg {
 		ImGuiIO& io = ImGui::GetIO();
 		io.BackendFlags = ImGuiBackendFlags_HasMouseCursors | ImGuiBackendFlags_HasSetMousePos;
 
-		io.KeyMap[ImGuiKey_Tab] = GEG_KEY_TAB;
-		io.KeyMap[ImGuiKey_LeftArrow] = GEG_KEY_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = GEG_KEY_RIGHT;
-		io.KeyMap[ImGuiKey_UpArrow] = GEG_KEY_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = GEG_KEY_DOWN;
-		io.KeyMap[ImGuiKey_PageUp] = GEG_KEY_PAGE_UP;
-		io.KeyMap[ImGuiKey_PageDown] = GEG_KEY_PAGE_DOWN;
-		io.KeyMap[ImGuiKey_Home] = GEG_KEY_HOME;
-		io.KeyMap[ImGuiKey_End] = GEG_KEY_END;
-		io.KeyMap[ImGuiKey_Insert] = GEG_KEY_INSERT;
-		io.KeyMap[ImGuiKey_Delete] = GEG_KEY_DELETE;
-		io.KeyMap[ImGuiKey_Backspace] = GEG_KEY_BACKSPACE;
-		io.KeyMap[ImGuiKey_Space] = GEG_KEY_SPACE;
-		io.KeyMap[ImGuiKey_Enter] = GEG_KEY_ENTER;
-		io.KeyMap[ImGuiKey_Escape] = GEG_KEY_ESCAPE;
+		io.KeyMap[ImGuiKey_Tab] 				= GEG_KEY_TAB;
+		io.KeyMap[ImGuiKey_LeftArrow] 	= GEG_KEY_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] 	= GEG_KEY_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] 		= GEG_KEY_UP;
+		io.KeyMap[ImGuiKey_DownArrow] 	= GEG_KEY_DOWN;
+		io.KeyMap[ImGuiKey_PageUp] 			= GEG_KEY_PAGE_UP;
+		io.KeyMap[ImGuiKey_PageDown] 		= GEG_KEY_PAGE_DOWN;
+		io.KeyMap[ImGuiKey_Home] 				= GEG_KEY_HOME;
+		io.KeyMap[ImGuiKey_End] 				= GEG_KEY_END;
+		io.KeyMap[ImGuiKey_Insert] 			= GEG_KEY_INSERT;
+		io.KeyMap[ImGuiKey_Delete] 			= GEG_KEY_DELETE;
+		io.KeyMap[ImGuiKey_Backspace] 	= GEG_KEY_BACKSPACE;
+		io.KeyMap[ImGuiKey_Space] 			= GEG_KEY_SPACE;
+		io.KeyMap[ImGuiKey_Enter] 			= GEG_KEY_ENTER;
+		io.KeyMap[ImGuiKey_Escape] 			= GEG_KEY_ESCAPE;
 		io.KeyMap[ImGuiKey_KeyPadEnter] = GEG_KEY_KP_ENTER;
-		io.KeyMap[ImGuiKey_A] = GEG_KEY_A;
-		io.KeyMap[ImGuiKey_C] = GEG_KEY_C;
-		io.KeyMap[ImGuiKey_V] = GEG_KEY_V;
-		io.KeyMap[ImGuiKey_X] = GEG_KEY_X;
-		io.KeyMap[ImGuiKey_Y] = GEG_KEY_Y;
-		io.KeyMap[ImGuiKey_Z] = GEG_KEY_Z;
+		io.KeyMap[ImGuiKey_A] 					= GEG_KEY_A;
+		io.KeyMap[ImGuiKey_C] 					= GEG_KEY_C;
+		io.KeyMap[ImGuiKey_V] 					= GEG_KEY_V;
+		io.KeyMap[ImGuiKey_X] 					= GEG_KEY_X;
+		io.KeyMap[ImGuiKey_Y] 					= GEG_KEY_Y;
+		io.KeyMap[ImGuiKey_Z] 					= GEG_KEY_Z;
 
 		ImGui_ImplOpenGL3_Init("#version 450");
 		GEG_TRACE("Im gui attached");
@@ -52,8 +52,10 @@ namespace Geg {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui::NewFrame();
 
-		static bool a =true;
-		ImGui::ShowDemoWindow(&a);
+		float a = 0;
+		{
+			ImGui::ShowAboutWindow();
+		}
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -74,15 +76,15 @@ namespace Geg {
 	bool ImGuiLayer::onMouseButtonPressedEvent(MouseButtonPressedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[e.GetMouseButton()] = true;
-
+		io.MouseDown[e.getMouseButton()] = true;
+		
 		return false;
 	}
 
 	bool ImGuiLayer::onMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[e.GetMouseButton()] = false;
+		io.MouseDown[e.getMouseButton()] = false;
 
 		return false;
 	}
@@ -109,10 +111,10 @@ namespace Geg {
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeysDown[e.getKeyCode()] = true;
 
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+		io.KeyCtrl 	= io.KeysDown[GEG_KEY_LEFT_CONTROL] || io.KeysDown[GEG_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GEG_KEY_LEFT_SHIFT] 	|| io.KeysDown[GEG_KEY_RIGHT_SHIFT];
+		io.KeyAlt 	= io.KeysDown[GEG_KEY_LEFT_ALT] 		|| io.KeysDown[GEG_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GEG_KEY_LEFT_SUPER] 	|| io.KeysDown[GEG_KEY_RIGHT_SUPER];
 		return false;
 	}
 
@@ -139,7 +141,7 @@ namespace Geg {
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(e.getW(), e.getH());
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-		glViewport(0, 0, e.getW(), e.getH());
+		glViewport(0, 0, (int)e.getW(), (int)e.getH());
 
 		return false;
 	}

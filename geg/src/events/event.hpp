@@ -1,11 +1,6 @@
 #ifndef GEG_EVENT_HPP
 #define GEG_EVENT_HPP
 
-#define EVENT_LISTENER std::pair<EventType, EVENT_CALLBACK>
-
-#include "core/logger.hpp"
-#include <functional>
-
 namespace Geg {
 
 	//@TODO implement events types
