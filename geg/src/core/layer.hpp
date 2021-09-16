@@ -5,11 +5,12 @@ namespace Geg {
 	class Layer {
 	public:
 		Layer(const std::string &name = "Layer") : debugName(name){};
-		virtual ~Layer(){};
+		virtual ~Layer()= default;
 
 		virtual void onAttach() {}
 		virtual void onDetach() {}
 		virtual void onUpdate() {}
+		virtual void onUiUpdate() {}
 		virtual void onEvent(Event &event) {}
 		const std::string &getName() const { return debugName; }
 

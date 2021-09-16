@@ -6,6 +6,7 @@ namespace Geg {
 			layer->onDetach();
 			delete layer;
 		}
+		GEG_CORE_INFO("Layer stack cleared");
 	}
 
 	void LayerStack::pushLayer(Layer *layer) {

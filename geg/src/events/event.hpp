@@ -23,7 +23,7 @@ namespace Geg {
 
 	class Event {
 	public:
-		Event() {};
+		Event()= default;
 
 		EventType eventType = EventType::None;
 		std::string name = "event";

@@ -1,5 +1,4 @@
 
-#include <iostream>
 #include "app.hpp"
 
 namespace Geg {
@@ -7,10 +6,16 @@ namespace Geg {
 
 	App::App() {
 		running = true;
+
+		//setup window
 		WindowProps props{};
 		window = std::make_unique<Window>(props);
 		window->setEventCallback(GEG_BIND_CB(App::onEvent));
+
 		i_Ins = this;
+
+		//setup imgui
+		pushOverlay(new ImGuiLayer{});
 	}
 	App::~App() {}
 
@@ -25,22 +30,25 @@ namespace Geg {
 
 	void App::start() {
 		while (running) {
-			if(Input::isKeyPressed(GEG_KEY_SPACE)) { GEG_CORE_TRACE("Hi!");}
 			for(Layer* l : layerStack) {
 				l->onUpdate();
+				imgui->begin();
+				l->onUiUpdate();
+				imgui->end();
 			}
+
 			window->onUpdate();
 		}
 	}
 
-	void App::pushLayer(Layer* l) {
-		layerStack.pushLayer(l);
-		l->onAttach();
+	void App::pushLayer(Layer* layer) {
+		layerStack.pushLayer(layer);
+		layer->onAttach();
 	}
 
-	void App::pushOverlay(Layer* l) {
-		layerStack.pushOverlay(l);
-		l->onAttach();
+	void App::pushOverlay(Layer* layer) {
+		layerStack.pushOverlay(layer);
+		layer->onAttach();
 	}
 
 	bool App::closeCallback(const WindowCloseEvent &e) {

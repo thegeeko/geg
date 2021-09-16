@@ -118,7 +118,7 @@ namespace Geg {
 		glfwDestroyWindow(windowPtr);
 		--s_GLFWWindowCount;
 
-		GEG_CORE_WARN("window destroyed");
+		GEG_CORE_INFO("window destroyed");
 
 		if (s_GLFWWindowCount == 0) {
 			glfwTerminate();

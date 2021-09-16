@@ -2,6 +2,7 @@
 
 #include "window/window.hpp"
 #include "layer-stack.hpp"
+#include "imgui/im-gui.hpp"
 #include <memory>
 
 
@@ -27,8 +28,9 @@ namespace Geg {
 	private:
 		static App* i_Ins;
 		bool running = true;
-		LayerStack layerStack{};
 		std::unique_ptr<Window> window;
+		ImGuiLayer* imgui;
+		LayerStack layerStack;
 	};
 
 	//client must implement
