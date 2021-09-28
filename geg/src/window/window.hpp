@@ -21,10 +21,10 @@ namespace Geg {
 
 		void onUpdate();
 		GLFWwindow* getRawWindow () const {return windowPtr;};
-		int getWidth () const {return info.width;};
-		int getHeight () const {return info.height;};
+		[[nodiscard]] int getWidth () const {return info.width;};
+		[[nodiscard]] int getHeight () const {return info.height;};
 		void setVsync (bool state);
-		bool getVSync() const {return info.VSync;}
+		[[nodiscard]] bool getVSync() const {return info.VSync;}
 		void setEventCallback (const std::function<void(Event&)>& cb) {info.eventCallback = cb;}
 
 	private:
