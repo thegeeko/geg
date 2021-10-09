@@ -1,9 +1,7 @@
-#ifndef GEG_EVENT_HPP
-#define GEG_EVENT_HPP
+#pragma once
 
 namespace Geg {
 
-	//@TODO implement events types
 	enum class EventType {
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -15,9 +13,9 @@ namespace Geg {
 	enum EventCategory {
 		None = 0,
 		EventCategoryApplication = 1 << 1, // 00001
-		EventCategoryInput = 1 << 2, // 00010
-		EventCategoryKeyboard = 1 << 3, // 00100
-		EventCategoryMouse = 1 << 4, // 01000
+		EventCategoryInput       = 1 << 2, // 00010
+		EventCategoryKeyboard    = 1 << 3, // 00100
+		EventCategoryMouse       = 1 << 4, // 01000
 		EventCategoryMouseButton = 1 << 5  // 10000
 	};
 
@@ -49,5 +47,3 @@ namespace Geg {
 		}
 	};
 }
-
-#endif //GEG_EVENT_HPP

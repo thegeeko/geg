@@ -1,5 +1,3 @@
-#pragma once
-
 #include "core/logger.hpp"
 #include "events/event-types.hpp"
 #include "core/core.hpp"

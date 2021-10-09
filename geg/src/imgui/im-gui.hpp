@@ -1,11 +1,9 @@
-#ifndef GEG_IM_GUI_HPP
-#define GEG_IM_GUI_HPP
+#pragma once
 
-
-
-
+#include "geg-pch.hpp"
 #include "imgui.h"
-#include "core/app.hpp"
+#include "core/layer.hpp"
+
 
 namespace Geg {
 	class ImGuiLayer : public Layer {
@@ -23,5 +21,3 @@ namespace Geg {
 		std::string debugName;
 	};
 }
-
-#endif //GEG_IM_GUI_HPP

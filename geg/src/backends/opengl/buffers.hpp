@@ -1,5 +1,4 @@
-#ifndef GEG_GL_BUFFERS_HPP
-#define GEG_GL_BUFFERS_HPP
+#pragma once
 
 #include "renderer/buffers.hpp"
 #include "glad/glad.h"
@@ -32,9 +31,7 @@ namespace Geg {
 		void unbind() const override;
 
 	private:
-		unsigned int r_Id;
+		unsigned int r_Id = 0;
 		unsigned int count;
 	};
 }
-
-#endif //GEG_GL_BUFFERS_HPP

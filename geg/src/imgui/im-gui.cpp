@@ -1,4 +1,5 @@
 #include "im-gui.hpp"
+#include "core/app.hpp"
 
 // ---------- compiling imgui impls ------------//
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM

@@ -1,8 +1,7 @@
-
 #include "window.hpp"
 
 namespace Geg {
-	//@TODO add better event dispatching
+
 	static uint8_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char *description) {
@@ -128,8 +127,6 @@ namespace Geg {
 	void Window::onUpdate() {
 		glfwPollEvents();
 		glfwSwapBuffers(windowPtr);
-		glClearColor(0.7, 0.3, 0.54, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void Window::setVsync(bool state) {

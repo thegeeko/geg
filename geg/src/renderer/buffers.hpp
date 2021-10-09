@@ -1,7 +1,5 @@
-#ifndef GEG_BUFFERS_HPP
-#define GEG_BUFFERS_HPP
+#pragma once
 
-#include "renderer/renderer-api.hpp"
 #include <memory>
 #include <vector>
 
@@ -67,8 +65,8 @@ namespace Geg {
 		[[nodiscard]] int getStride() const { return stride; }
 		[[nodiscard]] const std::vector<BufferElement>& getElements() const { return elements; }
 
-		std::vector<BufferElement>::iterator begin() { return elements.begin(); }
-		std::vector<BufferElement>::iterator end() { return elements.end(); }
+		[[nodiscard]] std::vector<BufferElement>::iterator begin() { return elements.begin(); }
+		[[nodiscard]] std::vector<BufferElement>::iterator end() { return elements.end(); }
 		[[nodiscard]] std::vector<BufferElement>::const_iterator begin() const { return elements.begin(); }
 		[[nodiscard]] std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
 
@@ -98,5 +96,3 @@ namespace Geg {
 		static IndexBuffer *create(unsigned int *indices, unsigned int size);
 	};
 }
-
-#endif //GEG_BUFFERS_HPP

@@ -1,11 +1,10 @@
-#ifndef GEG_EVENT_TYPES_HPP
-#define GEG_EVENT_TYPES_HPP
+#pragma once
 
 #include "event.hpp"
 
 #define IMPL_EVENT_TYPE(ev) const static EventType staticEventType = ev;\
                             EventType eventType = ev;\
-                            EventType getEventType() const {return eventType;}
+                            [[nodiscard]] EventType getEventType() const override {return eventType;}
 
 namespace Geg {
 
@@ -224,4 +223,3 @@ namespace Geg {
 
 
 }
-#endif //GEG_EVENT_TYPES_HPP

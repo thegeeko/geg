@@ -1,5 +1,4 @@
-#ifndef GEG_GL_VERTEX_ARRAY_HPP
-#define GEG_GL_VERTEX_ARRAY_HPP
+#pragma once
 
 #include "renderer/vertex-array.hpp"
 #include "renderer/buffers.hpp"
@@ -29,5 +28,3 @@ namespace Geg {
 	};
 }
 
-
-#endif //GEG_GL_VERTEX_ARRAY_HPP

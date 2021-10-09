@@ -1,5 +1,4 @@
-#ifndef GEG_VERTEX_ARRAY_HPP
-#define GEG_VERTEX_ARRAY_HPP
+#pragma once
 
 #include "buffers.hpp"
 #include <memory>
@@ -21,5 +20,3 @@ namespace Geg {
 		static VertexArray* create();
 	};
 }
-
-#endif //GEG_VERTEX_ARRAY_HPP
