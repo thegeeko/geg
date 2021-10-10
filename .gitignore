@@ -43,5 +43,10 @@ _deps
 *.out
 *.App
 
+.cache
+.ccls-cache
+build
+Debug
+cmake-build-Release
 cmake-build-debug
 .idea

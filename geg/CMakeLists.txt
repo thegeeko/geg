@@ -5,53 +5,58 @@ add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/imgui)
-add_library(geg SHARED
-	src/geg-pch.hpp
+add_library(geg STATIC 
+  src/geg-pch.hpp
 
-	src/core/main-entry.hpp
-	src/core/app.cpp
-	src/core/app.hpp
-	src/core/logger.cpp
-	src/core/logger.hpp
-	src/core/core.hpp
-	src/core/layer-stack.cpp
-	src/core/layer.hpp
-	src/core/layer-stack.hpp
-	src/core/input.cpp
-	src/core/input.hpp
-	src/core/key-codes.hpp
+  src/core/core.hpp
+  src/core/core.cpp
+  src/core/main-entry.hpp
+  src/core/app.cpp
+  src/core/app.hpp
+  src/core/logger.cpp
+  src/core/logger.hpp
+  src/core/layer.hpp
+  src/core/layer-stack.cpp
+  src/core/layer-stack.hpp
+  src/core/input.cpp
+  src/core/input.hpp
+  src/core/key-codes.hpp
 
-	src/events/event.cpp
-	src/events/event.hpp
-	src/events/event-types.hpp
+  src/events/event.cpp
+  src/events/event.hpp
+  src/events/event-types.hpp
 
-	src/window/window.cpp
-	src/window/window.hpp
+  src/window/window.cpp
+  src/window/window.hpp
 
-	src/glad/glad.h
-	src/glad/glad.cpp
+  src/glad/glad.h
+  src/glad/glad.cpp
 
-	src/imgui/im-gui.cpp
-	src/imgui/im-gui.hpp
+  src/imgui/im-gui.cpp
+  src/imgui/im-gui.hpp
 
-	
-	src/renderer/buffers.hpp
-	src/renderer/buffers.cpp
-	src/renderer/renderer-api.cpp
-	src/renderer/renderer-api.hpp
-	src/renderer/renderer.cpp
-	src/renderer/renderer.cpp
-	src/renderer/vertex-array.cpp
-	src/renderer/vertex-array.hpp
-	src/renderer/renderer-commands.cpp
-	src/renderer/renderer-commands.hpp
+  
+  src/renderer/buffers.hpp
+  src/renderer/buffers.cpp
+  src/renderer/shader.hpp
+  src/renderer/shader.cpp
+  src/renderer/renderer-api.cpp
+  src/renderer/renderer-api.hpp
+  src/renderer/renderer.cpp
+  src/renderer/renderer.cpp
+  src/renderer/vertex-array.cpp
+  src/renderer/vertex-array.hpp
+  src/renderer/renderer-commands.cpp
+  src/renderer/renderer-commands.hpp
 
-	src/backends/opengl/buffers.hpp
-	src/backends/opengl/buffers.cpp
-	src/backends/opengl/vertex-array.cpp
-	src/backends/opengl/vertex-array.hpp
-	src/backends/opengl/renderer-api.cpp
-	src/backends/opengl/renderer-api.hpp
+  src/backends/opengl/buffers.hpp
+  src/backends/opengl/buffers.cpp
+  src/backends/opengl/shader.hpp
+  src/backends/opengl/shader.cpp
+  src/backends/opengl/vertex-array.cpp
+  src/backends/opengl/vertex-array.hpp
+  src/backends/opengl/renderer-api.cpp
+  src/backends/opengl/renderer-api.hpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)

@@ -9,9 +9,9 @@ namespace Geg {
 			case RendererAPI::API::OpenGL :
 				return new GLVertexBuffer(vertices, size);
 			case RendererAPI::API::Vulkan :
-				GEG_ERROR("Vulkan not supported atm");
+				GEG_CORE_ERROR("Vulkan not supported atm");
 			default :
-				GEG_ERROR("you must use renderer api");
+				GEG_CORE_ERROR("you must use renderer api");
 		}
 	}
 
@@ -20,9 +20,9 @@ namespace Geg {
 			case RendererAPI::API::OpenGL :
 				return new GLIndexBuffer(indices, size);
 			case RendererAPI::API::Vulkan :
-				GEG_ERROR("Vulkan not supported atm");
+				GEG_CORE_ERROR("Vulkan not supported atm");
 			default :
-				GEG_ERROR("you must use renderer api");
+				GEG_CORE_ERROR("you must use renderer api");
 		}
 	}
 

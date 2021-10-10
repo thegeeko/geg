@@ -42,7 +42,7 @@ namespace Geg {
 	public:
 		Dispatcher(Event& _e) : e(_e) {};
 		template<typename T, typename F>
-		bool dispatch(const F& cb) {
+		void dispatch(const F& cb) {
 			if (e.getEventType() == T::staticEventType){ e.isHandeled = cb(static_cast<T&>(e)); }
 		}
 	};
