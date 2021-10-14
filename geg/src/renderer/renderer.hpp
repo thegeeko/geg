@@ -1,7 +1,7 @@
 #pragma once
 
 #include "renderer-commands.hpp"
-#include "renderer/renderer-api.hpp"
+#include "renderer-api.hpp"
 #include <memory>
 
 namespace Geg {

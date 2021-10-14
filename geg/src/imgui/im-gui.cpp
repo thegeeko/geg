@@ -1,29 +1,32 @@
 #include "im-gui.hpp"
+
 #include "core/app.hpp"
+#include "glad/glad.h"
+#include "imgui.h"
 
 // ---------- compiling imgui impls ------------//
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#include "vendor/imgui/backends/imgui_impl_opengl3.cpp"
 #include "vendor/imgui/backends/imgui_impl_glfw.cpp"
+#include "vendor/imgui/backends/imgui_impl_opengl3.cpp"
 // ---------- compiling imgui impls ------------//
 
 namespace Geg {
-	ImGuiLayer::ImGuiLayer() : debugName("ImGui Layer") {}
-
+	ImGuiLayer::ImGuiLayer():
+			Layer("ImGui Layer") {}
 
 	void ImGuiLayer::onAttach() {
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		ImGuiIO& io = ImGui::GetIO();
+		(void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;		 // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		 // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;		 // Enable Multi-Viewport / Platform Windows
 
 		ImGui::StyleColorsDark();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
@@ -57,8 +60,7 @@ namespace Geg {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			GLFWwindow* backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
@@ -66,10 +68,6 @@ namespace Geg {
 		}
 	}
 
-	void ImGuiLayer::onUiUpdate() {
-		static bool a = true;
-		ImGui::ShowDemoWindow(&a);
-	}
+	void ImGuiLayer::onUiUpdate() {}
 
-
-}
+}		 // namespace Geg

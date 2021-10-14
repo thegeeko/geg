@@ -1,34 +1,34 @@
 #pragma once
 
-#include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "renderer/graphics-context.hpp"
 
 namespace Geg {
 
-	struct WindowProps{
+	struct WindowProps {
 		int width, height;
 		std::string name;
 
-		WindowProps(int w = 1366, int h = 720, std::string n = "Geg") : width(w), height(h), name(n) {};
+		WindowProps(int w = 1366, int h = 720, std::string n = "Geg"):
+				width(w), height(h), name(n){};
 	};
 
 	class Window {
-	public:
+	 public:
 		Window(WindowProps& props);
 		~Window();
 
-
 		void onUpdate();
-		[[nodiscard]]	GLFWwindow* getRawWindow () const {return windowPtr;};
-		[[nodiscard]] int getWidth () const {return info.width;};
-		[[nodiscard]] int getHeight () const {return info.height;};
-		[[nodiscard]] bool getVSync() const {return info.VSync;}
-		void setVsync (bool state);
-		void setEventCallback (const std::function<void(Event&)>& cb) {info.eventCallback = cb;}
+		[[nodiscard]] GLFWwindow* getRawWindow() const { return windowPtr; };
+		[[nodiscard]] int getWidth() const { return info.width; };
+		[[nodiscard]] int getHeight() const { return info.height; };
+		[[nodiscard]] bool getVSync() const { return info.VSync; }
+		void setVsync(bool state);
+		void setEventCallback(const std::function<void(Event&)>& cb) { info.eventCallback = cb; }
 
-	private:
+	 private:
 		GLFWwindow* windowPtr;
-
+		GraphicsContext* context;
 		struct WindowInfo {
 			int width, height;
 			bool VSync = true;
@@ -37,6 +37,5 @@ namespace Geg {
 		};
 
 		WindowInfo info;
-
 	};
-}
+}		 // namespace Geg

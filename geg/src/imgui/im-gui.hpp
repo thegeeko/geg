@@ -1,13 +1,8 @@
 #pragma once
 
-#include "geg-pch.hpp"
-#include "imgui.h"
-#include "core/layer.hpp"
-
-
 namespace Geg {
-	class ImGuiLayer : public Layer {
-	public:
+	class ImGuiLayer: public Layer {
+	 public:
 		ImGuiLayer();
 		~ImGuiLayer() override = default;
 		void onAttach() override;
@@ -16,8 +11,5 @@ namespace Geg {
 
 		void begin();
 		void end();
-
-	private:
-		std::string debugName;
 	};
-}
+}		 // namespace Geg

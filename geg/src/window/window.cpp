@@ -18,31 +18,35 @@ namespace Geg {
 			GEG_CORE_ASSERT(success, "Could not initialize GLFW!");
 
 			glfwSetErrorCallback(GLFWErrorCallback);
-			windowPtr = glfwCreateWindow(props.width, props.height, props.name.c_str(), nullptr, nullptr);
+			windowPtr = glfwCreateWindow(
+					props.width,
+					props.height,
+					props.name.c_str(),
+					nullptr,
+					nullptr);
 			++s_GLFWWindowCount;
-			glfwMakeContextCurrent(windowPtr);
+			
+
+			context = GraphicsContext::create(windowPtr);
+			context->init();
 			glfwSetWindowUserPointer(windowPtr, &info);
-
-			success = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-			GEG_CORE_ASSERT(success, "Could not initialize GLAD");
 			setVsync(true);
-
 
 			GEG_CORE_INFO("window {} created", props.name);
 			glfwSetWindowCloseCallback(windowPtr, [](GLFWwindow *w) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(w);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(w);
 				WindowCloseEvent e{};
 				wi.eventCallback(e);
 			});
 
 			glfwSetCursorPosCallback(windowPtr, [](GLFWwindow *w, double x, double y) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(w);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(w);
 				MouseMovedEvent e(x, y);
 				wi.eventCallback(e);
 			});
 
 			glfwSetWindowSizeCallback(windowPtr, [](GLFWwindow *window, int width, int height) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(window);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 				wi.width = width;
 				wi.height = height;
 
@@ -51,7 +55,7 @@ namespace Geg {
 			});
 
 			glfwSetMouseButtonCallback(windowPtr, [](GLFWwindow *window, int button, int action, int mods) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(window);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 
 				switch (action) {
 					case GLFW_PRESS: {
@@ -68,21 +72,21 @@ namespace Geg {
 			});
 
 			glfwSetScrollCallback(windowPtr, [](GLFWwindow *window, double xOffset, double yOffset) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(window);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 
-				MouseScrolledEvent e((float) xOffset, (float) yOffset);
+				MouseScrolledEvent e((float)xOffset, (float)yOffset);
 				wi.eventCallback(e);
 			});
 
 			glfwSetCursorPosCallback(windowPtr, [](GLFWwindow *window, double xPos, double yPos) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(window);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 
-				MouseMovedEvent e((float) xPos, (float) yPos);
+				MouseMovedEvent e((float)xPos, (float)yPos);
 				wi.eventCallback(e);
 			});
 
 			glfwSetKeyCallback(windowPtr, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(window);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 
 				switch (action) {
 					case GLFW_PRESS: {
@@ -104,13 +108,12 @@ namespace Geg {
 			});
 
 			glfwSetCharCallback(windowPtr, [](GLFWwindow *window, unsigned int keycode) {
-				WindowInfo &wi = *(WindowInfo *) glfwGetWindowUserPointer(window);
+				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 
 				KeyTappedEvent e(keycode);
 				wi.eventCallback(e);
 			});
 		}
-
 	}
 
 	Window::~Window() {
@@ -126,11 +129,11 @@ namespace Geg {
 
 	void Window::onUpdate() {
 		glfwPollEvents();
-		glfwSwapBuffers(windowPtr);
+		context->swapBuffers();
 	}
 
 	void Window::setVsync(bool state) {
 		state ? glfwSwapInterval(1) : glfwSwapInterval(0);
 		info.VSync = state;
 	}
-}
+}		 // namespace Geg

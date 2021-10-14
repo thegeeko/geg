@@ -48,6 +48,8 @@ add_library(geg STATIC
   src/renderer/vertex-array.hpp
   src/renderer/renderer-commands.cpp
   src/renderer/renderer-commands.hpp
+	src/renderer/graphics-context.cpp
+	src/renderer/graphics-context.hpp
 
   src/backends/opengl/buffers.hpp
   src/backends/opengl/buffers.cpp
@@ -57,6 +59,8 @@ add_library(geg STATIC
   src/backends/opengl/vertex-array.hpp
   src/backends/opengl/renderer-api.cpp
   src/backends/opengl/renderer-api.hpp
+	src/backends/opengl/graphics-context.cpp
+	src/backends/opengl/graphics-context.hpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)

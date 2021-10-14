@@ -1,13 +1,10 @@
 #pragma once
+
 #include "app.hpp"
 
-#ifndef GEG_MAIN_ENTRY_HPP
-#define GEG_MAIN_ENTRY_HPP
-
-
 extern Geg::App* Geg::createApp();
-int main () {
 
+int main() {
 	Geg::Logger::init();
 	GEG_CORE_INFO("Hi :3");
 	GEG_INFO("Hi :3");
@@ -16,5 +13,3 @@ int main () {
 	appIns->start();
 	delete appIns;
 }
-
-#endif //GEG_MAIN_ENTRY_HPP
