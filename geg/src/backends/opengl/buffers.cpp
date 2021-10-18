@@ -1,4 +1,5 @@
 #include "buffers.hpp"
+#include "core/logger.hpp"
 
 namespace Geg {
 
@@ -40,7 +41,7 @@ namespace Geg {
 	GLIndexBuffer::GLIndexBuffer(unsigned int *indices, unsigned int _count) : count(_count){
 		glCreateBuffers(1, &r_Id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_Id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 	}
 
 	GLIndexBuffer::~GLIndexBuffer() {
@@ -56,11 +57,9 @@ namespace Geg {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, r_Id);
 	}
 
-	unsigned int GLIndexBuffer::getCount() const {
-		return count;
-	}
-
 	void GLIndexBuffer::unbind() const {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
+
+	unsigned int GLIndexBuffer::getCount() const { return count; }
 }

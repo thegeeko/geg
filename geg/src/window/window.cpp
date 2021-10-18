@@ -17,6 +17,8 @@ namespace Geg {
 			bool success = glfwInit();
 			GEG_CORE_ASSERT(success, "Could not initialize GLFW!");
 
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+
 			glfwSetErrorCallback(GLFWErrorCallback);
 			windowPtr = glfwCreateWindow(
 					props.width,
@@ -25,7 +27,6 @@ namespace Geg {
 					nullptr,
 					nullptr);
 			++s_GLFWWindowCount;
-			
 
 			context = GraphicsContext::create(windowPtr);
 			context->init();
