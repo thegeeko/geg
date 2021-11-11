@@ -43,6 +43,7 @@ _deps
 *.out
 *.App
 
+.vscode
 .cache
 .ccls-cache
 build

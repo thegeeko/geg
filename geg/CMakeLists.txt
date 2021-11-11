@@ -35,6 +35,8 @@ add_library(geg STATIC
   src/imgui/im-gui.cpp
   src/imgui/im-gui.hpp
 
+	src/renderer/cams/ortho-cam.hpp
+	src/renderer/cams/ortho-cam.cpp
   
   src/renderer/buffers.hpp
   src/renderer/buffers.cpp

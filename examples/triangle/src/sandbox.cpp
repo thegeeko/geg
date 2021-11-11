@@ -1,13 +1,18 @@
 #include "sandbox.hpp"
 
-#include <memory>
-#include "core/logger.hpp"
+#include "backends/opengl/shader.hpp"
+#include "glm/fwd.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "imgui.h"
+#include "renderer/cams/ortho-cam.hpp"
 
 // triangle lvl
 class Triangle: public Geg::Layer {
  private:
 	std::shared_ptr<Geg::VertexArray> vao;
-	std::shared_ptr<Geg::Shader> simpleShader;
+	std::shared_ptr<Geg::GLShader> simpleShader;
+	std::shared_ptr<Geg::OrthoCam> cam;
+	glm::vec3 camPos{0.5f, 0.5f, 0.0f};
 
  public:
 	Triangle() {
@@ -42,17 +47,34 @@ class Triangle: public Geg::Layer {
 		vao->addVertexBuffer(vbo);
 		vao->setIndexBuffer(vio);
 
+		// casting the shader so we can accses the uniforms opengl spasifc functions
+		Geg::Shader* toBeCasted = Geg::Shader::create(
+				"/home/thegeeko/projects/geg/examples/triangle/src/shaders/simple.vert",
+				"/home/thegeeko/projects/geg/examples/triangle/src/shaders/simple.frag");
+
+		Geg::GLShader* casted = dynamic_cast<Geg::GLShader*>(toBeCasted);
+
 		// shader setup
-		simpleShader = std::shared_ptr<Geg::Shader>(
-				Geg::Shader::create(
-						"/home/thegeeko/projects/geg/examples/triangle/src/shaders/simple.vert",
-						"/home/thegeeko/projects/geg/examples/triangle/src/shaders/simple.frag"));
+		simpleShader = std::shared_ptr<Geg::GLShader>(casted);
+
+		// creating a cam
+		cam = std::shared_ptr<Geg::OrthoCam>(new Geg::OrthoCam(1.f, -1.f, 1.f, -1.f));
+	}
+
+	void onEvent(Geg::Event& event) override {
+		Geg::Dispatcher dis(event);
+	}
+
+	void onUiUpdate() override {
+		ImGui::SliderFloat3("CamPos", &camPos.x, 0, 5);
 	}
 
 	void onUpdate() override {
 		Geg::Renderer::beginScene();
 
 		Geg::RendererCommands::clear({0.34f, 0.9f, .61f, 1});
+		cam->setPosition(camPos);
+		simpleShader->uploadUniformMat4f("cam", glm::value_ptr(cam->getProjVeiwM()));
 		simpleShader->bind();
 		Geg::Renderer::submit(vao);
 

@@ -68,6 +68,7 @@ namespace Geg {
 		}
 	}
 
-	void ImGuiLayer::onUiUpdate() {}
+	void ImGuiLayer::onUiUpdate() {
+	}
 
 }		 // namespace Geg

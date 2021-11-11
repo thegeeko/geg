@@ -18,10 +18,15 @@ namespace Geg {
 
 		void bind() const override;
 		void unBind() const override;
+		void uploadUniform4f(const std::string& name, float f1, float f2, float f3, float f4) const;
+		void uploadUniformMat4f(const char* name, const float* mat4) const;
+		void uploadUniformVec3f(const std::string name, const float* vec3) const;
 	private:
 		unsigned int r_Id;
 		GLShaderData vertShaderData;
 		GLShaderData fragShaderData;
 		void compile(GLShaderData shader);
+		const int getUniformLocation(const std::string& name) const;
 	};
+
 }
