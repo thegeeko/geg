@@ -1,4 +1,6 @@
 #include "app.hpp"
+#include <string>
+#include "time/time.hpp"
 
 namespace Geg {
 	App *App::i_Ins = nullptr;
@@ -11,7 +13,7 @@ namespace Geg {
 		window = std::make_unique<Window>(props);
 		window->setEventCallback(GEG_BIND_CB(App::onEvent));
 
-		i_Ins = this;
+		i_Ins = this; // singleton 
 
 		// setup imgui
 		pushOverlay(new ImGuiLayer{});
@@ -29,8 +31,9 @@ namespace Geg {
 
 	void App::start() {
 		while (running) {
+			Time::updateTime();
 			for (Layer *l : layerStack) {
-				l->onUpdate();
+				l->onUpdate(Time::getDeltaTime());
 				imgui->begin();
 				l->onUiUpdate();
 				imgui->end();

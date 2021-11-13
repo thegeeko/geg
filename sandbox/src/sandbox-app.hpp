@@ -1,6 +1,4 @@
-
-#ifndef GEG_SANDBOX_APP_HPP
-#define GEG_SANDBOX_APP_HPP
+#pragma once
 
 #include "geg.hpp"
 
@@ -9,6 +7,3 @@ public:
 	sandboxApp();
 	~sandboxApp();
 };
-
-
-#endif //GEG_SANDBOX_APP_HPP

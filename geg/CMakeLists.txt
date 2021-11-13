@@ -22,6 +22,9 @@ add_library(geg STATIC
   src/core/input.hpp
   src/core/key-codes.hpp
 
+	src/time/time.hpp
+	src/time/time.cpp
+
   src/events/event.cpp
   src/events/event.hpp
   src/events/event-types.hpp

@@ -9,7 +9,7 @@ namespace Geg {
 
 		virtual void onAttach(){};
 		virtual void onDetach(){};
-		virtual void onUpdate(){};
+		virtual void onUpdate(float deltaTime){};
 		virtual void onUiUpdate(){};
 		virtual void onEvent(Event &event) {}
 		virtual const std::string &getName() const { return debugName; }
