@@ -4,7 +4,6 @@
 
 #include "imgui/im-gui.hpp"
 #include "layer-stack.hpp"
-#include "renderer/vertex-array.hpp"
 #include "window/window.hpp"
 
 namespace Geg {
@@ -29,7 +28,6 @@ namespace Geg {
 		std::unique_ptr<Window> window;
 		ImGuiLayer *imgui;
 		LayerStack layerStack;
-		std::shared_ptr<VertexArray> vao;
 	};
 
 	// client must implement

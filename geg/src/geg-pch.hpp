@@ -5,6 +5,8 @@
 #include "core/core.hpp"
 #include "core/layer.hpp"
 #include "core/key-codes.hpp"
+#include "core/input.hpp"
+#include "time/time.hpp"
 
 #include <string>
 #include <vector>
