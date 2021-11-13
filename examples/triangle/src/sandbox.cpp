@@ -69,7 +69,7 @@ class Triangle: public Geg::Layer {
 		ImGui::SliderFloat3("CamPos", &camPos.x, 0, 5);
 	}
 
-	void onUpdate() override {
+	void onUpdate(float deltaTime) override {
 		Geg::Renderer::beginScene();
 
 		Geg::RendererCommands::clear({0.34f, 0.9f, .61f, 1});
