@@ -1,7 +1,6 @@
 #include "window.hpp"
 
 namespace Geg {
-
 	static uint8_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char *description) {
@@ -17,8 +16,6 @@ namespace Geg {
 			bool success = glfwInit();
 			GEG_CORE_ASSERT(success, "Could not initialize GLFW!");
 
-			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-
 			glfwSetErrorCallback(GLFWErrorCallback);
 			windowPtr = glfwCreateWindow(
 					props.width,
@@ -30,6 +27,7 @@ namespace Geg {
 
 			context = GraphicsContext::create(windowPtr);
 			context->init();
+
 			glfwSetWindowUserPointer(windowPtr, &info);
 			setVsync(true);
 

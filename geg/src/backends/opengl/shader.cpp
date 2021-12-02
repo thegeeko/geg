@@ -1,6 +1,4 @@
 #include "shader.hpp"
-
-#include "core/logger.hpp"
 #include "glad/glad.h"
 
 namespace Geg {

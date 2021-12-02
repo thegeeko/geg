@@ -12,8 +12,9 @@ namespace Geg {
 		glfwMakeContextCurrent(windowPtr);
 		bool success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		GEG_CORE_ASSERT(success, "Could not initialize GLAD");
-
 		GEG_CORE_INFO("OpenGl graphics initialized");
+
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(glDebugMsg, NULL);
 	}

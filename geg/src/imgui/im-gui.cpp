@@ -4,11 +4,11 @@
 #include "glad/glad.h"
 #include "imgui.h"
 
-// ---------- compiling imgui impls ------------//
+// ---------- imgui impls ------------//
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#include "vendor/imgui/backends/imgui_impl_glfw.cpp"
-#include "vendor/imgui/backends/imgui_impl_opengl3.cpp"
-// ---------- compiling imgui impls ------------//
+#include "vendor/imgui/backends/imgui_impl_glfw.h"
+#include "vendor/imgui/backends/imgui_impl_opengl3.h"
+// ---------- imgui impls ------------//
 
 namespace Geg {
 	ImGuiLayer::ImGuiLayer():
@@ -68,7 +68,17 @@ namespace Geg {
 		}
 	}
 
-	void ImGuiLayer::onUiUpdate() {
-	}
+	void ImGuiLayer::onUiUpdate(){
+		bool a = true;
 
+		ImGui::ShowDemoWindow();
+
+		ImGui::Begin("Test");
+		ImGui::End();
+
+		int i = 0, j = 0;
+		while (i < 10) {
+			++j;
+		}
+	}
 }		 // namespace Geg

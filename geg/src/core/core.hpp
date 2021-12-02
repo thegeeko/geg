@@ -2,6 +2,11 @@
 
 #define GEG_ENABLE_ASSERT
 #define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+
+#ifndef NDEBUG
+	#define GEG_DEBUG_ENABLED
+#endif
 
 #ifdef GEG_ENABLE_ASSERT
 	#define GEG_CORE_ASSERT(toCheck, ...)                  \

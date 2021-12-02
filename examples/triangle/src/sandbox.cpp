@@ -66,7 +66,11 @@ class Triangle: public Geg::Layer {
 	}
 
 	void onUiUpdate() override {
+		ImGui::Begin("Test");
+		ImGui::End();
+		ImGui::Begin("Test");
 		ImGui::SliderFloat3("CamPos", &camPos.x, 0, 5);
+		ImGui::End();
 	}
 
 	void onUpdate(float deltaTime) override {

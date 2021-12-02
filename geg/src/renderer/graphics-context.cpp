@@ -1,6 +1,7 @@
 #include "graphics-context.hpp"
 
 #include "backends/opengl/graphics-context.hpp"
+#include "backends/vulkan/graphics-context.hpp"
 #include "renderer.hpp"
 
 namespace Geg {
@@ -9,7 +10,7 @@ namespace Geg {
 			case RendererAPI::API::OpenGL:
 				return new GLGraphicsContext(_windowPtr);
 			case RendererAPI::API::Vulkan:
-				GEG_CORE_ERROR("Vulkan not supported atm");
+				return new VulkanGraphicsContext(_windowPtr);
 			default:
 				GEG_CORE_ERROR("you must use renderer api");
 		}

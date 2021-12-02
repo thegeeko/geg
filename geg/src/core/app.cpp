@@ -1,6 +1,4 @@
 #include "app.hpp"
-#include <string>
-#include "time/time.hpp"
 
 namespace Geg {
 	App *App::i_Ins = nullptr;
@@ -16,7 +14,7 @@ namespace Geg {
 		i_Ins = this; // singleton 
 
 		// setup imgui
-		pushOverlay(new ImGuiLayer{});
+		/* pushOverlay(new ImGuiLayer{}); */
 	}
 	App::~App() {}
 

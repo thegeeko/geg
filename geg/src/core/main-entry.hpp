@@ -10,6 +10,6 @@ int main() {
 	GEG_INFO("Hi :3");
 
 	auto appIns = Geg::createApp();
-	appIns->start();
+	/* appIns->start(); */
 	delete appIns;
 }

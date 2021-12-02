@@ -1,6 +1,7 @@
 #pragma once
 
 namespace Geg {
+
 	class ImGuiLayer: public Layer {
 	 public:
 		ImGuiLayer();
@@ -11,5 +12,6 @@ namespace Geg {
 
 		void begin();
 		void end();
+
 	};
 }		 // namespace Geg
