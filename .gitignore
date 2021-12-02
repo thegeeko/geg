@@ -51,3 +51,5 @@ Debug
 cmake-build-Release
 cmake-build-debug
 .idea
+
+*.ig

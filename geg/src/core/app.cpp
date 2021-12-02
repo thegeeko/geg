@@ -1,4 +1,6 @@
 #include "app.hpp"
+#include <string>
+#include "time/time.hpp"
 
 namespace Geg {
 	App *App::i_Ins = nullptr;
