@@ -1,4 +1,5 @@
 #include "vulkan-device.hpp"
+#include <vulkan/vulkan_core.h>
 
 #include <cstring>
 #include <set>
@@ -38,6 +39,7 @@ namespace Geg {
 	VulkanDevice::VulkanDevice(GLFWwindow* _window):
 			window(_window) {
 		createInstance();
+		createSurface();
 		setupDebugMessenger();
 		pickPhysicalDevice();
 
@@ -46,9 +48,9 @@ namespace Geg {
 		float queuePriority = 1.0f;
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
+		std::set<unsigned int> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
 
-		for (uint32_t queueFamily : uniqueQueueFamilies) {
+		for (unsigned int queueFamily : uniqueQueueFamilies) {
 			VkDeviceQueueCreateInfo queueCreateInfo{};
 			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -64,9 +66,10 @@ namespace Geg {
 		createInfo.pQueueCreateInfos = queueCreateInfos.data();
 		createInfo.queueCreateInfoCount = static_cast<unsigned int>(queueCreateInfos.size());
 		createInfo.pEnabledFeatures = &deviceFeatures;
-		createInfo.enabledExtensionCount = 0;
+		createInfo.enabledExtensionCount = static_cast<unsigned int>(deviceExtensions.size());
+		createInfo.ppEnabledExtensionNames = deviceExtensions.data();	
 		if (enableValidationLayers) {
-			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+			createInfo.enabledLayerCount = static_cast<unsigned int>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
 		} else {
 			createInfo.enabledLayerCount = 0;
@@ -135,6 +138,7 @@ namespace Geg {
 
 	void VulkanDevice::createSurface() {
 		VkResult result = glfwCreateWindowSurface(vulkanInstance, window, nullptr, &surface);
+		GEG_CORE_ASSERT( result == VK_SUCCESS , "Can't create window surface");
 	}
 
 	void VulkanDevice::populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
@@ -159,6 +163,8 @@ namespace Geg {
 		findQueueFamilies(devices[0], queueFam);
 
 		GEG_CORE_ASSERT(queueFam.vaiable, "No vaiable queue families");
+		GEG_CORE_ASSERT(checkDeviceExtentionSupport(devices[0]), "Your gpu doesn't support swap chain extension");
+
 		physicalDevice = devices[0];
 	}
 
@@ -187,6 +193,22 @@ namespace Geg {
 		return true;
 	}
 
+	bool VulkanDevice::checkDeviceExtentionSupport(VkPhysicalDevice device) {
+		uint32_t extensionCount;
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+		for (const auto& extension : availableExtensions) {
+				requiredExtensions.erase(extension.extensionName);
+		}
+
+		return requiredExtensions.empty();	
+	}
+
 	std::vector<const char*> VulkanDevice::getRequiredExtensions() {
 		unsigned int glfwExtensionCount = 0;
 		const char** glfwExtensions;
@@ -201,7 +223,7 @@ namespace Geg {
 		return extensions;
 	}
 
-	void VulkanDevice::findQueueFamilies(const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue) {
+	void VulkanDevice::findQueueFamilies(const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue) const {
 		if (queue.vaiable) { return; }
 
 		unsigned int queueFamilyCount = 0;

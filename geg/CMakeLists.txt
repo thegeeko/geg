@@ -75,6 +75,8 @@ add_library(geg STATIC
 	src/backends/vulkan/graphics-context.hpp
 	src/backends/vulkan/vulkan-device.hpp
 	src/backends/vulkan/vulkan-device.cpp
+	src/backends/vulkan/swap-chain.cpp
+	src/backends/vulkan/swap-chain.hpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)

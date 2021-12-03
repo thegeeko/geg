@@ -1,20 +1,29 @@
 #pragma once
 
-#include <optional>
 #include <vulkan/vulkan.hpp>
 
 #include "GLFW/glfw3.h"
 #include "renderer/graphics-context.hpp"
 
 namespace Geg {
+	struct QueueFamilyIndices {
+		unsigned int graphicsFamily;
+		unsigned int presentFamily;
+
+		bool vaiable = false;
+	};
+
 	class VulkanDevice {
 	public:
 		VulkanDevice(GLFWwindow* _window);
 		~VulkanDevice();
 
 		const VkDevice& getDevice() const { return device; }
+		const VkPhysicalDevice& getPhysicalDevice() const { return physicalDevice; }
+		const VkSurfaceKHR& getSurface() const { return surface; }
 		const VkQueue& getGraphicsQueue() const { return graphicsQueue; }
 		const VkQueue& getPresentQueue() const { return presentQueue; }
+		void findQueueFamilies (const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue) const;
 
 		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 				VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -45,21 +54,19 @@ namespace Geg {
 		const std::vector<const char*> validationLayers = {
 				"VK_LAYER_KHRONOS_validation"
 		};
-
-		struct QueueFamilyIndices {
-			unsigned int graphicsFamily;
-			unsigned int presentFamily;
-
-			bool vaiable = false;
+		const std::vector<const char*> deviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 		};
 
+		
+
 		bool checkValidationLayerSupport();
+		bool checkDeviceExtentionSupport(VkPhysicalDevice device);
 		std::vector<const char*> getRequiredExtensions();
 		void createInstance();
 		void setupDebugMessenger();
 		void createSurface();
 		void populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 		void pickPhysicalDevice();
-		void findQueueFamilies(const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue);
 	};
 }		 // namespace Geg

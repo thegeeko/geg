@@ -16,6 +16,8 @@ namespace Geg {
 			bool success = glfwInit();
 			GEG_CORE_ASSERT(success, "Could not initialize GLFW!");
 
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
 			glfwSetErrorCallback(GLFWErrorCallback);
 			windowPtr = glfwCreateWindow(
 					props.width,

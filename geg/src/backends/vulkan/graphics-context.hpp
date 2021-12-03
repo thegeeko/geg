@@ -3,7 +3,6 @@
 #include <vulkan/vulkan.hpp>
 
 #include "renderer/graphics-context.hpp"
-#include "vulkan-device.hpp"
 
 namespace Geg {
 	class VulkanGraphicsContext: public GraphicsContext {
