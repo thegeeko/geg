@@ -1,5 +1,4 @@
-#ifndef GEG_KEY_CODES_HPP
-#define GEG_KEY_CODES_HPP
+#pragma once
 
 //keyboard
 #define GEG_KEY_SPACE              32
@@ -138,4 +137,3 @@
 #define GEG_MOUSE_BUTTON_LEFT      GEG_MOUSE_BUTTON_1
 #define GEG_MOUSE_BUTTON_RIGHT     GEG_MOUSE_BUTTON_2
 #define GEG_MOUSE_BUTTON_MIDDLE    GEG_MOUSE_BUTTON_3
-#endif //GEG_KEY_CODES_HPP

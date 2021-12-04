@@ -7,9 +7,9 @@ namespace Geg {
 
 	VertexBuffer *VertexBuffer::create(float *vertices, unsigned int size) {
 		switch (Renderer::getAPI()) {
-			case RendererAPI::API::OpenGL:
+			case GraphicsAPI::OpenGL:
 				return new GLVertexBuffer(vertices, size);
-			case RendererAPI::API::Vulkan:
+			case GraphicsAPI::Vulkan:
 				GEG_CORE_ERROR("Vulkan not supported atm");
 			default:
 				GEG_CORE_ERROR("you must use renderer api");
@@ -19,9 +19,9 @@ namespace Geg {
 	// @FIXME should make it size
 	IndexBuffer *IndexBuffer::create(unsigned int *indices, unsigned int size) {
 		switch (Renderer::getAPI()) {
-			case RendererAPI::API::OpenGL:
+			case GraphicsAPI::OpenGL:
 				return new GLIndexBuffer(indices, size);
-			case RendererAPI::API::Vulkan:
+			case GraphicsAPI::Vulkan:
 				GEG_CORE_ERROR("Vulkan not supported atm");
 			default:
 				GEG_CORE_ERROR("you must use renderer api");

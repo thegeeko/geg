@@ -3,7 +3,6 @@
 #include "backends/opengl/shader.hpp"
 #include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "imgui.h"
 #include "renderer/cams/ortho-cam.hpp"
 
 // triangle lvl
@@ -63,14 +62,6 @@ class Triangle: public Geg::Layer {
 
 	void onEvent(Geg::Event& event) override {
 		Geg::Dispatcher dis(event);
-	}
-
-	void onUiUpdate() override {
-		ImGui::Begin("Test");
-		ImGui::End();
-		ImGui::Begin("Test");
-		ImGui::SliderFloat3("CamPos", &camPos.x, 0, 5);
-		ImGui::End();
 	}
 
 	void onUpdate(float deltaTime) override {

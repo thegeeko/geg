@@ -1,18 +1,21 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
-
 #include "renderer/graphics-context.hpp"
+#include "swap-chain.hpp"
+#include "vulkan-device.hpp"
+#include "pipeline-layout.hpp"
 
 namespace Geg {
 	class VulkanGraphicsContext: public GraphicsContext {
-	 public:
+	public:
 		VulkanGraphicsContext(GLFWwindow* window);
-		virtual ~VulkanGraphicsContext() {};
+		virtual ~VulkanGraphicsContext();
+
+		VulkanDevice* device;
+		VulkanSwapChain* swapChain;
+		VulkanPipelineLayout* pipelineLayout;
 
 		void init() override{};
 		void swapBuffers() override{};
-
-	 private:
 	};
 }		 // namespace Geg

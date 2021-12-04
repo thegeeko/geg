@@ -1,5 +1,4 @@
-#ifndef GEG_LOGGER_HPP
-#define GEG_LOGGER_HPP
+#pragma once
 
 #include <memory>
 #include "spdlog/spdlog.h"
@@ -30,5 +29,3 @@ namespace Geg {
 #define GEG_WARN(...) 	Geg::Logger::getAppLogger()->warn	(__VA_ARGS__)
 #define GEG_ERROR(...) 	Geg::Logger::getAppLogger()->error	(__VA_ARGS__)
 #define GEG_FETAL(...) 	Geg::Logger::getAppLogger()->fetal	(__VA_ARGS__)
-
-#endif //GEG_LOGGER_HPP

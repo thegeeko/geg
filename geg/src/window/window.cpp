@@ -134,7 +134,7 @@ namespace Geg {
 	}
 
 	void Window::setVsync(bool state) {
-		state ? glfwSwapInterval(1) : glfwSwapInterval(0);
+		/* state ? glfwSwapInterval(1) : glfwSwapInterval(0); */
 		info.VSync = state;
 	}
 }		 // namespace Geg

@@ -24,7 +24,6 @@ namespace Geg::Time {
 	
 	void updateTime() {
 		if(!timerInit) {
-			GEG_CORE_INFO("ONLY ONE");
 			startTime = high_resolution_clock::now();
 			lastFrameTime = 0;
 			timerInit = true;

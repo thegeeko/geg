@@ -6,9 +6,9 @@
 namespace Geg {
 	VertexArray* VertexArray::create() {
 		switch (Renderer::getAPI()) {
-		case RendererAPI::API::OpenGL:
+		case GraphicsAPI::OpenGL:
 			return new GLVertexArray();
-		case RendererAPI::API::Vulkan:
+		case GraphicsAPI::Vulkan:
 			GEG_ERROR("Vulkan not supported atm");
 		default:
 			GEG_ERROR("you must use renderer api");

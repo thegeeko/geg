@@ -4,6 +4,13 @@
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 
+#define GEG_USE_VULKAN
+
+#ifdef GEG_API_OPENGL
+	#ifndef GEG_API_VULKAN
+	#endif
+#endif
+
 #ifndef NDEBUG
 	#define GEG_DEBUG_ENABLED
 #endif
@@ -31,6 +38,20 @@
 		return this->fn(std::forward<decltype(args)>(args)...); \
 	}
 
-namespace Geg::Utils {
-	std::string readFileAsString(const std::string &filePath);
-}		 // namespace Geg::Utils
+namespace Geg {
+
+	enum class GraphicsAPI {
+		None = 0,
+		OpenGL = 1,
+		Vulkan = 2,
+	};
+	namespace Utils {
+		std::string readFileAsString(const std::string &filePath);
+		std::vector<char> readFileAsBinary(const std::string &filePath);
+	}		 // namespace Utils
+}		 // namespace Geg
+
+#ifdef GEG_USE_VULKAN
+	const Geg::GraphicsAPI GEG_CURRENT_API = Geg::GraphicsAPI::Vulkan;
+#endif
+

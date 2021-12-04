@@ -18,7 +18,7 @@ namespace Geg {
 			API->drawIndexed(vertexArray);
 		};
 
-		inline static RendererAPI::API getAPI() { return API->i_API; }
+		inline static GraphicsAPI getAPI() { return GEG_CURRENT_API; }
 
 	 private:
 		static RendererAPI *API;

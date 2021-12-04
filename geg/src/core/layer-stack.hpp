@@ -1,5 +1,4 @@
-#ifndef GEG_LAYER_STACK_HPP
-#define GEG_LAYER_STACK_HPP
+#pragma once
 
 namespace Geg {
 	class LayerStack {
@@ -26,4 +25,3 @@ namespace Geg {
 		unsigned int layerInsertIndex = 0;
 	};
 }
-#endif //GEG_LAYER_STACK_HPP

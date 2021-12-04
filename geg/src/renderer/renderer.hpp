@@ -10,6 +10,6 @@ namespace Geg {
 		static void beginScene();
 		static void endScene();
 		static void submit(const std::shared_ptr<VertexArray>& vertexArray);
-		static inline RendererAPI::API getAPI() { return RendererCommands::getAPI(); }
+		static inline GraphicsAPI getAPI() { return RendererCommands::getAPI(); }
 	};
 }		 // namespace Geg

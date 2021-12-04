@@ -17,6 +17,9 @@ namespace Geg {
 		VulkanSwapChain(GLFWwindow* window, VulkanDevice* _device);
 		~VulkanSwapChain();
 
+		const VkExtent2D getSwapChainExtent() const { return swapChainExtent; };
+		const VkFormat getSwapChainImageFormat() const { return swapChainImageFormat; };
+
 	private:
 		VulkanDevice* device;
 		GLFWwindow* window;

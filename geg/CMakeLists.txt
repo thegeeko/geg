@@ -39,8 +39,8 @@ add_library(geg STATIC
 	src/glad/glad.h
 	src/glad/glad.cpp
 
-	src/imgui/im-gui.cpp
-	src/imgui/im-gui.hpp
+	# src/imgui/im-gui.cpp
+	# src/imgui/im-gui.hpp
 
 	src/renderer/cams/ortho-cam.hpp
 	src/renderer/cams/ortho-cam.cpp
@@ -77,6 +77,10 @@ add_library(geg STATIC
 	src/backends/vulkan/vulkan-device.cpp
 	src/backends/vulkan/swap-chain.cpp
 	src/backends/vulkan/swap-chain.hpp
+	src/backends/vulkan/pipeline-layout.hpp
+	src/backends/vulkan/pipeline-layout.cpp
+	src/backends/vulkan/shader.hpp
+	src/backends/vulkan/shader.cpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)

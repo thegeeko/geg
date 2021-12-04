@@ -128,6 +128,7 @@ namespace Geg {
 	}
 
 	void VulkanSwapChain::createImageViews() {
+		swapChainImageViews.resize(swapChainImages.size());	
 		for (unsigned int i = 0; i < swapChainImages.size(); i++) {
 
 			VkImageViewCreateInfo createInfo{};

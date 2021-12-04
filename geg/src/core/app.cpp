@@ -34,9 +34,9 @@ namespace Geg {
 			Time::updateTime();
 			for (Layer *l : layerStack) {
 				l->onUpdate(Time::getDeltaTime());
-				imgui->begin();
-				l->onUiUpdate();
-				imgui->end();
+				/* imgui->begin(); */
+				/* l->onUiUpdate(); */
+				/* imgui->end(); */
 			}
 			window->onUpdate();
 		}

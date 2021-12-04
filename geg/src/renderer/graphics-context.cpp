@@ -7,9 +7,9 @@
 namespace Geg {
 	GraphicsContext* GraphicsContext::create(GLFWwindow* _windowPtr) {
 		switch (Renderer::getAPI()) {
-			case RendererAPI::API::OpenGL:
+			case GraphicsAPI::OpenGL:
 				return new GLGraphicsContext(_windowPtr);
-			case RendererAPI::API::Vulkan:
+			case GraphicsAPI::Vulkan:
 				return new VulkanGraphicsContext(_windowPtr);
 			default:
 				GEG_CORE_ERROR("you must use renderer api");
