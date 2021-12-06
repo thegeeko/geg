@@ -1,11 +1,15 @@
 #pragma once
 
+#include "backends/opengl/renderer-api.hpp"
+#include "backends/vulkan/renderer-api.hpp"
 #include "renderer-api.hpp"
 #include "vertex-array.hpp"
 
 namespace Geg {
 	class RendererCommands {
-	 public:
+	public:
+		static RendererAPI *API;
+
 		inline static void clear() {
 			API->clear();
 		};
@@ -18,9 +22,15 @@ namespace Geg {
 			API->drawIndexed(vertexArray);
 		};
 
+		inline static void drawIndexed() {
+			API->drawIndexed();
+		};
+
+		inline static void submit(const std::shared_ptr<Shader> &shader) {
+			API->submit(shader);
+		};
+
 		inline static GraphicsAPI getAPI() { return GEG_CURRENT_API; }
 
-	 private:
-		static RendererAPI *API;
-	};
+	};		// namespace RendererCommands
 }		 // namespace Geg

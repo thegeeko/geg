@@ -1,5 +1,4 @@
 #include "swap-chain.hpp"
-#include <vulkan/vulkan_core.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -7,7 +6,7 @@
 namespace Geg {
 
 	VulkanSwapChain::VulkanSwapChain(GLFWwindow* _window, VulkanDevice* _device):
-			device(_device), window(_window){
+			device(_device), window(_window) {
 		SwapChainSupportDetails supportDetails;
 		querySwapChainSupport(supportDetails);
 		GEG_CORE_ASSERT(!supportDetails.formats.empty() && !supportDetails.presentModes.empty(), "Swap chain formats and present modes arn't supported");
@@ -20,7 +19,7 @@ namespace Geg {
 			imageCount = supportDetails.capabilities.maxImageCount;
 		}
 
-		QueueFamilyIndices indices; 
+		QueueFamilyIndices indices;
 		device->findQueueFamilies(device->getPhysicalDevice(), indices);
 		uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
 
@@ -58,15 +57,22 @@ namespace Geg {
 		swapChainExtent = extent;
 
 		createImageViews();
+		createRenderPass();
+		createFramebuffers();
 
 		GEG_CORE_INFO("swap chain created");
 	}
 
 	VulkanSwapChain::~VulkanSwapChain() {
+		for (auto framebuffer : swapChainFramebuffers) {
+			vkDestroyFramebuffer(device->getDevice(), framebuffer, nullptr);
+		}
 		for (auto imageView : swapChainImageViews) {
 			vkDestroyImageView(device->getDevice(), imageView, nullptr);
 		}
-		vkDestroySwapchainKHR(device->getDevice(), swapChain, nullptr);	
+		vkDestroyRenderPass(device->getDevice(), renderPass, nullptr);
+		vkDestroySwapchainKHR(device->getDevice(), swapChain, nullptr);
+		GEG_CORE_INFO("Swap chain destroyed");
 	}
 
 	void VulkanSwapChain::querySwapChainSupport(SwapChainSupportDetails& details) {
@@ -114,28 +120,26 @@ namespace Geg {
 		} else {
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
-	
+
 			VkExtent2D actualExtent = {
-				static_cast<uint32_t>(width),
-				static_cast<uint32_t>(height)
-			};
-	
+					static_cast<uint32_t>(width),
+					static_cast<uint32_t>(height)};
+
 			actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
 			actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-	
+
 			return actualExtent;
 		}
 	}
 
 	void VulkanSwapChain::createImageViews() {
-		swapChainImageViews.resize(swapChainImages.size());	
+		swapChainImageViews.resize(swapChainImages.size());
 		for (unsigned int i = 0; i < swapChainImages.size(); i++) {
-
 			VkImageViewCreateInfo createInfo{};
 			createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-			createInfo.image = swapChainImages[i];	
+			createInfo.image = swapChainImages[i];
 			createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			createInfo.format = swapChainImageFormat;	
+			createInfo.format = swapChainImageFormat;
 			createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 			createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 			createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -148,7 +152,69 @@ namespace Geg {
 
 			VkResult result = vkCreateImageView(device->getDevice(), &createInfo, nullptr, &swapChainImageViews[i]);
 			GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create image view for image index {} in the swap chain images", i);
-		}	
+		}
+	}
+
+	void VulkanSwapChain::createRenderPass() {
+		VkAttachmentDescription colorAttachment{};
+		colorAttachment.format = swapChainImageFormat;
+		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		VkAttachmentReference colorAttachmentRef{};
+		colorAttachmentRef.attachment = 0;
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkSubpassDescription subpass{};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorAttachmentRef;
+
+		VkSubpassDependency dependency{};
+		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependency.dstSubpass = 0;
+		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependency.srcAccessMask = 0;
+		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+		VkRenderPassCreateInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.attachmentCount = 1;
+		renderPassInfo.pAttachments = &colorAttachment;
+		renderPassInfo.subpassCount = 1;
+		renderPassInfo.pSubpasses = &subpass;
+		renderPassInfo.dependencyCount = 1;
+		renderPassInfo.pDependencies = &dependency;
+
+		VkResult result = vkCreateRenderPass(device->getDevice(), &renderPassInfo, nullptr, &renderPass);
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't craete render pass");
+	}
+
+	void VulkanSwapChain::createFramebuffers() {
+		swapChainFramebuffers.resize(swapChainImageViews.size());
+
+		for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+			VkImageView attachments[] = {
+					swapChainImageViews[i]};
+
+			VkFramebufferCreateInfo framebufferInfo{};
+			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			framebufferInfo.renderPass = renderPass;
+			framebufferInfo.attachmentCount = 1;
+			framebufferInfo.pAttachments = attachments;
+			framebufferInfo.width = swapChainExtent.width;
+			framebufferInfo.height = swapChainExtent.height;
+			framebufferInfo.layers = 1;
+
+			VkResult result = vkCreateFramebuffer(device->getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create frame buffers");
+		}
 	}
 
 }		 // namespace Geg

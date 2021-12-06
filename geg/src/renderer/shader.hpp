@@ -38,7 +38,8 @@ namespace Geg {
 	}
 
 	class Shader {
-	 public:
+	public:
+		virtual ~Shader(){};
 		virtual void bind() const = 0;
 		virtual void unBind() const = 0;
 		static Shader* create(std::string vertPath, std::string fragPath);

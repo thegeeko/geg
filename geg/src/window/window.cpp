@@ -118,14 +118,16 @@ namespace Geg {
 	}
 
 	Window::~Window() {
+		delete context;
+
 		glfwDestroyWindow(windowPtr);
 		--s_GLFWWindowCount;
-
-		GEG_CORE_INFO("window destroyed");
 
 		if (s_GLFWWindowCount == 0) {
 			glfwTerminate();
 		}
+
+		GEG_CORE_INFO("window destroyed");
 	}
 
 	void Window::onUpdate() {

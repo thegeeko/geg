@@ -91,6 +91,7 @@ namespace Geg {
 		}
 		vkDestroySurfaceKHR(vulkanInstance, surface, nullptr);
 		vkDestroyInstance(vulkanInstance, nullptr);
+		GEG_CORE_INFO("Vulkan device destroyed");
 	}
 
 	void VulkanDevice::createInstance() {

@@ -1,7 +1,5 @@
 #include "command-buffers.hpp"
 
-#include <vulkan/vulkan_core.h>
-
 namespace Geg {
 	VulkanCommandBuffers::VulkanCommandBuffers(VulkanDevice* _device, VulkanSwapChain* _swapChain):
 			device(_device), swapChain(_swapChain) {
@@ -24,7 +22,7 @@ namespace Geg {
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
 
-		createSemaphores();
+		createSyncObjects();
 
 		result = vkAllocateCommandBuffers(device->getDevice(), &allocInfo, commandBuffers.data());
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't allocat command buffers")
@@ -34,21 +32,39 @@ namespace Geg {
 
 	VulkanCommandBuffers::~VulkanCommandBuffers() {
 		vkDestroyCommandPool(device->getDevice(), commandPool, nullptr);
-		vkDestroySemaphore(device->getDevice(), renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(device->getDevice(), imageAvailableSemaphore, nullptr);
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			vkDestroySemaphore(device->getDevice(), renderFinishedSemaphores[i], nullptr);
+			vkDestroySemaphore(device->getDevice(), imageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(device->getDevice(), inFlightFences[i], nullptr);
+		}
 		GEG_CORE_INFO("command pool and command buffers destroyed");
 	}
 
-	void VulkanCommandBuffers::createSemaphores() {
+	void VulkanCommandBuffers::createSyncObjects() {
 		VkResult result;
 
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-		result = vkCreateSemaphore(device->getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphore);
-		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a semaphore");
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-		result = vkCreateSemaphore(device->getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphore);
-		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a semaphore");
+		imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+		renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+		inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+		imagesInFlight.resize(swapChain->getSwapChainImages().size(), VK_NULL_HANDLE);
+		
+
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			result = vkCreateSemaphore(device->getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
+			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a semaphore");
+
+			result = vkCreateSemaphore(device->getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
+			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a semaphore");
+
+			result = vkCreateFence(device->getDevice(), &fenceInfo, nullptr, &inFlightFences[i]);
+			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create fences")
+		}
 	};
 }		 // namespace Geg

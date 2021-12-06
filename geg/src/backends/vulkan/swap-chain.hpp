@@ -17,8 +17,12 @@ namespace Geg {
 		VulkanSwapChain(GLFWwindow* window, VulkanDevice* _device);
 		~VulkanSwapChain();
 
-		const VkExtent2D getSwapChainExtent() const { return swapChainExtent; };
-		const VkFormat getSwapChainImageFormat() const { return swapChainImageFormat; };
+		const VkSwapchainKHR& getSwapChain() const { return swapChain; };
+		const VkRenderPass& getRenderPass() const { return renderPass; };
+		const VkExtent2D& getSwapChainExtent() const { return swapChainExtent; };
+		const VkFormat& getSwapChainImageFormat() const { return swapChainImageFormat; };
+		const std::vector<VkFramebuffer>& getSwapChainFrameBuffers() const { return swapChainFramebuffers; };
+		const std::vector<VkImage>& getSwapChainImages() const { return swapChainImages; };
 
 	private:
 		VulkanDevice* device;
@@ -26,13 +30,17 @@ namespace Geg {
 		VkSwapchainKHR swapChain;	
 		std::vector<VkImage> swapChainImages;
 		std::vector<VkImageView> swapChainImageViews;
+		std::vector<VkFramebuffer> swapChainFramebuffers;
 		VkFormat swapChainImageFormat;
 		VkExtent2D swapChainExtent; 
+		VkRenderPass renderPass;
 
 		void querySwapChainSupport(SwapChainSupportDetails& details);
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);	
 		VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		void createImageViews();
+		void createRenderPass();
+		void createFramebuffers();
 	};
 }		 // namespace Geg

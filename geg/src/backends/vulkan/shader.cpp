@@ -26,15 +26,16 @@ namespace Geg {
 		fragShaderStageInfo.module = fragModule;
 		fragShaderStageInfo.pName = "main";
 
-		VkPipelineShaderStageCreateInfo shaderStages[] = {
-			vertShaderStageInfo, 
-			fragShaderStageInfo
-		};
+		shaderStages.push_back(vertShaderStageInfo); 
+		shaderStages.push_back(fragShaderStageInfo); 
+
+		GEG_CORE_INFO("Shader moudules and stages created");
 	}
 
 	VulkanShader::~VulkanShader() {
 		vkDestroyShaderModule(context->device->getDevice(), vertModule, nullptr);
 		vkDestroyShaderModule(context->device->getDevice(), fragModule, nullptr);	
+		GEG_CORE_INFO("Shader moudules and stages destroyed");
 	}
 
 	VkShaderModule VulkanShader::createShaderModule(const std::vector<char>& src) {

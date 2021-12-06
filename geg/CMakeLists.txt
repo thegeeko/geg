@@ -81,6 +81,10 @@ add_library(geg STATIC
 	src/backends/vulkan/pipeline-layout.cpp
 	src/backends/vulkan/shader.hpp
 	src/backends/vulkan/shader.cpp
+	src/backends/vulkan/command-buffers.hpp
+	src/backends/vulkan/command-buffers.cpp
+	src/backends/vulkan/renderer-api.hpp
+	src/backends/vulkan/renderer-api.cpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)

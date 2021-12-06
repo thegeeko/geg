@@ -1,10 +1,9 @@
 #include "renderer-api.hpp"
 
-#include <vulkan/vulkan_core.h>
-
 #include <memory>
 
 namespace Geg {
+
 	void VulkanRendererAPI::submit(const std::shared_ptr<Shader>& shader) {
 		vulkanShader = std::dynamic_pointer_cast<VulkanShader>(shader);
 		vulkanContext = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
@@ -53,30 +52,55 @@ namespace Geg {
 	};
 
 	void VulkanRendererAPI::drawIndexed() {
+		vkWaitForFences(
+				vulkanContext->device->getDevice(),
+				1,
+				&vulkanContext->commandBuffers->getInFlightFences()[currentFrame],
+				VK_TRUE,
+				UINT64_MAX);
+
 		uint32_t imageIndex;
+
 		vkAcquireNextImageKHR(
 				vulkanContext->device->getDevice(),
 				vulkanContext->swapChain->getSwapChain(),
 				UINT64_MAX,
-				vulkanContext->commandBuffers->getImageAvailableSemaphore(),
+				vulkanContext->commandBuffers->getImageAvailableSemaphores()[currentFrame],
 				VK_NULL_HANDLE,
 				&imageIndex);
+
+		if (vulkanContext->commandBuffers->getImagesInFlight()[imageIndex] != VK_NULL_HANDLE) {
+			vkWaitForFences(
+					vulkanContext->device->getDevice(),
+					1,
+					&vulkanContext->commandBuffers->getImagesInFlight()[imageIndex],
+					VK_TRUE,
+					UINT64_MAX);
+		}
+
+		vulkanContext->commandBuffers->getImagesInFlight()[imageIndex] =
+				vulkanContext->commandBuffers->getInFlightFences()[currentFrame];
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-		VkSemaphore waitSemaphores[] = {vulkanContext->commandBuffers->getImageAvailableSemaphore()};
+		VkSemaphore waitSemaphores[] = {vulkanContext->commandBuffers->getImageAvailableSemaphores()[currentFrame]};
 		VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 		submitInfo.waitSemaphoreCount = 1;
 		submitInfo.pWaitSemaphores = waitSemaphores;
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &vulkanContext->commandBuffers->getCommandBuffers()[imageIndex];
-		VkSemaphore signalSemaphores[] = {vulkanContext->commandBuffers->getRenderFinshedSemaphore()};
+		VkSemaphore signalSemaphores[] = {vulkanContext->commandBuffers->getRenderFinshedSemaphores()[currentFrame]};
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
-		VkResult result = vkQueueSubmit(vulkanContext->device->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+		vkResetFences(
+				vulkanContext->device->getDevice(),
+				1,
+				&vulkanContext->commandBuffers->getInFlightFences()[currentFrame]);
+
+		VkResult result = vkQueueSubmit(vulkanContext->device->getGraphicsQueue(), 1, &submitInfo, vulkanContext->commandBuffers->getInFlightFences()[currentFrame]);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't submit draw command buffer");
 
 		VkPresentInfoKHR presentInfo{};
@@ -88,15 +112,15 @@ namespace Geg {
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
-		presentInfo.pResults = nullptr; // Optional
+		presentInfo.pResults = nullptr;		 // Optional
 
 		vkQueuePresentKHR(vulkanContext->device->getPresentQueue(), &presentInfo);
+
+		currentFrame = (currentFrame + 1) % vulkanContext->commandBuffers->MAX_FRAMES_IN_FLIGHT;
 	}
 
-
 	void VulkanRendererAPI::createPipeline(const std::shared_ptr<VulkanShader>& shader, VulkanGraphicsContext* context) {
-
-	VkPipelineShaderStageCreateInfo shaderStages[] = {shader->getStages()[0], shader->getStages()[1]};
+		VkPipelineShaderStageCreateInfo shaderStages[] = {shader->getStages()[0], shader->getStages()[1]};
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

@@ -13,18 +13,23 @@ namespace Geg {
 
 		const VkCommandPool& getPool() const { return commandPool; }
 		const std::vector<VkCommandBuffer>& getCommandBuffers() const { return commandBuffers; }
-		const VkSemaphore& getImageAvailableSemaphore() const { return imageAvailableSemaphore; };
-		const VkSemaphore& getRenderFinshedSemaphore() const { return renderFinishedSemaphore; };
+		const std::vector<VkSemaphore>& getImageAvailableSemaphores() const { return imageAvailableSemaphores; };
+		const std::vector<VkSemaphore>& getRenderFinshedSemaphores() const { return renderFinishedSemaphores; };
+		const std::vector<VkFence>& getInFlightFences() const { return inFlightFences; };
+		std::vector<VkFence>& getImagesInFlight() { return imagesInFlight; };
+		const int MAX_FRAMES_IN_FLIGHT = 4;
 
 	private:
 		VulkanDevice* device;
 		VulkanSwapChain* swapChain;
 
-		VkSemaphore imageAvailableSemaphore;
-		VkSemaphore renderFinishedSemaphore;
+		std::vector<VkSemaphore> imageAvailableSemaphores;
+		std::vector<VkSemaphore> renderFinishedSemaphores;
+		std::vector<VkFence> inFlightFences;
+		std::vector<VkFence> imagesInFlight;
 		VkCommandPool commandPool;
 		std::vector<VkCommandBuffer> commandBuffers;
 
-		void createSemaphores();
+		void createSyncObjects();
 	};
 }		 // namespace Geg

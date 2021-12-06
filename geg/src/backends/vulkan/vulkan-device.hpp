@@ -23,7 +23,8 @@ namespace Geg {
 		const VkSurfaceKHR& getSurface() const { return surface; }
 		const VkQueue& getGraphicsQueue() const { return graphicsQueue; }
 		const VkQueue& getPresentQueue() const { return presentQueue; }
-		void findQueueFamilies (const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue) const;
+
+		void findQueueFamilies(const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue) const;
 
 		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 				VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -52,13 +53,9 @@ namespace Geg {
 		VkQueue graphicsQueue;
 		VkQueue presentQueue;
 		const std::vector<const char*> validationLayers = {
-				"VK_LAYER_KHRONOS_validation"
-		};
+				"VK_LAYER_KHRONOS_validation"};
 		const std::vector<const char*> deviceExtensions = {
-			VK_KHR_SWAPCHAIN_EXTENSION_NAME
-		};
-
-		
+				VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 		bool checkValidationLayerSupport();
 		bool checkDeviceExtentionSupport(VkPhysicalDevice device);

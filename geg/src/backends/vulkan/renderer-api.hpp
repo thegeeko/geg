@@ -20,6 +20,7 @@ namespace Geg {
 		VkPipeline currentPipeline;
 		VulkanGraphicsContext* vulkanContext;
 		std::shared_ptr<VulkanShader> vulkanShader;
+		size_t currentFrame = 0;
 
 		void createPipeline(const std::shared_ptr<VulkanShader>& shader, VulkanGraphicsContext* context);
 		void destroyPipeline(VulkanGraphicsContext* context);

@@ -10,15 +10,19 @@ namespace Geg {
 	class VulkanShader: public Shader {
 	public:
 		VulkanShader(std::string vertPath, std::string fragPath, GraphicsContext* _context);
-		~VulkanShader();
+		virtual ~VulkanShader();
+
 		void bind() const override;
 		void unBind() const override;
+
+		const std::vector<VkPipelineShaderStageCreateInfo> getStages() const { return shaderStages; };
 
 	private:
 		VulkanGraphicsContext* context;
 
 		VkShaderModule vertModule;
 		VkShaderModule fragModule;
+		std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
 		VkShaderModule createShaderModule(const std::vector<char>& src);
 	};
