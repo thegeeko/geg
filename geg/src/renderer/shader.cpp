@@ -1,6 +1,5 @@
 #include "shader.hpp"
 #include "renderer.hpp"
-#include "backends/opengl/shader.hpp"
 #include "backends/vulkan/shader.hpp"
 
 namespace Geg {

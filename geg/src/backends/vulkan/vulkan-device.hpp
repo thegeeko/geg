@@ -19,6 +19,7 @@ namespace Geg {
 		~VulkanDevice();
 
 		const VkDevice& getDevice() const { return device; }
+		const VkInstance& getInstance() const { return vulkanInstance; }
 		const VkPhysicalDevice& getPhysicalDevice() const { return physicalDevice; }
 		const VkSurfaceKHR& getSurface() const { return surface; }
 		const VkQueue& getGraphicsQueue() const { return graphicsQueue; }

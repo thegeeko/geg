@@ -9,6 +9,7 @@ add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/imgui)
+add_subdirectory(vendor/vma)
 add_library(geg STATIC 
 	src/geg-pch.hpp
 
@@ -53,23 +54,23 @@ add_library(geg STATIC
 	src/renderer/renderer-api.hpp
 	src/renderer/renderer.cpp
 	src/renderer/renderer.cpp
-	src/renderer/vertex-array.cpp
-	src/renderer/vertex-array.hpp
+	src/renderer/pipeline.cpp
+	src/renderer/pipeline.hpp
 	src/renderer/renderer-commands.cpp
 	src/renderer/renderer-commands.hpp
 	src/renderer/graphics-context.cpp
 	src/renderer/graphics-context.hpp
 
-	src/backends/opengl/buffers.hpp
-	src/backends/opengl/buffers.cpp
-	src/backends/opengl/shader.hpp
-	src/backends/opengl/shader.cpp
-	src/backends/opengl/vertex-array.cpp
-	src/backends/opengl/vertex-array.hpp
-	src/backends/opengl/renderer-api.cpp
-	src/backends/opengl/renderer-api.hpp
-	src/backends/opengl/graphics-context.cpp
-	src/backends/opengl/graphics-context.hpp
+	# src/backends/opengl/buffers.hpp
+	# src/backends/opengl/buffers.cpp
+	# src/backends/opengl/shader.hpp
+	# src/backends/opengl/shader.cpp
+	# src/backends/opengl/vertex-array.cpp
+	# src/backends/opengl/vertex-array.hpp
+	# src/backends/opengl/renderer-api.cpp
+	# src/backends/opengl/renderer-api.hpp
+	# src/backends/opengl/graphics-context.cpp
+	# src/backends/opengl/graphics-context.hpp
 
 	src/backends/vulkan/graphics-context.cpp
 	src/backends/vulkan/graphics-context.hpp
@@ -77,14 +78,18 @@ add_library(geg STATIC
 	src/backends/vulkan/vulkan-device.cpp
 	src/backends/vulkan/swap-chain.cpp
 	src/backends/vulkan/swap-chain.hpp
-	src/backends/vulkan/pipeline-layout.hpp
-	src/backends/vulkan/pipeline-layout.cpp
+	src/backends/vulkan/pipeline.hpp
+	src/backends/vulkan/pipeline.cpp
 	src/backends/vulkan/shader.hpp
 	src/backends/vulkan/shader.cpp
 	src/backends/vulkan/command-buffers.hpp
 	src/backends/vulkan/command-buffers.cpp
 	src/backends/vulkan/renderer-api.hpp
 	src/backends/vulkan/renderer-api.cpp
+	src/backends/vulkan/vertex-buffer.hpp
+	src/backends/vulkan/vertex-buffer.cpp
+	src/backends/vulkan/index-buffer.hpp
+	src/backends/vulkan/index-buffer.cpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)
@@ -92,6 +97,7 @@ target_link_libraries(geg PUBLIC glfw)
 target_link_libraries(geg PUBLIC imgui)
 target_link_libraries(geg PUBLIC glm)
 target_link_libraries(geg PUBLIC vulkan)
+target_link_libraries(geg PUBLIC VulkanMemoryAllocator)
 
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

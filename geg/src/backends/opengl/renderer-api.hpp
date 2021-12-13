@@ -9,6 +9,6 @@ namespace Geg {
 	 public:
 		void clear() override;
 		void clear(glm::vec4) override;
-		void drawIndexed(const std::shared_ptr<VertexArray>& vertexArray) override;
+		void drawIndexed(const std::shared_ptr<Pipeline>& vertexArray) override;
 	};
 }		 // namespace Geg

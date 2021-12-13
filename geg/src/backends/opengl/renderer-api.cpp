@@ -12,7 +12,7 @@ namespace Geg {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void GLRendererAPI::drawIndexed(const std::shared_ptr<VertexArray>& vertexArray) {
+	void GLRendererAPI::drawIndexed(const std::shared_ptr<Pipeline>& vertexArray) {
 		vertexArray->bind();
 		vertexArray->getIndexBuffer()->bind();
 		glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);

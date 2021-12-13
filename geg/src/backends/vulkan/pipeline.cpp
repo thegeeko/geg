@@ -1,38 +1,53 @@
-#include "pipeline-layout.hpp"
-
-#include <vulkan/vulkan_core.h>
+#include "pipeline.hpp"
 
 namespace Geg {
+	VulkanPipeline::VulkanPipeline(
+			const Ref<VertexBuffer>& _vbo,
+			const Ref<IndexBuffer>& _ibo,
+			const Ref<Shader>& _shader) {
+		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
-	VulkanPipelineLayout::VulkanPipelineLayout(VulkanDevice* _device, VulkanSwapChain* _swapChain):
-			device(_device), swapChain(_swapChain) {
+		shader = std::dynamic_pointer_cast<VulkanShader>(_shader);
+		vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(_vbo);
+		ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(_ibo);
 
+		VkPipelineShaderStageCreateInfo shaderStages[] = {
+				shader->getStages()[0],
+				shader->getStages()[1]};
+
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr;		 // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;		 // Optional
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = &vbo->getBindingDesc();
+		vertexInputInfo.vertexAttributeDescriptionCount =
+				static_cast<uint32_t>(vbo->getAttribDesc().size());
+		vertexInputInfo.pVertexAttributeDescriptions = vbo->getAttribDesc().data();
 
+		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
+		VkViewport viewport{};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-		viewport.width = (float)swapChain->getSwapChainExtent().width;
-		viewport.height = (float)swapChain->getSwapChainExtent().height;
+		viewport.width = static_cast<float>(context->swapChain->getSwapChainExtent().width);
+		viewport.height = static_cast<float>(context->swapChain->getSwapChainExtent().height);
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
+		VkRect2D scissor{};
 		scissor.offset = {0, 0};
-		scissor.extent = swapChain->getSwapChainExtent();
+		scissor.extent = context->swapChain->getSwapChainExtent();
 
+		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportState.viewportCount = 1;
 		viewportState.pViewports = &viewport;
 		viewportState.scissorCount = 1;
 		viewportState.pScissors = &scissor;
 
+		VkPipelineRasterizationStateCreateInfo rasterizer{};
 		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizer.depthClampEnable = VK_FALSE;
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
@@ -45,6 +60,7 @@ namespace Geg {
 		rasterizer.depthBiasClamp = 0.0f;		 // Optional
 		rasterizer.depthBiasSlopeFactor = 0.0f;		 // Optional
 
+		VkPipelineMultisampleStateCreateInfo multisampling{};
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = VK_FALSE;
 		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -53,7 +69,12 @@ namespace Geg {
 		multisampling.alphaToCoverageEnable = VK_FALSE;		 // Optional
 		multisampling.alphaToOneEnable = VK_FALSE;		// Optional
 
-		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+		colorBlendAttachment.colorWriteMask =
+				VK_COLOR_COMPONENT_R_BIT |
+				VK_COLOR_COMPONENT_G_BIT |
+				VK_COLOR_COMPONENT_B_BIT |
+				VK_COLOR_COMPONENT_A_BIT;
 		colorBlendAttachment.blendEnable = VK_FALSE;
 		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;		 // Optional
 		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;		// Optional
@@ -69,6 +90,7 @@ namespace Geg {
 		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
+		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlending.logicOpEnable = VK_FALSE;
 		colorBlending.logicOp = VK_LOGIC_OP_COPY;		 // Optional
@@ -79,27 +101,61 @@ namespace Geg {
 		colorBlending.blendConstants[2] = 0.0f;		 // Optional
 		colorBlending.blendConstants[3] = 0.0f;		 // Optional
 
-		
+		VkDynamicState dynamicStates[2] = {
+				VK_DYNAMIC_STATE_VIEWPORT,
+				VK_DYNAMIC_STATE_LINE_WIDTH};
+
+		VkPipelineDynamicStateCreateInfo dynamicState{};
 		dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamicState.dynamicStateCount = 2;
 		dynamicState.pDynamicStates = dynamicStates;
 
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = 0;		// Optional
 		pipelineLayoutInfo.pSetLayouts = nullptr;		 // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0;		// Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr;		 // Optional
 
-		VkResult result = vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
+		VkResult result = vkCreatePipelineLayout(
+				context->device->getDevice(),
+				&pipelineLayoutInfo,
+				nullptr,
+				&layout);
+
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create pipline layout");
 
-		GEG_CORE_INFO("Pipeline layout created");
-	};
+		VkGraphicsPipelineCreateInfo pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = shader->getStages().size();
+		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &inputAssembly;
+		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pRasterizationState = &rasterizer;
+		pipelineInfo.pMultisampleState = &multisampling;
+		pipelineInfo.pDepthStencilState = nullptr;		// Optional
+		pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.pDynamicState = nullptr;		 // Optional
+		pipelineInfo.layout = layout;
+		pipelineInfo.renderPass = context->swapChain->getRenderPass();
+		pipelineInfo.subpass = 0;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;		 // Optional
+		pipelineInfo.basePipelineIndex = -1;		// Optional
 
-	
+		result = vkCreateGraphicsPipelines(
+				context->device->getDevice(),
+				VK_NULL_HANDLE,
+				1,
+				&pipelineInfo,
+				nullptr,
+				&pipelineHandle);
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create pipeline");
+	}
 
-	VulkanPipelineLayout::~VulkanPipelineLayout() {
-		vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
+	VulkanPipeline::~VulkanPipeline() {
+		vkDestroyPipeline(context->device->getDevice(), pipelineHandle, nullptr);
+		vkDestroyPipelineLayout(context->device->getDevice(), layout, nullptr);
 		GEG_CORE_INFO("Pipeline layout destroyed");
 	}
 }		 // namespace Geg

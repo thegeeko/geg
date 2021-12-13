@@ -3,8 +3,8 @@
 #include "renderer/graphics-context.hpp"
 #include "swap-chain.hpp"
 #include "vulkan-device.hpp"
-#include "pipeline-layout.hpp"
 #include "command-buffers.hpp"
+#include "vk_mem_alloc.h"
 
 namespace Geg {
 	class VulkanGraphicsContext: public GraphicsContext {
@@ -14,10 +14,14 @@ namespace Geg {
 
 		VulkanDevice* device;
 		VulkanSwapChain* swapChain;
-		VulkanPipelineLayout* pipelineLayout;
 		VulkanCommandBuffers* commandBuffers;
+		VmaAllocator allocator;
 
 		void init() override{};
 		void swapBuffers() override{};
+
+		// vulkan related
+		static void uploadDataToGpuMem(void* data, size_t size, VkBuffer bufferHandle);
+		static void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	};
 }		 // namespace Geg

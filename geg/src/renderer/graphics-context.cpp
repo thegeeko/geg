@@ -1,14 +1,11 @@
 #include "graphics-context.hpp"
 
-#include "backends/opengl/graphics-context.hpp"
 #include "backends/vulkan/graphics-context.hpp"
 #include "renderer.hpp"
 
 namespace Geg {
 	GraphicsContext* GraphicsContext::create(GLFWwindow* _windowPtr) {
 		switch (Renderer::getAPI()) {
-			case GraphicsAPI::OpenGL:
-				return new GLGraphicsContext(_windowPtr);
 			case GraphicsAPI::Vulkan:
 				return new VulkanGraphicsContext(_windowPtr);
 			default:

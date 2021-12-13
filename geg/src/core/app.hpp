@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "imgui/im-gui.hpp"
 #include "layer-stack.hpp"
 #include "window/window.hpp"

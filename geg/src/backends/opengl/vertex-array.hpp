@@ -1,12 +1,11 @@
 #pragma once
 
-#include "renderer/vertex-array.hpp"
 #include "renderer/buffers.hpp"
 #include <vector>
 
 namespace Geg {
 
-	class GLVertexArray : public VertexArray {
+	class GLVertexArray : public Pipeline {
 	public:
 		GLVertexArray();
 		~GLVertexArray() override;

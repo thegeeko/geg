@@ -17,7 +17,7 @@ namespace Geg {
 		const std::vector<VkSemaphore>& getRenderFinshedSemaphores() const { return renderFinishedSemaphores; };
 		const std::vector<VkFence>& getInFlightFences() const { return inFlightFences; };
 		std::vector<VkFence>& getImagesInFlight() { return imagesInFlight; };
-		const int MAX_FRAMES_IN_FLIGHT = 4;
+		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 	private:
 		VulkanDevice* device;

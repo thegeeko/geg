@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory.h>
+
 #define GEG_ENABLE_ASSERT
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
@@ -40,11 +42,18 @@
 
 namespace Geg {
 
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+
 	enum class GraphicsAPI {
 		None = 0,
 		OpenGL = 1,
 		Vulkan = 2,
 	};
+
 	namespace Utils {
 		std::string readFileAsString(const std::string &filePath);
 		std::vector<char> readFileAsBinary(const std::string &filePath);
@@ -52,6 +61,5 @@ namespace Geg {
 }		 // namespace Geg
 
 #ifdef GEG_USE_VULKAN
-	const Geg::GraphicsAPI GEG_CURRENT_API = Geg::GraphicsAPI::Vulkan;
+const Geg::GraphicsAPI GEG_CURRENT_API = Geg::GraphicsAPI::Vulkan;
 #endif
-

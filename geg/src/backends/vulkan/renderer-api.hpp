@@ -4,25 +4,27 @@
 
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/shader.hpp"
+#include "backends/vulkan/vertex-buffer.hpp"
 #include "renderer/renderer-api.hpp"
 
 namespace Geg {
 	class VulkanRendererAPI: public RendererAPI {
 	public:
 		/* VulkanRendererAPI(); */
-		void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray) override {};
-		void submit(const std::shared_ptr<Shader> &shader) override;
-		void drawIndexed() override;
+		void init() override;
+		void drawIndexed(const Ref<Pipeline>& _pipeline) override;
 		void clear() override{};
 		void clear(glm::vec4 color) override{};
 
 	private:
+		VkPipelineVertexInputStateCreateInfo vertexInfo{};
 		VkPipeline currentPipeline;
-		VulkanGraphicsContext* vulkanContext;
-		std::shared_ptr<VulkanShader> vulkanShader;
+		VulkanGraphicsContext* context = nullptr;
 		size_t currentFrame = 0;
+		bool a = true;
 
-		void createPipeline(const std::shared_ptr<VulkanShader>& shader, VulkanGraphicsContext* context);
-		void destroyPipeline(VulkanGraphicsContext* context);
+		void recordCommands();
+		void beginRecording();
+		void endRecording();
 	};
 }		 // namespace Geg

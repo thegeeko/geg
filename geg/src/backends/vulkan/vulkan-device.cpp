@@ -1,5 +1,4 @@
 #include "vulkan-device.hpp"
-#include <vulkan/vulkan_core.h>
 
 #include <cstring>
 #include <set>
@@ -67,7 +66,7 @@ namespace Geg {
 		createInfo.queueCreateInfoCount = static_cast<unsigned int>(queueCreateInfos.size());
 		createInfo.pEnabledFeatures = &deviceFeatures;
 		createInfo.enabledExtensionCount = static_cast<unsigned int>(deviceExtensions.size());
-		createInfo.ppEnabledExtensionNames = deviceExtensions.data();	
+		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 		if (enableValidationLayers) {
 			createInfo.enabledLayerCount = static_cast<unsigned int>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -108,7 +107,7 @@ namespace Geg {
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "Geg";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.apiVersion = VK_API_VERSION_1_0;
+		appInfo.apiVersion = VK_API_VERSION_1_2;
 
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -139,7 +138,7 @@ namespace Geg {
 
 	void VulkanDevice::createSurface() {
 		VkResult result = glfwCreateWindowSurface(vulkanInstance, window, nullptr, &surface);
-		GEG_CORE_ASSERT( result == VK_SUCCESS , "Can't create window surface");
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create window surface");
 	}
 
 	void VulkanDevice::populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
@@ -204,10 +203,10 @@ namespace Geg {
 		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
 		for (const auto& extension : availableExtensions) {
-				requiredExtensions.erase(extension.extensionName);
+			requiredExtensions.erase(extension.extensionName);
 		}
 
-		return requiredExtensions.empty();	
+		return requiredExtensions.empty();
 	}
 
 	std::vector<const char*> VulkanDevice::getRequiredExtensions() {

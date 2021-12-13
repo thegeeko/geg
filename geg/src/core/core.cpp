@@ -1,7 +1,6 @@
 #include "core.hpp"
 
 #include <fstream>
-#include <iostream>
 
 namespace Geg::Utils {
 	std::string readFileAsString(const std::string &filePath) {
