@@ -13,6 +13,7 @@ public:
 	Triangle();
 	void onEvent(Geg::Event& event) override;
 	void onUpdate(float deltaTime) override;
+	void onUiUpdate() override;
 };
 
 class sandboxApp: public Geg::App {

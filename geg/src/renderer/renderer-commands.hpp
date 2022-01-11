@@ -14,8 +14,12 @@ namespace Geg {
 			API->clear();
 		};
 
-		inline static void init() {
-			API->init();
+		inline static void startFrame() {
+			API->startFrame();
+		}
+
+		inline static void endFrame() {
+			API->endFrame();
 		}
 
 		inline static void clear(glm::vec4 color) {

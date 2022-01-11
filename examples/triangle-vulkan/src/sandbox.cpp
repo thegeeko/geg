@@ -1,6 +1,6 @@
 #include "sandbox.hpp"
-#include <cstdint>
 
+#include "imgui.h"
 #include "renderer/buffers.hpp"
 
 // triangle lvl
@@ -26,13 +26,12 @@ Triangle::Triangle() {
 	uint32_t indecies[] = { 0, 1, 2, 2, 3, 0 };
 
 	//clang-format on
-	
 
 	vbo = Geg::Ref<Geg::VertexBuffer>(Geg::VertexBuffer::create(&vertices[0], layout.getStride() * 4));
 	vbo->setLayout(layout);
 
 	ibo = Geg::Ref<Geg::IndexBuffer>(Geg::IndexBuffer::create(&indecies[0], 6 * sizeof(uint32_t)));
-	
+
 	pipeline = Geg::Ref<Geg::Pipeline>(Geg::Pipeline::create(vbo, ibo, shader));
 }
 
@@ -44,6 +43,9 @@ void Triangle::onUpdate(float deltaTime) {
 	Geg::Renderer::beginScene();
 	Geg::Renderer::submit(pipeline);
 	Geg::Renderer::endScene();
+}
+
+void Triangle::onUiUpdate() {
 }
 
 // main app

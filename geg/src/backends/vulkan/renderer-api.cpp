@@ -1,16 +1,20 @@
 #include "renderer-api.hpp"
 
+#include "imgui.h"
+#include "vendor/imgui/backends/imgui_impl_vulkan.h"
 #include "pipeline.hpp"
 
 namespace Geg {
 
-	void VulkanRendererAPI::init() {
+	void VulkanRendererAPI::startFrame() {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
+		beginRecording();
 	}
 
 	void VulkanRendererAPI::beginRecording() {
 		VkResult result;
 		auto commandBuffers = context->commandBuffers->getCommandBuffers();
+
 		for (size_t i = 0; i < commandBuffers.size(); i++) {
 			VkCommandBufferBeginInfo beginInfo{};
 			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -19,7 +23,7 @@ namespace Geg {
 
 			result = vkBeginCommandBuffer(context->commandBuffers->getCommandBuffers()[i], &beginInfo);
 			GEG_CORE_ASSERT(result == VK_SUCCESS, "can't begin command buffer {}", i);
-			GEG_CORE_TRACE(" FRAME : Began command buffer {}", i);
+			/* GEG_CORE_TRACE(" FRAME : Began command buffer {}", i); */
 
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -38,6 +42,7 @@ namespace Geg {
 	void VulkanRendererAPI::endRecording() {
 		VkResult result;
 		auto commandBuffers = context->commandBuffers->getCommandBuffers();
+
 		for (size_t i = 0; i < commandBuffers.size(); i++) {
 			vkCmdEndRenderPass(commandBuffers[i]);
 			result = vkEndCommandBuffer(commandBuffers[i]);
@@ -49,37 +54,38 @@ namespace Geg {
 		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
 		auto pipeline = std::dynamic_pointer_cast<VulkanPipeline>(_pipeline);
 
-		if (a) {
-			auto commandBuffers = context->commandBuffers->getCommandBuffers();
-			beginRecording();
-			for (size_t i = 0; i < commandBuffers.size(); i++) {
-				vkCmdBindPipeline(
-						commandBuffers[i],
-						VK_PIPELINE_BIND_POINT_GRAPHICS,
-						pipeline->getPipelineHandle());
+		auto commandBuffers = context->commandBuffers->getCommandBuffers();
+		for (size_t i = 0; i < commandBuffers.size(); i++) {
+			vkCmdBindPipeline(
+					commandBuffers[i],
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					pipeline->getPipelineHandle());
 
-				VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
-				VkDeviceSize offsets[] = {0};
-				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+			VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
+			VkDeviceSize offsets[] = {0};
+			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-				vkCmdBindIndexBuffer(
-						commandBuffers[i],
-						pipeline->getIbo()->getBufferHandle(),
-						0,
-						VK_INDEX_TYPE_UINT32);
+			vkCmdBindIndexBuffer(
+					commandBuffers[i],
+					pipeline->getIbo()->getBufferHandle(),
+					0,
+					VK_INDEX_TYPE_UINT32);
 
-				vkCmdDrawIndexed(
-						commandBuffers[i],
-						static_cast<uint32_t>(pipeline->getIbo()->getCount()),
-						1,
-						0,
-						0,
-						0);
-			}
+			vkCmdDrawIndexed(
+					commandBuffers[i],
+					static_cast<uint32_t>(pipeline->getIbo()->getCount()),
+					1,
+					0,
+					0,
+					0);
 
-			endRecording();
-			a = false;
+			ImDrawData* drawdata = ImGui::GetDrawData();
+			ImGui_ImplVulkan_RenderDrawData(drawdata, commandBuffers[i]);
 		}
+	}
+
+	void VulkanRendererAPI::endFrame() {
+		endRecording();
 
 		vkWaitForFences(
 				context->device->getDevice(),
@@ -106,7 +112,6 @@ namespace Geg {
 					VK_TRUE,
 					UINT64_MAX);
 		}
-
 		context->commandBuffers->getImagesInFlight()[imageIndex] =
 				context->commandBuffers->getInFlightFences()[currentFrame];
 
@@ -129,8 +134,13 @@ namespace Geg {
 				1,
 				&context->commandBuffers->getInFlightFences()[currentFrame]);
 
-		VkResult result = vkQueueSubmit(context->device->getGraphicsQueue(), 1, &submitInfo, context->commandBuffers->getInFlightFences()[currentFrame]);
+		VkResult result = vkQueueSubmit(
+				context->device->getGraphicsQueue(),
+				1,
+				&submitInfo,
+				context->commandBuffers->getInFlightFences()[currentFrame]);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't submit draw command buffer");
+		vkQueueWaitIdle(context->device->getGraphicsQueue());
 
 		VkPresentInfoKHR presentInfo{};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -144,6 +154,7 @@ namespace Geg {
 		presentInfo.pResults = nullptr;		 // Optional
 
 		vkQueuePresentKHR(context->device->getPresentQueue(), &presentInfo);
+		vkQueueWaitIdle(context->device->getPresentQueue());
 
 		currentFrame = (currentFrame + 1) % context->commandBuffers->MAX_FRAMES_IN_FLIGHT;
 	}

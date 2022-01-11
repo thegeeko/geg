@@ -1,12 +1,23 @@
 #pragma once
 
-#include <memory.h>
+#include "geg-pch.hpp"
 
 #include "renderer-api.hpp"
 #include "renderer-commands.hpp"
 
 namespace Geg {
-	struct Renderer {
+
+	struct GpuSceneData{
+		glm::mat4 proj;
+		glm::mat4 view;
+		glm::mat4 viewProj;
+	};
+
+	struct SceneData{
+	};
+
+	class Renderer {
+		public:
 		static void beginScene();
 		static void endScene();
 		static void submit(const Ref<Pipeline>& pipeline);

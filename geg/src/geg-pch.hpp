@@ -7,6 +7,7 @@
 #include "core/key-codes.hpp"
 #include "core/input.hpp"
 #include "time/time.hpp"
+#include "glm/glm.hpp"
 
 #include <string>
 #include <vector>

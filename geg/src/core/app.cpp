@@ -1,5 +1,7 @@
 #include "app.hpp"
+
 #include <string>
+
 #include "time/time.hpp"
 
 namespace Geg {
@@ -13,15 +15,15 @@ namespace Geg {
 		window = std::make_unique<Window>(props);
 		window->setEventCallback(GEG_BIND_CB(App::onEvent));
 
-		i_Ins = this; // singleton 
+		i_Ins = this;		 // singleton
 
 		// setup imgui
-		/* pushOverlay(new ImGuiLayer{}); */
+		pushOverlay(new ImGuiLayer{});
 	}
 	App::~App() {}
 
 	void App::onEvent(Event &e) {
-		// GEG_INFO("Event : {}", e.toString());
+		/* GEG_INFO("Event : {}", e.toString()); */
 		Dispatcher dispatch(e);
 		dispatch.dispatch<WindowCloseEvent>(GEG_BIND_CB(App::closeCallback));
 		for (Layer *l : layerStack) {
@@ -32,11 +34,11 @@ namespace Geg {
 	void App::start() {
 		while (running) {
 			Time::updateTime();
+			imgui->begin();
 			for (Layer *l : layerStack) {
+				l->onUiUpdate();
+				imgui->end();
 				l->onUpdate(Time::getDeltaTime());
-				/* imgui->begin(); */
-				/* l->onUiUpdate(); */
-				/* imgui->end(); */
 			}
 			window->onUpdate();
 		}

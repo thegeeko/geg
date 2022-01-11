@@ -40,8 +40,8 @@ add_library(geg STATIC
 	src/glad/glad.h
 	src/glad/glad.cpp
 
-	# src/imgui/im-gui.cpp
-	# src/imgui/im-gui.hpp
+	src/imgui/im-gui.cpp
+	src/imgui/im-gui.hpp
 
 	src/renderer/cams/ortho-cam.hpp
 	src/renderer/cams/ortho-cam.cpp

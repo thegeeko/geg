@@ -18,7 +18,6 @@ namespace Geg {
 		void setLayout(BufferLayout) override;
 		void setData(void* data, unsigned int size) override{};
 		const uint32_t getVerticesCount() const { return size / sizeof(float); };
-
 		const VkBuffer& getBufferHandle() const { return bufferHandle; };
 		const VmaAllocation& getAllocationHandle() const { return allocationHandle; };
 		const std::vector<VkVertexInputAttributeDescription>& getAttribDesc() const {

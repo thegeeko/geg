@@ -5,6 +5,7 @@
 #include "vulkan-device.hpp"
 #include "command-buffers.hpp"
 #include "vk_mem_alloc.h"
+#include "descriptors.hpp"
 
 namespace Geg {
 	class VulkanGraphicsContext: public GraphicsContext {
@@ -16,6 +17,8 @@ namespace Geg {
 		VulkanSwapChain* swapChain;
 		VulkanCommandBuffers* commandBuffers;
 		VmaAllocator allocator;
+		DescriptorLayoutCache* descriptorLayoutCache;
+		DescriptorAllocator* descriptorsAlloc;
 
 		void init() override{};
 		void swapBuffers() override{};

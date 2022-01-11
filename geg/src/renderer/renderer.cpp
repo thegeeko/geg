@@ -2,10 +2,12 @@
 
 namespace Geg {
 	void Renderer::beginScene(){
-		RendererCommands::init();
+		RendererCommands::startFrame();
 	};
 
-	void Renderer::endScene(){};
+	void Renderer::endScene(){
+		RendererCommands::endFrame();
+	};
 
 	void Renderer::submit(const Ref<Pipeline>& pipeline) {
 		RendererCommands::drawIndexed(pipeline);

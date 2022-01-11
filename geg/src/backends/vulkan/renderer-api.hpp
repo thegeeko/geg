@@ -11,7 +11,8 @@ namespace Geg {
 	class VulkanRendererAPI: public RendererAPI {
 	public:
 		/* VulkanRendererAPI(); */
-		void init() override;
+		void startFrame() override;
+		void endFrame() override;
 		void drawIndexed(const Ref<Pipeline>& _pipeline) override;
 		void clear() override{};
 		void clear(glm::vec4 color) override{};

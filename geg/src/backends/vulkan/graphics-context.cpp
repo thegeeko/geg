@@ -10,6 +10,8 @@ namespace Geg {
 		device = new VulkanDevice(_windowPtr);
 		swapChain = new VulkanSwapChain(_windowPtr, device);
 		commandBuffers = new VulkanCommandBuffers(device, swapChain);
+		descriptorLayoutCache = new DescriptorLayoutCache(device);
+		descriptorsAlloc = new DescriptorAllocator(device);
 
 		VmaAllocatorCreateInfo allocatorInfo = {};
 		allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_2;
@@ -36,7 +38,6 @@ namespace Geg {
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = static_cast<size_t>(size);
 		bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 		VmaAllocationCreateInfo allocInfo = {};

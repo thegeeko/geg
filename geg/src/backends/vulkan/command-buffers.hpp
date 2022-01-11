@@ -11,13 +11,20 @@ namespace Geg {
 		VulkanCommandBuffers(VulkanDevice* _device, VulkanSwapChain* _swapChain);
 		~VulkanCommandBuffers();
 
+		const int MAX_FRAMES_IN_FLIGHT = 2;
+
+		VkCommandBuffer beginSingleTimeCommand();
+		void endSingleTimeCommand(VkCommandBuffer cb);
+
+		/* void beginCommandBuffers(); */
+		/* void endCommandBuffers(); */
+
 		const VkCommandPool& getPool() const { return commandPool; }
 		const std::vector<VkCommandBuffer>& getCommandBuffers() const { return commandBuffers; }
 		const std::vector<VkSemaphore>& getImageAvailableSemaphores() const { return imageAvailableSemaphores; };
 		const std::vector<VkSemaphore>& getRenderFinshedSemaphores() const { return renderFinishedSemaphores; };
 		const std::vector<VkFence>& getInFlightFences() const { return inFlightFences; };
 		std::vector<VkFence>& getImagesInFlight() { return imagesInFlight; };
-		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 	private:
 		VulkanDevice* device;
