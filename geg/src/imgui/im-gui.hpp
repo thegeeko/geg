@@ -9,18 +9,19 @@ namespace Geg {
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "IMGUI ERR : ", result);
 	};
 
-	class ImGuiLayer: public Layer {
+	class ImGuiLayer{
 	public:
 		ImGuiLayer();
-		~ImGuiLayer() override = default;
-		void onAttach() override;
-		void onDetach() override;
-		void onUiUpdate() override;
+		~ImGuiLayer();
 
-		void begin();
-		void end();
+		
+		void init();
+		void render();
 
 	private:
+		void attach();
+		void detach();
+
 		VulkanGraphicsContext* context;
 		GLFWwindow* window;
 

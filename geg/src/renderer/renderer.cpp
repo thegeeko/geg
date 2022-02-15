@@ -1,15 +1,29 @@
 #include "renderer.hpp"
+#include "backends/vulkan/renderer-api.hpp"
+#include "renderer/renderer-api.hpp"
 
 namespace Geg {
+	RendererAPI* currentAPI = nullptr;
+
+	void Renderer::initAPI(){
+		currentAPI = new VulkanRendererAPI;
+	}
+
+	void Renderer::deInitAPI(){
+		delete currentAPI;
+	}
+
 	void Renderer::beginScene(){
-		RendererCommands::startFrame();
+		currentAPI->startFrame();
 	};
 
 	void Renderer::endScene(){
-		RendererCommands::endFrame();
+		currentAPI->endFrame();
 	};
 
 	void Renderer::submit(const Ref<Pipeline>& pipeline) {
-		RendererCommands::drawIndexed(pipeline);
+		currentAPI->drawIndexed(pipeline);
 	};
+
+
 }		 // namespace Geg

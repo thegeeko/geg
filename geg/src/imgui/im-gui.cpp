@@ -2,18 +2,24 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "core/logger.hpp"
 #include "imgui.h"
 #include "vendor/imgui/backends/imgui_impl_glfw.h"
 #include "vendor/imgui/backends/imgui_impl_vulkan.h"
 
 namespace Geg {
-	ImGuiLayer::ImGuiLayer():
-			Layer("ImGui Layer") {
+	ImGuiLayer::ImGuiLayer(){
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 		window = App::get().getWindow().getRawWindow();
+
+		attach();
 	}
 
-	void ImGuiLayer::onAttach() {
+	ImGuiLayer::~ImGuiLayer(){
+		detach();
+	};
+
+	void ImGuiLayer::attach() {
 		VkDescriptorPoolSize poolSizes[] = {
 				{VK_DESCRIPTOR_TYPE_SAMPLER, 2000},
 				{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2000},
@@ -78,15 +84,15 @@ namespace Geg {
 
 		// upload fonts, this is done by recording and submitting a one time use command buffer
 		// which can be done easily bye using some existing helper functions on the lve device object
-		auto commandBuffer = context->commandBuffers->beginSingleTimeCommand();
+		auto commandBuffer = VulkanGraphicsContext::beginSingleTimeCommand();
 		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-		context->commandBuffers->endSingleTimeCommand(commandBuffer);
+		VulkanGraphicsContext::endSingleTimeCommand(commandBuffer);
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 
 		GEG_CORE_INFO("Imgui layer attached");
 	}
 
-	void ImGuiLayer::onDetach() {
+	void ImGuiLayer::detach() {
 		GEG_CORE_INFO("Detaching Imgui");
 		vkDestroyDescriptorPool(context->device->getDevice(), descriptorPool, nullptr);
 		ImGui_ImplVulkan_Shutdown();
@@ -94,13 +100,14 @@ namespace Geg {
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiLayer::begin() {
+
+	void ImGuiLayer::init() {
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();	
 	}
 
-	void ImGuiLayer::end() {
+	void ImGuiLayer::render() {
 		ImGuiIO& io = ImGui::GetIO();
 		App& app = App::get();
 		io.DisplaySize = ImVec2((float)app.getWindow().getWidth(), (float)app.getWindow().getHeight());
@@ -112,13 +119,5 @@ namespace Geg {
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 		}
-	}
-
-	void ImGuiLayer::onUiUpdate() {
-		bool a = true;
-
-		ImGui::ShowDemoWindow(&a);
-		ImGui::Begin("Testing");
-		ImGui::End();
 	}
 }		 // namespace Geg

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include "shader.hpp"
 
 namespace Geg {
@@ -45,10 +42,10 @@ namespace Geg {
 		[[nodiscard]] int getStride() const { return stride; }
 		[[nodiscard]] const std::vector<BufferElement> &getElements() const { return elements; }
 
-		[[nodiscard]] std::vector<BufferElement>::iterator begin() { return elements.begin(); }
-		[[nodiscard]] std::vector<BufferElement>::iterator end() { return elements.end(); }
-		[[nodiscard]] std::vector<BufferElement>::const_iterator begin() const { return elements.begin(); }
-		[[nodiscard]] std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
+		std::vector<BufferElement>::iterator begin() { return elements.begin(); }
+		std::vector<BufferElement>::iterator end() { return elements.end(); }
+		std::vector<BufferElement>::const_iterator begin() const { return elements.begin(); }
+		std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
 
 	private:
 		int stride;

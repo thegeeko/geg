@@ -1,18 +1,31 @@
 #include "graphics-context.hpp"
 
-#include "backends/vulkan/command-buffers.hpp"
-
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
 namespace Geg {
 	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _windowPtr) {
+		// device and swapchain
 		device = new VulkanDevice(_windowPtr);
 		swapChain = new VulkanSwapChain(_windowPtr, device);
-		commandBuffers = new VulkanCommandBuffers(device, swapChain);
+
+		// command pool
+		QueueFamilyIndices queueFamilyIndices;
+		device->findQueueFamilies(device->getPhysicalDevice(), queueFamilyIndices);
+
+		VkCommandPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
+		poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;		 // Optional
+
+		VkResult result = vkCreateCommandPool(device->getDevice(), &poolInfo, nullptr, &commandPool);
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create command pool");
+
+		// descriptors
 		descriptorLayoutCache = new DescriptorLayoutCache(device);
 		descriptorsAlloc = new DescriptorAllocator(device);
 
+		// vma
 		VmaAllocatorCreateInfo allocatorInfo = {};
 		allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_2;
 		allocatorInfo.physicalDevice = device->getPhysicalDevice();
@@ -23,14 +36,24 @@ namespace Geg {
 	}
 
 	VulkanGraphicsContext::~VulkanGraphicsContext() {
+		delete descriptorLayoutCache;
+		delete descriptorsAlloc;
 		vmaDestroyAllocator(allocator);
-		delete commandBuffers;
+		vkDestroyCommandPool(device->getDevice(), commandPool, nullptr);
 		delete swapChain;
 		delete device;
 	}
 
-	void VulkanGraphicsContext::uploadDataToGpuMem(
-			void* data, size_t size, VkBuffer bufferHandle) {
+	// Static helper functions
+	/**
+	 * @brief
+	 * 	creates staging buffer and map it and copy the data and the make a copy command to move
+	 *	the data to the provided buffer
+	 * @param data a void pointer to the data that will be uploaded
+	 * @param size the size of the data
+	 * @param bufferHandle vulkan buffer handle which the data will be copied to
+	 */
+	void VulkanGraphicsContext::uploadDataToGpuMem(void* data, size_t size, VkBuffer bufferHandle) {
 		auto context = dynamic_cast<VulkanGraphicsContext*>(
 				App::get().getWindow().getGraphicsContext());
 
@@ -68,17 +91,45 @@ namespace Geg {
 		vmaDestroyBuffer(context->allocator, stagingBuffer, stagingAlloc);
 	}
 
-	void VulkanGraphicsContext::copyBuffer(
-			VkBuffer srcBuffer,
-			VkBuffer dstBuffer,
-			VkDeviceSize size) {
+	/**
+	 * @brief
+	 * 	record a copy command from @param srcBuffer to @param dstBuffer
+	 * 	and submit it
+	 * @param srcBuffer
+	 * @param dstBuffer
+	 * @param size
+	 */
+	void VulkanGraphicsContext::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+		auto context = dynamic_cast<VulkanGraphicsContext*>(
+				App::get().getWindow().getGraphicsContext());
+
+		auto commandBuffer = beginSingleTimeCommand();
+
+		VkBufferCopy copyRegion{};
+		copyRegion.srcOffset = 0;		 // Optional
+		copyRegion.dstOffset = 0;		 // Optional
+		copyRegion.size = size;
+
+		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+		endSingleTimeCommand(commandBuffer);
+	}
+
+	/**
+	 * @brief
+	 * creates a command buffer and begins it
+	 * u should call end single time command buffer after
+	 *
+	 * @return VkCommandBuffer
+	 */
+	VkCommandBuffer VulkanGraphicsContext::beginSingleTimeCommand() {
 		auto context = dynamic_cast<VulkanGraphicsContext*>(
 				App::get().getWindow().getGraphicsContext());
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = context->commandBuffers->getPool();
+		allocInfo.commandPool = context->commandPool;
 		allocInfo.commandBufferCount = 1;
 
 		VkCommandBuffer commandBuffer;
@@ -89,13 +140,17 @@ namespace Geg {
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
 		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		return commandBuffer;
+	}
 
-		VkBufferCopy copyRegion{};
-		copyRegion.srcOffset = 0;		 // Optional
-		copyRegion.dstOffset = 0;		 // Optional
-		copyRegion.size = size;
-
-		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+	/**
+	 * @brief
+	 *  ends the command buffer and submit it and then cleans it
+	 * @param commandBuffer the command to be
+	 */
+	void VulkanGraphicsContext::endSingleTimeCommand(VkCommandBuffer commandBuffer) {
+		auto context = dynamic_cast<VulkanGraphicsContext*>(
+				App::get().getWindow().getGraphicsContext());
 
 		vkEndCommandBuffer(commandBuffer);
 
@@ -107,10 +162,6 @@ namespace Geg {
 		vkQueueSubmit(context->device->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 		vkQueueWaitIdle(context->device->getGraphicsQueue());
 
-		vkFreeCommandBuffers(
-				context->device->getDevice(),
-				context->commandBuffers->getPool(),
-				1,
-				&commandBuffer);
+		vkFreeCommandBuffers(context->device->getDevice(), context->commandPool, 1, &commandBuffer);
 	}
 }		 // namespace Geg

@@ -56,8 +56,6 @@ add_library(geg STATIC
 	src/renderer/renderer.cpp
 	src/renderer/pipeline.cpp
 	src/renderer/pipeline.hpp
-	src/renderer/renderer-commands.cpp
-	src/renderer/renderer-commands.hpp
 	src/renderer/graphics-context.cpp
 	src/renderer/graphics-context.hpp
 
@@ -82,14 +80,14 @@ add_library(geg STATIC
 	src/backends/vulkan/pipeline.cpp
 	src/backends/vulkan/shader.hpp
 	src/backends/vulkan/shader.cpp
-	src/backends/vulkan/command-buffers.hpp
-	src/backends/vulkan/command-buffers.cpp
 	src/backends/vulkan/renderer-api.hpp
 	src/backends/vulkan/renderer-api.cpp
 	src/backends/vulkan/vertex-buffer.hpp
 	src/backends/vulkan/vertex-buffer.cpp
 	src/backends/vulkan/index-buffer.hpp
 	src/backends/vulkan/index-buffer.cpp
+	src/backends/vulkan/descriptors.hpp
+	src/backends/vulkan/descriptors.cpp
 )
 
 target_link_libraries(geg PUBLIC spdlog)

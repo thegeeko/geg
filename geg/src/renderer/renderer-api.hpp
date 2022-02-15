@@ -6,7 +6,7 @@
 namespace Geg {
 	class RendererAPI {
 	public:
-		/* virtual ~RendererAPI(){}; */
+		virtual ~RendererAPI(){};
 		virtual void clear() = 0;
 		virtual void startFrame() = 0;
 		virtual void endFrame() = 0;

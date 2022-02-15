@@ -1,7 +1,5 @@
 #include "sandbox.hpp"
-
 #include "imgui.h"
-#include "renderer/buffers.hpp"
 
 // triangle lvl
 Triangle::Triangle() {
@@ -45,7 +43,8 @@ void Triangle::onUpdate(float deltaTime) {
 	Geg::Renderer::endScene();
 }
 
-void Triangle::onUiUpdate() {
+void Triangle::onUiUpdate(float deltaTime) {
+	ImGui::ShowDemoWindow();
 }
 
 // main app
