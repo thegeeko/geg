@@ -10,6 +10,7 @@ add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/vma)
+add_subdirectory(vendor/spirv/reflect)
 add_library(geg STATIC 
 	src/geg-pch.hpp
 
@@ -37,9 +38,6 @@ add_library(geg STATIC
 	src/window/window.cpp
 	src/window/window.hpp
 
-	src/glad/glad.h
-	src/glad/glad.cpp
-
 	src/imgui/im-gui.cpp
 	src/imgui/im-gui.hpp
 
@@ -59,17 +57,6 @@ add_library(geg STATIC
 	src/renderer/graphics-context.cpp
 	src/renderer/graphics-context.hpp
 
-	# src/backends/opengl/buffers.hpp
-	# src/backends/opengl/buffers.cpp
-	# src/backends/opengl/shader.hpp
-	# src/backends/opengl/shader.cpp
-	# src/backends/opengl/vertex-array.cpp
-	# src/backends/opengl/vertex-array.hpp
-	# src/backends/opengl/renderer-api.cpp
-	# src/backends/opengl/renderer-api.hpp
-	# src/backends/opengl/graphics-context.cpp
-	# src/backends/opengl/graphics-context.hpp
-
 	src/backends/vulkan/graphics-context.cpp
 	src/backends/vulkan/graphics-context.hpp
 	src/backends/vulkan/vulkan-device.hpp
@@ -88,6 +75,9 @@ add_library(geg STATIC
 	src/backends/vulkan/index-buffer.cpp
 	src/backends/vulkan/descriptors.hpp
 	src/backends/vulkan/descriptors.cpp
+	src/backends/vulkan/uniform-buffers.hpp
+	src/backends/vulkan/uniform-buffers.cpp
+	
 )
 
 target_link_libraries(geg PUBLIC spdlog)
@@ -96,6 +86,7 @@ target_link_libraries(geg PUBLIC imgui)
 target_link_libraries(geg PUBLIC glm)
 target_link_libraries(geg PUBLIC vulkan)
 target_link_libraries(geg PUBLIC VulkanMemoryAllocator)
+target_link_libraries(geg PUBLIC sprivReflect)
 
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

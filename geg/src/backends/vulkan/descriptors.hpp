@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "backends/vulkan/vulkan-device.hpp"
 
@@ -80,12 +81,15 @@ namespace Geg {
 		static DescriptorBuilder begin(DescriptorLayoutCache* layoutCache, DescriptorAllocator* allocator);
 
 		DescriptorBuilder& bindBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
+		DescriptorBuilder& bindBuffer(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags);
 		DescriptorBuilder& bindImage(uint32_t binding, VkDescriptorImageInfo* imageInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
 
 		bool build(VkDescriptorSet& set, VkDescriptorSetLayout& layout);
-		bool build(VkDescriptorSet& set);
+		bool build(VkDescriptorSetLayout& layout);
 
 	private:
+		DescriptorBuilder() = default;
+
 		std::vector<VkWriteDescriptorSet> writes;
 		std::vector<VkDescriptorSetLayoutBinding> bindings;
 

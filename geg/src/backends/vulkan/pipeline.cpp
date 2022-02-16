@@ -110,10 +110,12 @@ namespace Geg {
 		dynamicState.dynamicStateCount = 2;
 		dynamicState.pDynamicStates = dynamicStates;
 
+		auto setsInfo = shader->getReflectionInfo();
+
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0;		// Optional
-		pipelineLayoutInfo.pSetLayouts = nullptr;		 // Optional
+		pipelineLayoutInfo.setLayoutCount = setsInfo.layouts.size();		// Optional
+		pipelineLayoutInfo.pSetLayouts = setsInfo.layouts.data();		 // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0;		// Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr;		 // Optional
 

@@ -149,9 +149,12 @@ namespace Geg {
 		}
 		// sort the bindings if they aren't in order
 		if (!isSorted) {
-			std::sort(layoutinfo.bindings.begin(), layoutinfo.bindings.end(), [](VkDescriptorSetLayoutBinding& a, VkDescriptorSetLayoutBinding& b) {
-				return a.binding < b.binding;
-			});
+			std::sort(
+					layoutinfo.bindings.begin(),
+					layoutinfo.bindings.end(),
+					[](VkDescriptorSetLayoutBinding& a, VkDescriptorSetLayoutBinding& b) {
+						return a.binding < b.binding;
+					});
 		}
 
 		// try to grab from cache
@@ -243,6 +246,22 @@ namespace Geg {
 		return *this;
 	}
 
+	DescriptorBuilder& DescriptorBuilder::bindBuffer(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags) {
+		// create the descriptor binding for the layout
+		VkDescriptorSetLayoutBinding newBinding{};
+
+		newBinding.descriptorCount = 1;
+		newBinding.descriptorType = type;
+		newBinding.pImmutableSamplers = nullptr;
+		newBinding.stageFlags = stageFlags;
+		newBinding.binding = binding;
+
+		bindings.push_back(newBinding);
+
+		// create the descriptor write
+		return *this;
+	}
+
 	bool DescriptorBuilder::build(VkDescriptorSet& set, VkDescriptorSetLayout& layout) {
 		// build layout first
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -264,6 +283,18 @@ namespace Geg {
 		}
 
 		vkUpdateDescriptorSets(alloc->device->getDevice(), writes.size(), writes.data(), 0, nullptr);
+
+		return true;
+	}
+
+	bool DescriptorBuilder::build(VkDescriptorSetLayout& layout) {
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.pNext = nullptr;
+		layoutInfo.pBindings = bindings.data();
+		layoutInfo.bindingCount = bindings.size();
+
+		layout = cache->createDescriptorLayout(&layoutInfo);
 
 		return true;
 	}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vulkan/vulkan_core.h>
+
 #include <vulkan/vulkan.hpp>
 
 #include "backends/vulkan/graphics-context.hpp"
@@ -24,6 +26,7 @@ namespace Geg {
 		const Ref<VulkanIndexBuffer>& getIbo() const { return ibo; };
 		const Ref<VulkanShader>& getShader() const { return shader; };
 		const VkPipeline& getPipelineHandle() const { return pipelineHandle; };
+		const VkPipelineLayout& getLayout() const { return layout; }
 
 	private:
 		VulkanGraphicsContext* context;

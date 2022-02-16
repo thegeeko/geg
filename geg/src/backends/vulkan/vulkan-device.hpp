@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan.hpp>
 
 #include "GLFW/glfw3.h"
@@ -21,6 +22,7 @@ namespace Geg {
 		const VkDevice& getDevice() const { return device; }
 		const VkInstance& getInstance() const { return vulkanInstance; }
 		const VkPhysicalDevice& getPhysicalDevice() const { return physicalDevice; }
+		const VkPhysicalDeviceProperties& getGpuProperties() const { return gpuProperties; }
 		const VkSurfaceKHR& getSurface() const { return surface; }
 		const VkQueue& getGraphicsQueue() const { return graphicsQueue; }
 		const VkQueue& getPresentQueue() const { return presentQueue; }
@@ -49,10 +51,12 @@ namespace Geg {
 		VkInstance vulkanInstance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkSurfaceKHR surface;
-		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+		VkPhysicalDevice physicalDevice;
+		VkPhysicalDeviceProperties gpuProperties;
 		VkDevice device;
 		VkQueue graphicsQueue;
 		VkQueue presentQueue;
+
 		const std::vector<const char*> validationLayers = {
 				"VK_LAYER_KHRONOS_validation"};
 		const std::vector<const char*> deviceExtensions = {

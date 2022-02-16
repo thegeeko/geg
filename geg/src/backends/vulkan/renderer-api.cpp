@@ -1,11 +1,13 @@
 #include "renderer-api.hpp"
 
-#include <vulkan/vulkan_core.h>
+#include <memory>
 
 #include "backends/vulkan/graphics-context.hpp"
-#include "core/logger.hpp"
+#include "backends/vulkan/pipeline.hpp"
+#include "backends/vulkan/uniform-buffers.hpp"
+#include "glm/fwd.hpp"
 #include "imgui.h"
-#include "pipeline.hpp"
+#include "renderer/graphics-context.hpp"
 #include "vendor/imgui/backends/imgui_impl_vulkan.h"
 
 namespace Geg {
@@ -13,6 +15,7 @@ namespace Geg {
 	VulkanRendererAPI::VulkanRendererAPI() {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 		initSyncObjects();
+		initGlobalUbo();
 	}
 
 	VulkanRendererAPI::~VulkanRendererAPI() {
@@ -51,7 +54,7 @@ namespace Geg {
 				&allocInfo,
 				commandBuffers);
 
-		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't allocat command buffers")
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't allocate command buffers")
 
 		// Frames
 		frames.resize(frameBuffersCount);
@@ -74,6 +77,15 @@ namespace Geg {
 
 		// busy fences
 		busyFences.resize(frameBuffersCount, VK_NULL_HANDLE);
+	}
+
+	void VulkanRendererAPI::initGlobalUbo() {
+		globalUbo = std::make_unique<VulkanUniform>(3, sizeof(UboTest));
+		UboTest test{};
+		test.color = glm::vec4{0.3f, 0.5f, 0.7f, 1.f};
+		for (int i = 0; i < VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT; i++) {
+			globalUbo->write(&test, sizeof(test), i + 1);
+		}
 	}
 
 	void VulkanRendererAPI::deInitSyncObjects() {
@@ -131,6 +143,11 @@ namespace Geg {
 				frames[nextFrame].commandBuffer,
 				VK_PIPELINE_BIND_POINT_GRAPHICS,
 				pipeline->getPipelineHandle());
+
+		globalUbo->bindAtOffset(
+			pipeline,
+			frames[nextFrame].commandBuffer,
+			currentInFlightFrame);
 
 		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
 		VkDeviceSize offsets[] = {0};

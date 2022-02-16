@@ -1,14 +1,18 @@
 #pragma once
 
-#include <cstdint>
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/shader.hpp"
+#include "backends/vulkan/uniform-buffers.hpp"
 #include "backends/vulkan/vertex-buffer.hpp"
+#include "glm/fwd.hpp"
 #include "renderer/renderer-api.hpp"
 
-
-
 namespace Geg {
+
+	struct UboTest {
+		glm::vec4 cam = glm::vec4(80.f);
+		glm::vec4 color = glm::vec4(80.f);
+	};
 
 	struct VulkanFrame {
 		int index;
@@ -33,7 +37,7 @@ namespace Geg {
 	private:
 		VulkanGraphicsContext* context;
 
-		// syncing
+		// Syncing
 		std::vector<VkSemaphore> imageAvailableSemaphores;
 		std::vector<VkSemaphore> renderFinishedSemaphores;
 		std::vector<VulkanFrame> frames;
@@ -41,8 +45,14 @@ namespace Geg {
 		uint32_t currentInFlightFrame = 0;
 		uint32_t nextFrame = 0;
 
+		// Global ubo
+		Scope<VulkanUniform> globalUbo;
+
 		void initSyncObjects();
 		void deInitSyncObjects();
+
+		void initGlobalUbo();
+		void deInitGlobalUbo(){};
 
 		void recordCommands();
 		void beginRecording();

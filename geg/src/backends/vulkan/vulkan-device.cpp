@@ -37,6 +37,7 @@ namespace Geg {
 
 	VulkanDevice::VulkanDevice(GLFWwindow* _window):
 			window(_window) {
+
 		createInstance();
 		createSurface();
 		setupDebugMessenger();
@@ -166,6 +167,7 @@ namespace Geg {
 		GEG_CORE_ASSERT(checkDeviceExtentionSupport(devices[0]), "Your gpu doesn't support swap chain extension");
 
 		physicalDevice = devices[0];
+		vkGetPhysicalDeviceProperties(physicalDevice, &gpuProperties);
 	}
 
 	bool VulkanDevice::checkValidationLayerSupport() {
