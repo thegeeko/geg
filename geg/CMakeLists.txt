@@ -3,94 +3,98 @@ project(geg-engine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(GCC_COVERAGE_COMPILE_FLAGS "-fPIC")
-set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+
+if(NOT MSVC)
+	set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+endif()
+
+
+# ========= vulkan ==============
+find_package(Vulkan REQUIRED)
+# ==============================
+
+# ========= glfw ================
+if(WIN32)
+	add_compile_definitions(_GLFW_WIN32=1)
+elseif(UNIX AND NOT APPLE)
+	add_compile_definitions(_GLFW_X11=1)
+endif()
+
+add_compile_definitions(_GLFW_VULKAN_STATIC)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
+add_subdirectory(vendor/glfw)
+# ===============================
 
 add_subdirectory(vendor/spdlog)
-add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/vma)
 add_subdirectory(vendor/spirv/reflect)
+add_subdirectory(vendor/tinyobj)
+
 add_library(geg STATIC 
-	src/geg-pch.hpp
-
-	src/core/core.hpp
-	src/core/core.cpp
-	src/core/main-entry.hpp
-	src/core/app.cpp
-	src/core/app.hpp
-	src/core/logger.cpp
-	src/core/logger.hpp
-	src/core/layer.hpp
-	src/core/layer-stack.cpp
-	src/core/layer-stack.hpp
-	src/core/input.cpp
-	src/core/input.hpp
-	src/core/key-codes.hpp
-
-	src/time/time.hpp
-	src/time/time.cpp
-
-	src/events/event.cpp
-	src/events/event.hpp
-	src/events/event-types.hpp
-
-	src/window/window.cpp
-	src/window/window.hpp
-
-	src/imgui/im-gui.cpp
-	src/imgui/im-gui.hpp
-
-	src/renderer/cams/ortho-cam.hpp
-	src/renderer/cams/ortho-cam.cpp
 	
-	src/renderer/buffers.hpp
+	# core
+	src/core/core.cpp
+	src/core/main-entry.cpp
+	src/core/app.cpp
+	src/core/logger.cpp
+	src/core/layer-stack.cpp
+	src/core/input.cpp
+
+	# engine
+	src/time/time.cpp
+	src/events/event.cpp
+	src/window/window.cpp
+	src/imgui/im-gui.cpp
+	src/assets/loading/obj.cpp
+	src/assets/models.cpp
+
+	# renderer
+	src/renderer/cams/perspective.cpp
 	src/renderer/buffers.cpp
-	src/renderer/shader.hpp
 	src/renderer/shader.cpp
 	src/renderer/renderer-api.cpp
-	src/renderer/renderer-api.hpp
 	src/renderer/renderer.cpp
 	src/renderer/renderer.cpp
 	src/renderer/pipeline.cpp
-	src/renderer/pipeline.hpp
 	src/renderer/graphics-context.cpp
-	src/renderer/graphics-context.hpp
 
+	# renderer backend
 	src/backends/vulkan/graphics-context.cpp
-	src/backends/vulkan/graphics-context.hpp
-	src/backends/vulkan/vulkan-device.hpp
 	src/backends/vulkan/vulkan-device.cpp
 	src/backends/vulkan/swap-chain.cpp
-	src/backends/vulkan/swap-chain.hpp
-	src/backends/vulkan/pipeline.hpp
 	src/backends/vulkan/pipeline.cpp
-	src/backends/vulkan/shader.hpp
 	src/backends/vulkan/shader.cpp
-	src/backends/vulkan/renderer-api.hpp
 	src/backends/vulkan/renderer-api.cpp
-	src/backends/vulkan/vertex-buffer.hpp
 	src/backends/vulkan/vertex-buffer.cpp
-	src/backends/vulkan/index-buffer.hpp
 	src/backends/vulkan/index-buffer.cpp
-	src/backends/vulkan/descriptors.hpp
 	src/backends/vulkan/descriptors.cpp
-	src/backends/vulkan/uniform-buffers.hpp
 	src/backends/vulkan/uniform-buffers.cpp
-	
 )
+
+# =============== deps ======================
+# vulkan .. vars should be defind by find vulkan or manuallay
+target_link_libraries(geg PUBLIC Vulkan::Vulkan)
 
 target_link_libraries(geg PUBLIC spdlog)
 target_link_libraries(geg PUBLIC glfw)
 target_link_libraries(geg PUBLIC imgui)
 target_link_libraries(geg PUBLIC glm)
-target_link_libraries(geg PUBLIC vulkan)
 target_link_libraries(geg PUBLIC VulkanMemoryAllocator)
 target_link_libraries(geg PUBLIC sprivReflect)
+target_link_libraries(geg PUBLIC tinyObj)
+# ==============================================
 
+# =================== include dir ==============================
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+# ==============================================================
 
+# ====================== geg pch =============================
 target_precompile_headers(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 if(MSVC)
 	add_definitions(/FI"${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
@@ -98,3 +102,4 @@ else()
 	# GCC or Clang
 	add_definitions(-include "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 endif()
+# ==========================================================

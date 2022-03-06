@@ -1,18 +1,14 @@
 #pragma once
 
-#include "core/core.hpp"
-#include "geg-pch.hpp"
 #include "renderer-api.hpp"
+#include "renderer/cams/perspective.hpp"
 
 namespace Geg {
 
 	struct GpuSceneData {
 		glm::mat4 proj;
 		glm::mat4 view;
-		glm::mat4 viewProj;
-	};
-
-	struct SceneData {
+		glm::mat4 ProjView;
 	};
 
 	class Renderer {
@@ -20,7 +16,7 @@ namespace Geg {
 		static void initAPI();
 		static void deInitAPI();
 
-		static void beginScene();
+		static void beginScene(Camera cam);
 		static void endScene();
 		static void submit(const Ref<Pipeline>& pipeline);
 		static inline GraphicsAPI getAPI() { return GEG_CURRENT_API; }

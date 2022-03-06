@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/logger.hpp"
+
 namespace Geg {
 
 	enum class ShaderDataType {

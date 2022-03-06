@@ -1,10 +1,13 @@
 #pragma once
 
-namespace Geg::Time {
-	void updateTime();
-	const long& getTime();
-	const long& getTimeMs();
-	const double& getGegTime();
-	const double& getGegTimeMs();
-	const float& getDeltaTime();
+namespace Geg{
+	class Time {
+	public:
+		static	void updateTime();
+		static const long& getTime();
+		static const long& getTimeMs();
+		static const double& getGegTime();
+		static const double& getGegTimeMs();
+		static const float& getDeltaTime();
+	};
 }		 // namespace Geg::Time

@@ -7,13 +7,13 @@ namespace Geg {
 	struct BufferElement {
 		ShaderDataType type;
 		int size;
-		unsigned int offset;
+		uint32_t offset;
 		bool normalized;
 
 		BufferElement() = default;
 		BufferElement(ShaderDataType _type, bool _normalized = false):
 				type(_type), size(ShaderDataTypeSize(type)), offset(0), normalized(_normalized) {}
-		[[nodiscard]] unsigned getComponentCount() const {
+		[[nodiscard]] uint8_t getComponentCount() const {
 			switch (type) {
 				case ShaderDataType::Float: return 1;
 				case ShaderDataType::Float2: return 2;
@@ -55,21 +55,21 @@ namespace Geg {
 	class VertexBuffer {
 	public:
 		virtual ~VertexBuffer() = default;
-		virtual void setData(void *data, unsigned int size) = 0;
+		virtual void setData(void *data, uint32_t size) = 0;
 		virtual void bind() const = 0;
 		virtual void unbind() const = 0;
 		virtual void setLayout(BufferLayout) = 0;
 		virtual BufferLayout getLayout() const = 0;
-		static VertexBuffer *create(float *vertices, unsigned int size);
+		static VertexBuffer *create(float *vertices, uint32_t size);
 	};
 
 	class IndexBuffer {
 	public:
 		virtual ~IndexBuffer() = default;
-		virtual void setData(unsigned int *data, unsigned int size) = 0;
+		virtual void setData(uint32_t *data, uint32_t size) = 0;
 		virtual void bind() const = 0;
 		virtual unsigned int getCount() const = 0;
 		virtual void unbind() const = 0;
-		static IndexBuffer *create(unsigned int *indices, unsigned int size);
+		static IndexBuffer *create(uint32_t *indices, uint32_t size);
 	};
 }		 // namespace Geg

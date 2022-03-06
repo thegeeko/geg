@@ -6,11 +6,12 @@ layout(location = 1) in vec3 inColor;
 layout(location = 0) out vec4 fragColor;
 
 layout(set = 0, binding = 0) uniform  GlobalUbo{
-	vec4 cam1;
-	vec4 color;
+	mat4 proj;
+	mat4 view;
+	mat4 projView;
 } globalUbo;
 
 void main() {
   gl_Position = vec4(inPosition, 1.0);
-  fragColor = globalUbo.color;
+  fragColor = vec4(0.2, 0.8, .6, 1.0);
 }

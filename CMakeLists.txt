@@ -8,8 +8,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(geg)
 add_subdirectory(sandbox)
-# add_subdirectory(examples/triangle)
-add_subdirectory(examples/triangle-vulkan)
 
 execute_process(
 	COMMAND ${CMAKE_COMMAND} -E create_symlink

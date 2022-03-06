@@ -1,37 +1,52 @@
 #include "core.hpp"
 
+#include <cstddef>
 #include <fstream>
 
-namespace Geg::Utils {
-	std::string readFileAsString(const std::string &filePath) {
-		std::ifstream file{filePath, std::ios::ate};
+#define GLM_ENABLE_EXPERMENTAL ;
+#include "glm/gtx/hash.hpp"
 
-		GEG_CORE_ASSERT(file.is_open(), "can't open file" + filePath);
+namespace Geg {
 
-		size_t fileSize = static_cast<size_t>(file.tellg());
-		std::vector<char> buffer(fileSize);
+	namespace Utils {
 
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-		file.close();
+		template<typename T, typename... Rest>
+		void hashCombine(std::size_t &seed, const T &v, const Rest &...rest) {
+			seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+			(hashCombine(seed, rest), ...);
+		};
 
-		std::string stringBuffer(buffer.begin(), buffer.end());
-		return stringBuffer;
-	}
+		std::string readFileAsString(const std::string &filePath) {
+			std::ifstream file{filePath, std::ios::ate};
 
-	std::vector<char> readFileAsBinary(const std::string &filePath) {
-		std::ifstream file{filePath, std::ios::ate | std::ios::binary};
+			GEG_CORE_ASSERT(file.is_open(), "can't open file" + filePath);
 
-		GEG_CORE_ASSERT(file.is_open(), "can't open file" + filePath);
+			size_t fileSize = static_cast<size_t>(file.tellg());
+			std::vector<char> buffer(fileSize);
 
-		size_t fileSize = static_cast<size_t>(file.tellg());
-		std::vector<char> buffer(fileSize);
+			file.seekg(0);
+			file.read(buffer.data(), fileSize);
+			file.close();
 
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-		file.close();
+			std::string stringBuffer(buffer.begin(), buffer.end());
+			return stringBuffer;
+		}
 
-		return buffer;;
-	}
+		std::vector<char> readFileAsBinary(const std::string &filePath) {
+			std::ifstream file{filePath, std::ios::ate | std::ios::binary};
 
-}		 // namespace Geg::Utils
+			GEG_CORE_ASSERT(file.is_open(), "can't open file" + filePath);
+
+			size_t fileSize = static_cast<size_t>(file.tellg());
+			std::vector<char> buffer(fileSize);
+
+			file.seekg(0);
+			file.read(buffer.data(), fileSize);
+			file.close();
+
+			return buffer;
+		}
+
+	}		 // namespace Utils
+
+}		 // namespace Geg

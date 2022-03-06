@@ -8,6 +8,7 @@ namespace Geg {
 	App::App() {
 		running = true;
 
+
 		// Setup window
 		WindowProps props{};
 		window = std::make_unique<Window>(props);
@@ -16,6 +17,8 @@ namespace Geg {
 		i_Ins = this;		 // Singleton
 
 		// Init rendering api
+		// this should be owned by the graphics context
+		// will fix
 		Renderer::initAPI();
 
 		// Setup imgui

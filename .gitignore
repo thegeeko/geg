@@ -10,6 +10,11 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+# Visual studio
+vs
+.vs
+
+
 # Prerequisites
 *.d
 

@@ -1,6 +1,4 @@
-#pragma once
-
-#include "app.hpp"
+#include "geg-pch.hpp"
 
 extern Geg::App* Geg::createApp();
 

@@ -4,8 +4,10 @@
 #include "backends/vulkan/shader.hpp"
 #include "backends/vulkan/uniform-buffers.hpp"
 #include "backends/vulkan/vertex-buffer.hpp"
+#include "core/core.hpp"
 #include "glm/fwd.hpp"
 #include "renderer/renderer-api.hpp"
+#include "renderer/renderer.hpp"
 
 namespace Geg {
 
@@ -27,7 +29,7 @@ namespace Geg {
 		VulkanRendererAPI();
 		~VulkanRendererAPI();
 
-		void startFrame() override;
+		void startFrame(GpuSceneData _uboData) override;
 		void endFrame() override;
 		void drawIndexed(const Ref<Pipeline>& _pipeline) override;
 
@@ -47,6 +49,7 @@ namespace Geg {
 
 		// Global ubo
 		Scope<VulkanUniform> globalUbo;
+		GpuSceneData uboData;
 
 		void initSyncObjects();
 		void deInitSyncObjects();

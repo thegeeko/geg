@@ -4,6 +4,9 @@
 #include "vk_mem_alloc.h"
 
 namespace Geg {
+
+	const int VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT = 3;
+
 	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _windowPtr) {
 		// device and swapchain
 		device = new VulkanDevice(_windowPtr);
@@ -100,9 +103,6 @@ namespace Geg {
 	 * @param size
 	 */
 	void VulkanGraphicsContext::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-		auto context = dynamic_cast<VulkanGraphicsContext*>(
-				App::get().getWindow().getGraphicsContext());
-
 		auto commandBuffer = beginSingleTimeCommand();
 
 		VkBufferCopy copyRegion{};

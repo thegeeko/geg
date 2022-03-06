@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "buffers.hpp"
+#include "core/core.hpp"
 
 namespace Geg {
 	class Pipeline {

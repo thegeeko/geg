@@ -8,6 +8,7 @@
 #include "glm/fwd.hpp"
 #include "imgui.h"
 #include "renderer/graphics-context.hpp"
+#include "renderer/renderer.hpp"
 #include "vendor/imgui/backends/imgui_impl_vulkan.h"
 
 namespace Geg {
@@ -80,12 +81,8 @@ namespace Geg {
 	}
 
 	void VulkanRendererAPI::initGlobalUbo() {
-		globalUbo = std::make_unique<VulkanUniform>(3, sizeof(UboTest));
-		UboTest test{};
-		test.color = glm::vec4{0.3f, 0.5f, 0.7f, 1.f};
-		for (int i = 0; i < VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT; i++) {
-			globalUbo->write(&test, sizeof(test), i + 1);
-		}
+		globalUbo = std::make_unique<VulkanUniform>(VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT, sizeof(GpuSceneData));
+		uboData = GpuSceneData{};
 	}
 
 	void VulkanRendererAPI::deInitSyncObjects() {
@@ -98,7 +95,10 @@ namespace Geg {
 		}
 	}
 
-	void VulkanRendererAPI::startFrame() {
+	void VulkanRendererAPI::startFrame(GpuSceneData _uboData) {
+		uboData = _uboData;
+		globalUbo->write(&uboData, sizeof(uboData), currentInFlightFrame + 1);
+
 		beginRecording();
 	}
 
@@ -145,9 +145,9 @@ namespace Geg {
 				pipeline->getPipelineHandle());
 
 		globalUbo->bindAtOffset(
-			pipeline,
-			frames[nextFrame].commandBuffer,
-			currentInFlightFrame);
+				pipeline,
+				frames[nextFrame].commandBuffer,
+				currentInFlightFrame);
 
 		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
 		VkDeviceSize offsets[] = {0};

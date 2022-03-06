@@ -2,6 +2,8 @@
 
 #include <memory.h>
 
+#include <cstdint>
+
 #define GEG_ENABLE_ASSERT
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
@@ -55,9 +57,13 @@ namespace Geg {
 	};
 
 	namespace Utils {
+		template<typename T, typename... Rest>
+		void hashCombine(std::size_t &seed, const T &v, const Rest &...rest);
+
 		std::string readFileAsString(const std::string &filePath);
 		std::vector<char> readFileAsBinary(const std::string &filePath);
 	}		 // namespace Utils
+
 }		 // namespace Geg
 
 #ifdef GEG_USE_VULKAN
