@@ -13,3 +13,6 @@
 [submodule "geg/vendor/vma"]
 	path = geg/vendor/vma
 	url = git@github.com:GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "geg/vendor/assimp"]
+	path = geg/vendor/assimp
+	url = https://github.com/assimp/assimp

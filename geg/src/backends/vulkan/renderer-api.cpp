@@ -1,7 +1,5 @@
 #include "renderer-api.hpp"
 
-#include <memory>
-
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/pipeline.hpp"
 #include "backends/vulkan/uniform-buffers.hpp"
@@ -164,6 +162,36 @@ namespace Geg {
 				static_cast<uint32_t>(pipeline->getIbo()->getCount()),
 				1,
 				0,
+				0,
+				0);
+
+		// render ui
+		ImDrawData* drawdata = ImGui::GetDrawData();
+		ImGui_ImplVulkan_RenderDrawData(drawdata, frames[nextFrame].commandBuffer);
+	}
+
+	void VulkanRendererAPI::draw(const Ref<Pipeline>& _pipeline) {
+		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
+		auto pipeline = std::dynamic_pointer_cast<VulkanPipeline>(_pipeline);
+
+		vkCmdBindPipeline(
+				frames[nextFrame].commandBuffer,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				pipeline->getPipelineHandle());
+
+		globalUbo->bindAtOffset(
+				pipeline,
+				frames[nextFrame].commandBuffer,
+				currentInFlightFrame);
+
+		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
+		VkDeviceSize offsets[] = {0};
+		vkCmdBindVertexBuffers(frames[nextFrame].commandBuffer, 0, 1, vertexBuffers, offsets);
+
+		vkCmdDraw(
+				frames[nextFrame].commandBuffer,
+				static_cast<uint32_t>(pipeline->getVbo()->getVerticesCount()),
+				1,
 				0,
 				0);
 

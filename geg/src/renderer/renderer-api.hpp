@@ -14,5 +14,6 @@ namespace Geg {
 		virtual void endFrame() = 0;
 		virtual void clear(glm::vec4 color) = 0;
 		virtual void drawIndexed(const Ref<Pipeline>& pipeline) = 0;
+		virtual void draw(const Ref<Pipeline>& pipeline) = 0;
 	};
 }		 // namespace Geg

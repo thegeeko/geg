@@ -32,6 +32,7 @@ namespace Geg {
 		void startFrame(GpuSceneData _uboData) override;
 		void endFrame() override;
 		void drawIndexed(const Ref<Pipeline>& _pipeline) override;
+		void draw(const Ref<Pipeline>& _pipeline) override;
 
 		void clear() override{};
 		void clear(glm::vec4 color) override{};

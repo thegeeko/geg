@@ -18,7 +18,7 @@ namespace Geg {
 
 		static void beginScene(Camera cam);
 		static void endScene();
-		static void submit(const Ref<Pipeline>& pipeline);
+		static void submit(const Ref<Pipeline>& pipeline, bool isIndexed = true);
 		static inline GraphicsAPI getAPI() { return GEG_CURRENT_API; }
 
 	private:

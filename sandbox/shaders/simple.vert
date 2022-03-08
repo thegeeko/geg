@@ -12,6 +12,6 @@ layout(set = 0, binding = 0) uniform  GlobalUbo{
 } globalUbo;
 
 void main() {
-  gl_Position = vec4(inPosition, 1.0);
+  gl_Position = globalUbo.view * vec4(inPosition, 1.0);
   fragColor = vec4(0.2, 0.8, .6, 1.0);
 }
