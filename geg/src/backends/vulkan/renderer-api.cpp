@@ -3,7 +3,6 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/pipeline.hpp"
 #include "backends/vulkan/uniform-buffers.hpp"
-#include "glm/fwd.hpp"
 #include "imgui.h"
 #include "renderer/graphics-context.hpp"
 #include "renderer/renderer.hpp"

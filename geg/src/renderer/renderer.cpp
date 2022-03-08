@@ -16,9 +16,9 @@ namespace Geg {
 
 	void Renderer::beginScene(Camera cam){
 		GpuSceneData currentScene{};
-		currentScene.proj = cam.getProj();
-		currentScene.view = cam.getView();
-		currentScene.ProjView = cam.getProjView();
+		currentScene.proj = cam.proj;
+		currentScene.view = cam.view;
+		currentScene.ProjView = cam.proj * cam.view;
 
 		currentAPI->startFrame(currentScene);
 	};
