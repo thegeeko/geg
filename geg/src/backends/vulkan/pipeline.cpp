@@ -112,12 +112,17 @@ namespace Geg {
 
 		auto setsInfo = shader->getReflectionInfo();
 
+		VkPushConstantRange pushConstantRange{};
+		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		pushConstantRange.size = ShaderDataTypeSize(ShaderDataType::Mat4);
+		pushConstantRange.offset = 0;
+		
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = setsInfo.layouts.size();		// Optional
 		pipelineLayoutInfo.pSetLayouts = setsInfo.layouts.data();		 // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 0;		// Optional
-		pipelineLayoutInfo.pPushConstantRanges = nullptr;		 // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = 1;		// Optional
+		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;		 // Optional
 
 		VkResult result = vkCreatePipelineLayout(
 				context->device->getDevice(),

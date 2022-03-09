@@ -6,7 +6,7 @@
 #include "assimp/Importer.hpp"
 
 namespace Geg {
-	Mesh Loader::loadModel(const std::string& path) {
+	Mesh* Loader::loadModel(const std::string& path) {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(
 				path,
@@ -14,13 +14,13 @@ namespace Geg {
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			GEG_CORE_ERROR(" Error loadin model : ", importer.GetErrorString());
-			return Mesh{};
+			return new Mesh{};
 		}
 
 		Loader loader;
 		loader.processNodes(scene->mRootNode, scene);
 
-		return Mesh(loader.vertices, loader.indices);
+		return new Mesh(loader.vertices, loader.indices);
 	}
 
 		

@@ -6,10 +6,17 @@
 
 class Level: public Geg::Layer {
 private:
-	Geg::Mesh mesh;
 	Geg::Ref<Geg::Shader> shader;
-	Geg::Ref<Geg::Pipeline> pipeline;
 	CamController camController;
+	
+	Geg::Ref<Geg::Mesh> mesh;
+	Geg::Ref<Geg::Mesh> mesh1;
+
+	glm::vec3 meshPos{0}, meshRotation, meshScale{1};
+	glm::vec3 mesh1Pos, mesh1Rotation, mesh1Scale;
+	
+	Geg::Ref<Geg::Pipeline> pipeline;
+	Geg::Ref<Geg::Pipeline> pipeline1;
 
 public:
 	Level();
@@ -24,5 +31,5 @@ private:
 
 public:
 	sandboxApp();
-	~sandboxApp();
+	~sandboxApp() override;
 };

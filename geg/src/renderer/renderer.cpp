@@ -4,7 +4,7 @@
 #include "renderer/renderer-api.hpp"
 
 namespace Geg {
-	RendererAPI* currentAPI = nullptr;
+	RendererAPI* Renderer::currentAPI = nullptr;
 
 	void Renderer::initAPI(){
 		currentAPI = new VulkanRendererAPI;
@@ -15,24 +15,27 @@ namespace Geg {
 	}
 
 	void Renderer::beginScene(Camera cam){
-		GpuSceneData currentScene{};
+		GpuSceneData currentScene;
 		currentScene.proj = cam.proj;
 		currentScene.view = cam.view;
 		currentScene.ProjView = cam.proj * cam.view;
 
 		currentAPI->startFrame(currentScene);
-	};
+	}
 
 	void Renderer::endScene(){
 		currentAPI->endFrame();
-	};
+	}
 
 	void Renderer::submit(const Ref<Pipeline>& pipeline, bool isIndexed) {
 		if (isIndexed)
 			currentAPI->drawIndexed(pipeline);
 		else
 			currentAPI->draw(pipeline);
-	};
+	}
 
+	void Renderer::submit(const Ref<Pipeline>& pipeline, GpuModelData model) {
+		currentAPI->drawIndexed(pipeline, model);
+	}
 
 }		 // namespace Geg

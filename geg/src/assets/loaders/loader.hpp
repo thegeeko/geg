@@ -6,7 +6,7 @@
 namespace Geg {
 	class Loader {
 	public:
-		static Mesh loadModel(const std::string& path);
+		static Mesh* loadModel(const std::string& path);
 		std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
 

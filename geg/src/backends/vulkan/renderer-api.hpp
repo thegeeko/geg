@@ -11,11 +11,6 @@
 
 namespace Geg {
 
-	struct UboTest {
-		glm::vec4 cam = glm::vec4(80.f);
-		glm::vec4 color = glm::vec4(80.f);
-	};
-
 	struct VulkanFrame {
 		int index;
 		int globalUboOffset;
@@ -27,11 +22,13 @@ namespace Geg {
 	class VulkanRendererAPI: public RendererAPI {
 	public:
 		VulkanRendererAPI();
-		~VulkanRendererAPI();
+		~VulkanRendererAPI() override;
 
 		void startFrame(GpuSceneData _uboData) override;
 		void endFrame() override;
+		
 		void drawIndexed(const Ref<Pipeline>& _pipeline) override;
+		void drawIndexed(const Ref<Pipeline>& _pipeline, GpuModelData model ) override;
 		void draw(const Ref<Pipeline>& _pipeline) override;
 
 		void clear() override{};
@@ -58,8 +55,9 @@ namespace Geg {
 		void initGlobalUbo();
 		void deInitGlobalUbo(){};
 
-		void recordCommands();
+		// helpers
 		void beginRecording();
 		void endRecording();
+		void oncePerFrame();
 	};
 }		 // namespace Geg

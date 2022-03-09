@@ -22,7 +22,7 @@ namespace Geg {
 
 	void VulkanRendererAPI::initSyncObjects() {
 		VkResult result;
-		uint32_t frameBuffersCount = context->swapChain->getSwapChainFrameBuffers().size();
+		const uint32_t frameBuffersCount = context->swapChain->getSwapChainFrameBuffers().size();
 
 		// Semaphores
 		imageAvailableSemaphores.resize(VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
@@ -87,7 +87,7 @@ namespace Geg {
 			vkDestroySemaphore(context->device->getDevice(), renderFinishedSemaphores[i], nullptr);
 			vkDestroySemaphore(context->device->getDevice(), imageAvailableSemaphores[i], nullptr);
 		}
-		for (auto frame : frames) {
+		for (const auto& frame : frames) {
 			vkDestroyFence(context->device->getDevice(), frame.fence, nullptr);
 		}
 	}
@@ -104,8 +104,8 @@ namespace Geg {
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = 0;		// Optional
-		beginInfo.pInheritanceInfo = nullptr;		 // Optional
+		beginInfo.flags = 0; // Optional
+		beginInfo.pInheritanceInfo = nullptr; // Optional
 
 		result = vkBeginCommandBuffer(frames[nextFrame].commandBuffer, &beginInfo);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't begin a command buffer");
@@ -130,6 +130,12 @@ namespace Geg {
 		vkCmdEndRenderPass(frames[nextFrame].commandBuffer);
 		result = vkEndCommandBuffer(frames[nextFrame].commandBuffer);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't stop recording on a command buffer");
+	}
+
+	void VulkanRendererAPI::oncePerFrame() {
+		// render ui
+		ImDrawData* drawdata = ImGui::GetDrawData();
+		ImGui_ImplVulkan_RenderDrawData(drawdata, frames[nextFrame].commandBuffer);
 	}
 
 	void VulkanRendererAPI::drawIndexed(const Ref<Pipeline>& _pipeline) {
@@ -163,10 +169,51 @@ namespace Geg {
 				0,
 				0,
 				0);
+	}
 
-		// render ui
-		ImDrawData* drawdata = ImGui::GetDrawData();
-		ImGui_ImplVulkan_RenderDrawData(drawdata, frames[nextFrame].commandBuffer);
+
+	void VulkanRendererAPI::drawIndexed(const Ref<Pipeline>& _pipline, GpuModelData model) {
+		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
+		const auto pipeline = std::dynamic_pointer_cast<VulkanPipeline>(_pipline);
+		const auto commandBuffer = frames[nextFrame].commandBuffer;
+
+		vkCmdBindPipeline(
+				commandBuffer,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				pipeline->getPipelineHandle());
+
+		globalUbo->bindAtOffset(
+				pipeline,
+				commandBuffer,
+				currentInFlightFrame);
+
+		vkCmdPushConstants(
+				commandBuffer,
+				pipeline->getLayout(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				0,
+				ShaderDataTypeSize(ShaderDataType::Mat4),
+				&model.model[0]);
+
+		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
+		VkDeviceSize offsets[] = {0};
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+		vkCmdBindIndexBuffer(
+				commandBuffer,
+				pipeline->getIbo()->getBufferHandle(),
+				0,
+				VK_INDEX_TYPE_UINT32);
+
+		vkCmdDrawIndexed(
+				commandBuffer,
+				static_cast<uint32_t>(pipeline->getIbo()->getCount()),
+				1,
+				0,
+				0,
+				0);
+
+		oncePerFrame();
 	}
 
 	void VulkanRendererAPI::draw(const Ref<Pipeline>& _pipeline) {
@@ -194,9 +241,6 @@ namespace Geg {
 				0,
 				0);
 
-		// render ui
-		ImDrawData* drawdata = ImGui::GetDrawData();
-		ImGui_ImplVulkan_RenderDrawData(drawdata, frames[nextFrame].commandBuffer);
 	}
 
 	void VulkanRendererAPI::endFrame() {
@@ -270,7 +314,7 @@ namespace Geg {
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
-		presentInfo.pResults = nullptr;		 // Optional
+		presentInfo.pResults = nullptr; // Optional
 
 		vkQueuePresentKHR(context->device->getPresentQueue(), &presentInfo);
 		vkQueueWaitIdle(context->device->getPresentQueue());
@@ -279,4 +323,4 @@ namespace Geg {
 		currentInFlightFrame = (currentInFlightFrame + 1) % VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT;
 	}
 
-}		 // namespace Geg
+} // namespace Geg

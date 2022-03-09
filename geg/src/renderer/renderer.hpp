@@ -1,6 +1,7 @@
 #pragma once
 
 #include "renderer-api.hpp"
+#include "assets/mesh.hpp"
 #include "renderer/cams/perspective.hpp"
 
 namespace Geg {
@@ -11,6 +12,13 @@ namespace Geg {
 		glm::mat4 ProjView;
 	};
 
+	struct GpuModelData {
+		glm::mat4 model;
+
+		GpuModelData(glm::mat4 m) :
+			model(m) {}
+	};
+
 	class Renderer {
 	public:
 		static void initAPI();
@@ -19,9 +27,10 @@ namespace Geg {
 		static void beginScene(Camera cam);
 		static void endScene();
 		static void submit(const Ref<Pipeline>& pipeline, bool isIndexed = true);
-		static inline GraphicsAPI getAPI() { return GEG_CURRENT_API; }
+		static void submit(const Ref<Pipeline>& pipeline, GpuModelData model);
+		static GraphicsAPI getAPI() { return GEG_CURRENT_API; }
 
 	private:
-		static RendererAPI* currentAPi;
+		static RendererAPI* currentAPI;
 	};
-}		 // namespace Geg
+} // namespace Geg
