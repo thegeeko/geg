@@ -1,19 +1,15 @@
 #include "pipeline.hpp"
 
+#include "shader.hpp"
+
 namespace Geg {
 	VulkanPipeline::VulkanPipeline(
 			const Ref<VertexBuffer>& _vbo,
-			const Ref<IndexBuffer>& _ibo,
 			const Ref<Shader>& _shader) {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
-		shader = std::dynamic_pointer_cast<VulkanShader>(_shader);
-		vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(_vbo);
-		ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(_ibo);
-
-		VkPipelineShaderStageCreateInfo shaderStages[] = {
-				shader->getStages()[0],
-				shader->getStages()[1]};
+		auto shader = std::dynamic_pointer_cast<VulkanShader>(_shader);
+		auto vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(_vbo);
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -132,10 +128,15 @@ namespace Geg {
 
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create pipline layout");
 
+		
+		VkPipelineShaderStageCreateInfo shaderStages[] = {
+				shader->getStages()[0],
+				shader->getStages()[1]};
+		
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = shader->getStages().size();
-		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.pStages = shaderStages; 
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;
 		pipelineInfo.pViewportState = &viewportState;
@@ -163,6 +164,6 @@ namespace Geg {
 	VulkanPipeline::~VulkanPipeline() {
 		vkDestroyPipeline(context->device->getDevice(), pipelineHandle, nullptr);
 		vkDestroyPipelineLayout(context->device->getDevice(), layout, nullptr);
-		GEG_CORE_INFO("Pipeline layout destroyed");
+		// GEG_CORE_INFO("Pipeline layout destroyed");
 	}
 }		 // namespace Geg

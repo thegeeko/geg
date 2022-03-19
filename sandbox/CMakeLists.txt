@@ -11,3 +11,8 @@ add_executable(sandbox
 )
 
 target_link_libraries(sandbox PRIVATE geg)
+
+add_custom_target(copy_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets
+)
+add_dependencies(sandbox copy_assets)

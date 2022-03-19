@@ -12,11 +12,25 @@ else()
 endif()
 
 
-# ========= vulkan ==============
+# ========= graphics ==============
+# vulkan loader
 find_package(Vulkan REQUIRED)
+
+# other vulkan libs / shaderc + spirvcross
+
+if(DEFINED ENV{VULKAN_SDK})
+	if (CMAKE_BUILD_TYPE MATCHES "Debug")
+		set(GEG_SHADERC_LIB "$ENV{VULKAN_SDK}/Lib/shaderc_combinedd.lib")
+	else()
+		set(GEG_SHADERC_LIB "$ENV{VULKAN_SDK}/Lib/shaderc_combined.lib")
+	endif()
+	message(STATUS ${GEG_SHADERC_LIB})
+else()
+	message(FATAL_ERROR "install VulkanSDK, and add to the env variable VULKAN_SDK")
+endif()
 # ==============================
 
-# ============== glfw ==========================
+# ============== glfw =========================
 if(WIN32)
 	add_compile_definitions(_GLFW_WIN32=1)
 elseif(UNIX AND NOT APPLE)
@@ -24,7 +38,6 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 
-add_compile_definitions(_GLFW_VULKAN_STATIC)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -33,8 +46,8 @@ add_subdirectory(vendor/glfw)
 # ==============================================
 
 # =============== assimp ============
-set(ASSIMP_NO_EXPORT ON FORCE)
-set(ASSIMP_BUILD_TESTS OFF FORCE)
+set(ASSIMP_NO_EXPORT OFF CACHE BOOL "" FORCE) 
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE) 
 add_subdirectory(vendor/assimp)
 # ===================================
 
@@ -43,92 +56,23 @@ add_subdirectory(vendor/glm)
 add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/vma)
 add_subdirectory(vendor/spirv/reflect)
+add_subdirectory(vendor/entt)
 
-set(GEG_HEADERS 
-	# core
-	src/core/core.hpp
-	src/core/app.hpp
-	src/core/logger.hpp
-	src/core/layer-stack.hpp
-	src/core/input.hpp
-
-	# engine
-	src/time/time.hpp
-	src/events/event.hpp
-	src/window/window.hpp
-	src/imgui/im-gui.hpp
-	src/assets/loaders/loader.hpp
-	src/assets/mesh.hpp
-
-	# renderer
-	src/renderer/cams/perspective.hpp
-	src/renderer/buffers.hpp
-	src/renderer/shader.hpp
-	src/renderer/renderer-api.hpp
-	src/renderer/renderer.hpp
-	src/renderer/renderer.hpp
-	src/renderer/pipeline.hpp
-	src/renderer/graphics-context.hpp
-
-	# renderer backend
-	src/backends/vulkan/graphics-context.hpp
-	src/backends/vulkan/vulkan-device.hpp
-	src/backends/vulkan/swap-chain.hpp
-	src/backends/vulkan/pipeline.hpp
-	src/backends/vulkan/shader.hpp
-	src/backends/vulkan/renderer-api.hpp
-	src/backends/vulkan/vertex-buffer.hpp
-	src/backends/vulkan/index-buffer.hpp
-	src/backends/vulkan/descriptors.hpp
-	src/backends/vulkan/uniform-buffers.hpp
+# ================== geg ====================
+# find all source files and headers
+file(
+	GLOB_RECURSE # recursive
+	GEG_SRC # variable to store the source files and headers
+	CONFIGURE_DEPENDS # make a dependency
+	"${PROJECT_SOURCE_DIR}/src/*.hpp" "${PROJECT_SOURCE_DIR}/src/*.cpp"
 )
-
-add_library(geg STATIC 
-
-	${GEG_HEADERS}
-
-	# core
-	src/core/core.cpp
-	src/core/main-entry.cpp
-	src/core/app.cpp
-	src/core/logger.cpp
-	src/core/layer-stack.cpp
-	src/core/input.cpp
-
-	# engine
-	src/time/time.cpp
-	src/events/event.cpp
-	src/window/window.cpp
-	src/imgui/im-gui.cpp
-	src/assets/loaders/loader.cpp
-	src/assets/mesh.cpp
-
-	# renderer
-	src/renderer/cams/perspective.cpp
-	src/renderer/buffers.cpp
-	src/renderer/shader.cpp
-	src/renderer/renderer-api.cpp
-	src/renderer/renderer.cpp
-	src/renderer/renderer.cpp
-	src/renderer/pipeline.cpp
-	src/renderer/graphics-context.cpp
-
-	# renderer backend
-	src/backends/vulkan/graphics-context.cpp
-	src/backends/vulkan/vulkan-device.cpp
-	src/backends/vulkan/swap-chain.cpp
-	src/backends/vulkan/pipeline.cpp
-	src/backends/vulkan/shader.cpp
-	src/backends/vulkan/renderer-api.cpp
-	src/backends/vulkan/vertex-buffer.cpp
-	src/backends/vulkan/index-buffer.cpp
-	src/backends/vulkan/descriptors.cpp
-	src/backends/vulkan/uniform-buffers.cpp
-)
+add_library(geg STATIC ${GEG_SRC})
+# ===========================================
 
 # =============== deps ======================
-# vulkan .. vars should be defind by find vulkan or manuallay
-target_link_libraries(geg PUBLIC Vulkan::Vulkan)
+# vulkan .. vars should be defined by find vulkan or manually
+target_link_libraries(geg PUBLIC Vulkan::Vulkan) # loader
+target_link_libraries(geg PUBLIC ${GEG_SHADERC_LIB})
 
 target_link_libraries(geg PUBLIC spdlog)
 target_link_libraries(geg PUBLIC glfw)
@@ -137,6 +81,7 @@ target_link_libraries(geg PUBLIC glm)
 target_link_libraries(geg PUBLIC VulkanMemoryAllocator)
 target_link_libraries(geg PUBLIC sprivReflect)
 target_link_libraries(geg PUBLIC assimp)
+target_link_libraries(geg PUBLIC entt)
 # ==============================================
 
 # =================== include dir ==============================

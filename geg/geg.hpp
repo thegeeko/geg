@@ -17,7 +17,6 @@
 
 #include "src/renderer/renderer.hpp"
 #include "src/renderer/buffers.hpp"
-#include "src/renderer/pipeline.hpp"
 #include "src/renderer/renderer.hpp"
 #include "src/renderer/renderer.hpp"
 #include "src/renderer/cams/perspective.hpp"

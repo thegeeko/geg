@@ -43,7 +43,7 @@ namespace Geg {
 			Time::updateTime();
 
 			for (Layer *l : layerStack) {
-				ui->init();
+				ui->initFrame();
 				l->onUiUpdate(Time::getDeltaTime());
 				ui->render();
 

@@ -51,6 +51,7 @@ vs
 .vscode
 .cache
 .ccls-cache
+imgui.ini
 build
 Debug
 cmake-build-Release

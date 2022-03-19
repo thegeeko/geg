@@ -52,7 +52,7 @@ namespace Geg {
 
 	void VulkanVertexBuffer::createInputAttributeDescription() {
 		attributeDescriptions.clear();
-		char location = 0;
+		uint32_t location = 0;
 		for (const auto element : layout) {
 			VkVertexInputAttributeDescription attribDesc;
 

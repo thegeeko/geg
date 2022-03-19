@@ -13,19 +13,21 @@ namespace Geg {
 	public:
 		ImGuiLayer();
 		~ImGuiLayer();
-
 		
-		void init();
+		void initFrame();
 		void render();
 
 	private:
 		void attach();
 		void detach();
+		void initDescriptorPool();
+		void initRenderPass();
 
 		VulkanGraphicsContext* context;
 		GLFWwindow* window;
 
 		VkDescriptorPool descriptorPool;
+		VkRenderPass renderPass;
 		std::vector<VkCommandBuffer> commandBuffers;
 	};
 }		 // namespace Geg

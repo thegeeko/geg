@@ -108,7 +108,7 @@ namespace Geg {
 				}
 			});
 
-			glfwSetCharCallback(windowPtr, [](GLFWwindow *window, unsigned int keycode) {
+			glfwSetCharCallback(windowPtr, [](GLFWwindow *window, uint32_t keycode) {
 				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
 
 				KeyTappedEvent e(keycode);

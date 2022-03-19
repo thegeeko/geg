@@ -1,24 +1,71 @@
 #include "sandbox.hpp"
-
-#include <memory>
-
-#include "assets/loaders/loader.hpp"
 #include "imgui.h"
 
-// triangle lvl
+
 Level::Level() {
-	shader = Geg::Ref<Geg::Shader>(
-			Geg::Shader::create(
-					"C:/projects/g/sandbox/shaders/simple.vert.spv",
-					"C:/projects/g/sandbox/shaders/simple.frag.spv"));
+	vase = scene.createEntity("vase");
+	another = scene.createEntity("another");
 
-	mesh = Geg::Ref<Geg::Mesh>(Geg::Loader::loadModel("C:/projects/g/sandbox/models/smooth_vase.obj"));
-	mesh1 = Geg::Ref<Geg::Mesh>(Geg::Loader::loadModel("C:/projects/g/sandbox/models/smooth_vase.obj"));
-	pipeline = Geg::Ref<Geg::Pipeline>(Geg::Pipeline::create(mesh->vbo, mesh->ibo, shader));
-	pipeline1 = Geg::Ref<Geg::Pipeline>(Geg::Pipeline::create(mesh->vbo, mesh->ibo, shader));
+	meshPath = "assets/models/smooth_vase.obj";
+	Geg::MeshAsset mesh = Geg::MeshLoader::loadModel(meshPath);
+	vase.addComponent<Geg::MeshComponent>(mesh);
+	vase.getComponent<Geg::TransformComponent>().translation = {0, 0, -3};
 
-	mesh->setScale({2.f, 2.f, 2.f});
-	mesh->setPosition({0.5, 0.5, 0});
+	shaderPath = "assets/shaders/shader.glsl";
+	Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
+	vase.addComponent<Geg::MeshRendererComponent>(shader);
+}
+
+void Level::drawComponents(Geg::Entity entity) {
+	auto& name = entity.getComponent<Geg::NameComponent>().name;
+	ImGui::Begin(name.c_str());
+
+	// draw transform
+	if (entity.hasComponent<Geg::TransformComponent>()) {
+		auto& trans = entity.getComponent<Geg::TransformComponent>();
+		ImGui::DragFloat3("Translation", &trans.translation[0]);
+		ImGui::DragFloat3("Scale", &trans.scale[0]);
+		ImGui::DragFloat3("Rotation", &trans.rotation[0]);
+
+	}
+
+	ImGui::Separator();
+
+	// draw mesh
+	ImGui::InputText("mesh path", meshPath.data(), 256);
+	if (entity.hasComponent<Geg::MeshComponent>()) {
+		if (ImGui::Button("load new mesh")) {
+			const auto mesh = Geg::MeshLoader::loadModel(meshPath);
+			entity.getComponent<Geg::MeshComponent>().mesh = mesh;
+		}
+	} else {
+		if (ImGui::Button("Add mesh component")) {
+			entity.addComponent<Geg::MeshComponent>(meshPath);
+		}
+	}
+
+	// draw renderer
+
+	ImGui::Separator();
+
+	ImGui::InputText("shader path", shaderPath.data(), 256);
+	if (entity.hasComponent<Geg::MeshRendererComponent>()) {
+
+		if (ImGui::Button("reload")) {
+			const Geg::ShaderAsset shader = Geg::ShaderLoader::load("C:/Projects/g/sandbox/shaders/shader.glsl");
+			entity.getComponent<Geg::MeshRendererComponent>().shader = shader;
+		}
+		if (ImGui::Button("load new shader")) {
+			const Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
+			entity.getComponent<Geg::MeshRendererComponent>().shader = shader;
+		}
+	} else {
+		if (ImGui::Button("Add mesh renderer component")) {
+			entity.addComponent<Geg::MeshRendererComponent>(shaderPath);
+		}
+	}
+
+	ImGui::End();
 }
 
 void Level::onEvent(Geg::Event& event) {
@@ -27,35 +74,50 @@ void Level::onEvent(Geg::Event& event) {
 
 void Level::onUpdate(float deltaTime) {
 	Geg::Renderer::beginScene(camController.getCam());
-	Geg::Renderer::submit(pipeline, mesh->getModelMatrix());
-	Geg::Renderer::submit(pipeline1, mesh1->getModelMatrix());
+	scene.onUpdate(deltaTime);
 	Geg::Renderer::endScene();
 }
 
 void Level::onUiUpdate(float deltaTime) {
 	camController.handleUpdates();
 
-	ImGui::Begin("objects");
-	{
-		if (ImGui::InputFloat3("Pos", &meshPos[0])) {
-			mesh->setPosition(meshPos);
+	const auto view = scene.getReg().view<Geg::NameComponent>();
+	for (const auto e : view) {
+		Geg::Entity ent{&scene, e};
+		const auto& name = ent.getComponent<Geg::NameComponent>().name;
+		const auto id = static_cast<uint32_t>(e);
+		const bool isActive = id == activeId;
+
+		ImGuiTreeNodeFlags flags =
+				ImGuiTreeNodeFlags_OpenOnArrow |
+				ImGuiTreeNodeFlags_NoTreePushOnOpen | (
+					isActive ?
+						ImGuiTreeNodeFlags_Selected :
+						0);
+
+		ImGui::TreeNodeEx((void*)(uint64_t)id, flags, name.c_str());
+		if (ImGui::IsItemClicked()) {
+			activeId = id;
 		}
-		if (ImGui::InputFloat3("scale", &meshScale[0])) {
-			mesh->setScale(meshScale);
+
+		if (isActive) {
+			drawComponents(ent);
 		}
 	}
-	ImGui::End();
+
 }
 
 // main app
 sandboxApp::sandboxApp() {
+	// layers should be heap allocated .. the app will clean them up
 	lvl = new Level();
 	pushLayer(lvl);
-};
-sandboxApp::~sandboxApp() {};
+}
+
+sandboxApp::~sandboxApp() {}
 
 // main fn
 Geg::App* Geg::createApp() {
-	Geg::App* a = new sandboxApp();
+	App* a = new sandboxApp();
 	return a;
 }

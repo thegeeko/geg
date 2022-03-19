@@ -8,19 +8,17 @@
 #include "spirv_reflect.h"
 
 namespace Geg {
-	VulkanShader::VulkanShader(std::string vertPath, std::string fragPath, GraphicsContext* _context) {
+	VulkanShader::VulkanShader(std::vector<uint32_t> vertSrc, std::vector<uint32_t> fragSrc) {
+		GraphicsContext* _context = App::get().getWindow().getGraphicsContext();
 		context = dynamic_cast<VulkanGraphicsContext*>(_context);
-
-		auto vertSrc = Geg::Utils::readFileAsBinary(vertPath);
-		auto fragSrc = Geg::Utils::readFileAsBinary(fragPath);
 
 		vertModule = createShaderModule(vertSrc);
 		fragModule = createShaderModule(fragSrc);
 
-		SpvReflectResult result = spvReflectCreateShaderModule(vertSrc.size(), vertSrc.data(), &vertRefModule);
+		SpvReflectResult result = spvReflectCreateShaderModule(vertSrc.size() * sizeof(vertSrc[0]), vertSrc.data(), &vertRefModule);
 		GEG_CORE_ASSERT(result == SPV_REFLECT_RESULT_SUCCESS, "Can't Reflect on a shader");
 
-		result = spvReflectCreateShaderModule(fragSrc.size(), fragSrc.data(), &fragRefModule);
+		result = spvReflectCreateShaderModule(fragSrc.size() * sizeof(fragSrc[0]), fragSrc.data(), &fragRefModule);
 		GEG_CORE_ASSERT(result == SPV_REFLECT_RESULT_SUCCESS, "Can't Reflect on a shader");
 
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -49,13 +47,13 @@ namespace Geg {
 		GEG_CORE_INFO("Shader modules and stages destroyed");
 	}
 
-	VkShaderModule VulkanShader::createShaderModule(const std::vector<char>& src) {
+	VkShaderModule VulkanShader::createShaderModule(const std::vector<uint32_t>& src) {
 		VkShaderModule shaderModule;
 
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = src.size();
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(src.data());
+		createInfo.codeSize = src.size() * sizeof(src[0]);
+		createInfo.pCode = src.data();
 
 		VkResult result = vkCreateShaderModule(context->device->getDevice(), &createInfo, nullptr, &shaderModule);
 		GEG_ASSERT(result == VK_SUCCESS, "Can't create a shader module");

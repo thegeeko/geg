@@ -44,6 +44,6 @@ namespace Geg {
 		virtual ~Shader(){};
 		virtual void bind() const = 0;
 		virtual void unBind() const = 0;
-		static Shader* create(std::string vertPath, std::string fragPath);
+		static Shader* create(std::vector<uint32_t> vertSrc, std::vector<uint32_t> fragSrc);
 	};
 }		 // namespace Geg

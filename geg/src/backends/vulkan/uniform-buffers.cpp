@@ -66,12 +66,12 @@ namespace Geg {
 		vmaUnmapMemory(context->allocator, allocationHandle);
 	}
 
-	void VulkanUniform::bindAtOffset(Ref<VulkanPipeline> pipline, VkCommandBuffer cmd, int instance) {
+	void VulkanUniform::bindAtOffset(const VulkanPipeline& pipline, VkCommandBuffer cmd, uint32_t instance) {
 		uint32_t offset = instance * padBufferSize(originalSize);
 		vkCmdBindDescriptorSets(
 				cmd,
 				VK_PIPELINE_BIND_POINT_GRAPHICS,
-				pipline->getLayout(),
+				pipline.getLayout(),
 				0,
 				1,
 				&descriptorSet,

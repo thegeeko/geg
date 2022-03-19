@@ -3,7 +3,6 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/shader.hpp"
 #include "backends/vulkan/uniform-buffers.hpp"
-#include "backends/vulkan/vertex-buffer.hpp"
 #include "core/core.hpp"
 #include "glm/fwd.hpp"
 #include "renderer/renderer-api.hpp"
@@ -27,9 +26,7 @@ namespace Geg {
 		void startFrame(GpuSceneData _uboData) override;
 		void endFrame() override;
 		
-		void drawIndexed(const Ref<Pipeline>& _pipeline) override;
-		void drawIndexed(const Ref<Pipeline>& _pipeline, GpuModelData model ) override;
-		void draw(const Ref<Pipeline>& _pipeline) override;
+		void drawMesh(const MeshComponent* mesh, MeshRenderData meshData) override;
 
 		void clear() override{};
 		void clear(glm::vec4 color) override{};
@@ -48,6 +45,8 @@ namespace Geg {
 		// Global ubo
 		Scope<VulkanUniform> globalUbo;
 		GpuSceneData uboData;
+		// look into making this a cache system or smth
+		std::vector<VulkanPipeline> framePipelines;
 
 		void initSyncObjects();
 		void deInitSyncObjects();

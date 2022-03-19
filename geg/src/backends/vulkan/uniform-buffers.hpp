@@ -16,7 +16,7 @@ namespace Geg {
 		~VulkanUniform();
 
 		void write(const void* data, size_t size, int instance = 1);
-		void bindAtOffset(Ref<VulkanPipeline> pipline, VkCommandBuffer cmd, int instances);
+		void bindAtOffset(const VulkanPipeline& pipline, VkCommandBuffer cmd, uint32_t instances);
 
 	private:
 		VulkanGraphicsContext* context;

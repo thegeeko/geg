@@ -4,7 +4,6 @@
 #include <vulkan/vulkan.h>
 
 #include "backends/vulkan/graphics-context.hpp"
-#include "renderer/graphics-context.hpp"
 #include "renderer/shader.hpp"
 
 namespace Geg {
@@ -25,11 +24,11 @@ namespace Geg {
 
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
-		VkShaderModule createShaderModule(const std::vector<char>& src);
+		VkShaderModule createShaderModule(const std::vector<uint32_t>& src);
 		void reflectOn(SpvReflectShaderModule reflectModule);
 
 	public:
-		VulkanShader(std::string vertPath, std::string fragPath, GraphicsContext* _context);
+		VulkanShader(std::vector<uint32_t> vertSrc, std::vector<uint32_t> fragSrc);
 		virtual ~VulkanShader();
 
 		void bind() const override;

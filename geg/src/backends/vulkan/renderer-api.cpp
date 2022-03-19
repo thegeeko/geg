@@ -4,6 +4,7 @@
 #include "backends/vulkan/pipeline.hpp"
 #include "backends/vulkan/uniform-buffers.hpp"
 #include "imgui.h"
+#include "index-buffer.hpp"
 #include "renderer/graphics-context.hpp"
 #include "renderer/renderer.hpp"
 #include "vendor/imgui/backends/imgui_impl_vulkan.h"
@@ -138,49 +139,23 @@ namespace Geg {
 		ImGui_ImplVulkan_RenderDrawData(drawdata, frames[nextFrame].commandBuffer);
 	}
 
-	void VulkanRendererAPI::drawIndexed(const Ref<Pipeline>& _pipeline) {
+	void VulkanRendererAPI::drawMesh(const MeshComponent* mesh, MeshRenderData meshData) {
 		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
-		auto pipeline = std::dynamic_pointer_cast<VulkanPipeline>(_pipeline);
+		
+		// create a pipeline for the mesh
+		framePipelines.emplace_back(mesh->mesh.vbo, meshData.material->shader.shader);
 
-		vkCmdBindPipeline(
-				frames[nextFrame].commandBuffer,
-				VK_PIPELINE_BIND_POINT_GRAPHICS,
-				pipeline->getPipelineHandle());
-
-		globalUbo->bindAtOffset(
-				pipeline,
-				frames[nextFrame].commandBuffer,
-				currentInFlightFrame);
-
-		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
-		VkDeviceSize offsets[] = {0};
-		vkCmdBindVertexBuffers(frames[nextFrame].commandBuffer, 0, 1, vertexBuffers, offsets);
-
-		vkCmdBindIndexBuffer(
-				frames[nextFrame].commandBuffer,
-				pipeline->getIbo()->getBufferHandle(),
-				0,
-				VK_INDEX_TYPE_UINT32);
-
-		vkCmdDrawIndexed(
-				frames[nextFrame].commandBuffer,
-				static_cast<uint32_t>(pipeline->getIbo()->getCount()),
-				1,
-				0,
-				0,
-				0);
-	}
-
-
-	void VulkanRendererAPI::drawIndexed(const Ref<Pipeline>& _pipline, GpuModelData model) {
-		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
-		const auto pipeline = std::dynamic_pointer_cast<VulkanPipeline>(_pipline);
+		// setup the vars
+		const VulkanPipeline& pipeline = framePipelines.back();
 		const auto commandBuffer = frames[nextFrame].commandBuffer;
+		const auto vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(mesh->mesh.vbo);
+		const auto ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(mesh->mesh.ibo);
 
+		// record commands
 		vkCmdBindPipeline(
 				commandBuffer,
 				VK_PIPELINE_BIND_POINT_GRAPHICS,
-				pipeline->getPipelineHandle());
+				pipeline.getPipelineHandle());
 
 		globalUbo->bindAtOffset(
 				pipeline,
@@ -189,61 +164,33 @@ namespace Geg {
 
 		vkCmdPushConstants(
 				commandBuffer,
-				pipeline->getLayout(),
+				pipeline.getLayout(),
 				VK_SHADER_STAGE_VERTEX_BIT,
 				0,
 				ShaderDataTypeSize(ShaderDataType::Mat4),
-				&model.model[0]);
+				&meshData.modelMat->getTransform());
 
-		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
+		VkBuffer vertexBuffers[] = {vbo->getBufferHandle()};
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
 		vkCmdBindIndexBuffer(
 				commandBuffer,
-				pipeline->getIbo()->getBufferHandle(),
+				ibo->getBufferHandle(),
 				0,
 				VK_INDEX_TYPE_UINT32);
 
 		vkCmdDrawIndexed(
 				commandBuffer,
-				static_cast<uint32_t>(pipeline->getIbo()->getCount()),
+				ibo->getCount(),
 				1,
 				0,
 				0,
 				0);
-
-		oncePerFrame();
-	}
-
-	void VulkanRendererAPI::draw(const Ref<Pipeline>& _pipeline) {
-		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
-		auto pipeline = std::dynamic_pointer_cast<VulkanPipeline>(_pipeline);
-
-		vkCmdBindPipeline(
-				frames[nextFrame].commandBuffer,
-				VK_PIPELINE_BIND_POINT_GRAPHICS,
-				pipeline->getPipelineHandle());
-
-		globalUbo->bindAtOffset(
-				pipeline,
-				frames[nextFrame].commandBuffer,
-				currentInFlightFrame);
-
-		VkBuffer vertexBuffers[] = {pipeline->getVbo()->getBufferHandle()};
-		VkDeviceSize offsets[] = {0};
-		vkCmdBindVertexBuffers(frames[nextFrame].commandBuffer, 0, 1, vertexBuffers, offsets);
-
-		vkCmdDraw(
-				frames[nextFrame].commandBuffer,
-				static_cast<uint32_t>(pipeline->getVbo()->getVerticesCount()),
-				1,
-				0,
-				0);
-
 	}
 
 	void VulkanRendererAPI::endFrame() {
+		oncePerFrame();
 		endRecording();
 
 		uint32_t imageIndex = 0;
@@ -265,8 +212,9 @@ namespace Geg {
 				VK_NULL_HANDLE,
 				&imageIndex);
 
-		// Check if the frame is busy
+		// Check if another frame is using the image
 		if (busyFences[imageIndex] != VK_NULL_HANDLE) {
+			// wait for that frame to finish
 			vkWaitForFences(
 					context->device->getDevice(),
 					1,
@@ -275,7 +223,7 @@ namespace Geg {
 					UINT64_MAX);
 		}
 
-		// Add the frame to the busy list
+		// Add the mark the image with the fences of the current frame
 		busyFences[imageIndex] = frames[imageIndex].fence;
 
 		VkSubmitInfo submitInfo{};
@@ -297,6 +245,7 @@ namespace Geg {
 				1,
 				&frames[imageIndex].fence);
 
+		// submit the queue with the current frame's fence
 		VkResult result = vkQueueSubmit(
 				context->device->getGraphicsQueue(),
 				1,
@@ -319,8 +268,10 @@ namespace Geg {
 		vkQueuePresentKHR(context->device->getPresentQueue(), &presentInfo);
 		vkQueueWaitIdle(context->device->getPresentQueue());
 
+		// setup for the next frame 
 		nextFrame = (imageIndex + 1) % frames.size();
 		currentInFlightFrame = (currentInFlightFrame + 1) % VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT;
+		framePipelines.clear();
 	}
 
 } // namespace Geg

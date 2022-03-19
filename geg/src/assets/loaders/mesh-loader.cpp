@@ -1,4 +1,4 @@
-#include "loader.hpp"
+#include "mesh-loader.hpp"
 
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
@@ -6,7 +6,7 @@
 #include "assimp/Importer.hpp"
 
 namespace Geg {
-	Mesh* Loader::loadModel(const std::string& path) {
+	MeshAsset MeshLoader::loadModel(const std::string& path) {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(
 				path,
@@ -14,30 +14,28 @@ namespace Geg {
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			GEG_CORE_ERROR(" Error loadin model : ", importer.GetErrorString());
-			return new Mesh{};
+			return MeshAsset{};
 		}
 
-		Loader loader;
+		MeshLoader loader;
 		loader.processNodes(scene->mRootNode, scene);
 
-		return new Mesh(loader.vertices, loader.indices);
+		return MeshAsset(loader.vertices, loader.indices);
 	}
 
-		
-
-	void Loader::processNodes(aiNode *node, const aiScene *scene) {
+	void MeshLoader::processNodes(aiNode* node, const aiScene* scene) {
 		// process all the node's meshes (if any)
-		for(unsigned int i = 0; i < node->mNumMeshes; i++) {
-			aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
-			processMesh(mesh, scene);			
+		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			processMesh(mesh, scene);
 		}
 		// then do the same for each of its children
-		for(unsigned int i = 0; i < node->mNumChildren; i++) {
+		for (unsigned int i = 0; i < node->mNumChildren; i++) {
 			processNodes(node->mChildren[i], scene);
 		}
 	}
-		
-	void Loader::processMesh(aiMesh* mesh, const aiScene* scene) {
+
+	void MeshLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 		for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
 			Vertex vertex;
 
@@ -73,5 +71,4 @@ namespace Geg {
 				indices.push_back(face.mIndices[j]);
 		}
 	}
-}
- // namespace Geg
+} // namespace Geg

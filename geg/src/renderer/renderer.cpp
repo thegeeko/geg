@@ -27,15 +27,8 @@ namespace Geg {
 		currentAPI->endFrame();
 	}
 
-	void Renderer::submit(const Ref<Pipeline>& pipeline, bool isIndexed) {
-		if (isIndexed)
-			currentAPI->drawIndexed(pipeline);
-		else
-			currentAPI->draw(pipeline);
-	}
-
-	void Renderer::submit(const Ref<Pipeline>& pipeline, GpuModelData model) {
-		currentAPI->drawIndexed(pipeline, model);
+	void Renderer::submit(const MeshComponent* mesh, MeshRenderData meshData) {
+		currentAPI->drawMesh(mesh, meshData);
 	}
 
 }		 // namespace Geg
