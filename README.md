@@ -12,7 +12,9 @@ you can build with :
 
 - windows MSVC17
 - Linux Clang / GCC
-
+<br>
+Make sure your ssh fingerprint is uploaded to GitHub.com, see https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection <br>
+<br>
 ```bash
 git clone --recurse-submodules git@github.com:thegeeko/geg
 cd geg
@@ -20,7 +22,7 @@ mkdir build && cd build
 cmake .. && cmake --build
 ```
 
-## decencies
+## dependencies
 
 - [spdlog](https://github.com/gabime/spdlog)
 - [glfw](https://github.com/glfw/glfw)

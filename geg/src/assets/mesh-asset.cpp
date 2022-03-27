@@ -9,7 +9,7 @@ namespace Geg {
 	}
 
 	void MeshAsset::setup() {
-		vbo = Ref<VertexBuffer>(VertexBuffer::create((float*)vertices.data(), vertices.size() * sizeof Vertex));
+		vbo = Ref<VertexBuffer>(VertexBuffer::create((float*)vertices.data(), vertices.size() * sizeof (Vertex)));
 		ibo = Ref<IndexBuffer>(IndexBuffer::create(indices.data(), indices.size() * sizeof indices[0]));
 		vbo->setLayout(Vertex::getLayout());
 	}
