@@ -6,12 +6,14 @@
 namespace Geg {
 	struct Vertex {
 		glm::vec3 position;
+		glm::vec4 color;
 		glm::vec3 normal;
 		glm::vec2 texCoord;
 
 		static BufferLayout getLayout() {
 			BufferLayout layout{};
 			layout.add(ShaderDataType::Float3, false); // position
+			layout.add(ShaderDataType::Float4, false); // position
 			layout.add(ShaderDataType::Float3, false); // normals
 			layout.add(ShaderDataType::Float2, false); // texture coordinates
 			return layout;

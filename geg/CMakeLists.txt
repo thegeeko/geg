@@ -3,12 +3,12 @@ project(geg-engine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(GCC_COVERAGE_COMPILE_FLAGS "-fPIC")
-# set(MSVC_COVERAGE_COMPILE_FLAGS "/MP 12")
+# set(MSVC_COVERAGE_COMPILE_FLAGS "")
 
 if(NOT MSVC)
 	set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 else()
-	# set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${MSVC_COVERAGE_COMPILE_FLAGS}")
+	set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${MSVC_COVERAGE_COMPILE_FLAGS}")
 endif()
 
 
@@ -89,12 +89,14 @@ target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # ==============================================================
 
-# ====================== geg pch =============================
+# ====================== geg build =============================
 # target_precompile_headers(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 if(MSVC)
-	add_definitions(/FI"${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+	target_compile_options(geg PRIVATE "/FI ${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+	target_compile_options(geg PRIVATE "/MP 12")
 else()
 	# GCC or Clang
-	add_definitions(-include "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+	target_compile_options(geg PRIVATE "-include ${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+	target_compile_options(geg PRIVATE "-j 12")
 endif()
 # ==========================================================

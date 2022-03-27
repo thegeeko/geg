@@ -37,10 +37,11 @@ namespace Geg {
 
 	void MeshLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 		for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
-			Vertex vertex;
+			Vertex vertex{};
+			glm::vec3 vector;
+			glm::vec4 color;
 
 			// position
-			glm::vec3 vector;
 			vector.x = mesh->mVertices[i].x;
 			vector.y = mesh->mVertices[i].y;
 			vector.z = mesh->mVertices[i].z;
@@ -52,14 +53,23 @@ namespace Geg {
 			vector.z = mesh->mNormals[i].z;
 			vertex.normal = vector;
 
+			// colors
+			if (mesh->mColors[0]) {
+				color.r = mesh->mColors[0][i].r;
+				color.g = mesh->mColors[0][i].g;
+				color.b = mesh->mColors[0][i].b;
+				color.a = mesh->mColors[0][i].a;
+			} else
+				vertex.color = {1, 1, 1, 1};
+
 			// texture cords
 			if (mesh->mTextureCoords[0]) {
-				glm::vec2 vector;
-				vector.x = mesh->mTextureCoords[0][i].x;
-				vector.y = mesh->mTextureCoords[0][i].y;
-				vertex.texCoord = vector;
+				glm::vec2 vec;
+				vec.x = mesh->mTextureCoords[0][i].x;
+				vec.y = mesh->mTextureCoords[0][i].y;
+				vertex.texCoord = vec;
 			} else
-				vertex.texCoord = glm::vec2(0.0f, 0.0f);
+				vertex.texCoord = {0.0f, 0.0f};
 
 			vertices.push_back(vertex);
 		}

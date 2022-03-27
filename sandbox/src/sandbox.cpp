@@ -6,12 +6,12 @@ Level::Level() {
 	vase = scene.createEntity("vase");
 	another = scene.createEntity("another");
 
-	meshPath = "assets/models/smooth_vase.obj";
+	meshPath = "assets/models/colored_cube.obj";
 	Geg::MeshAsset mesh = Geg::MeshLoader::loadModel(meshPath);
 	vase.addComponent<Geg::MeshComponent>(mesh);
 	vase.getComponent<Geg::TransformComponent>().translation = {0, 0, -3};
 
-	shaderPath = "assets/shaders/shader.glsl";
+	shaderPath = "assets/shaders/flat.glsl";
 	Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
 	vase.addComponent<Geg::MeshRendererComponent>(shader);
 }
