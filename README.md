@@ -13,6 +13,9 @@ you can build with :
 
 - windows MSVC17
 - Linux Clang / GCC
+<br>
+Make sure your ssh fingerprint is uploaded to GitHub.com if you're using ssh links, see https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection <br>
+
 
 ```bash
 # for arch based distros
@@ -23,7 +26,9 @@ mkdir build && cd build
 cmake .. && cmake --build
 ```
 
-## decencies
+you should build and run sandbox app and run it inside `build/sandbox` or with `assets folder`
+
+## dependencies
 
 - [spdlog](https://github.com/gabime/spdlog)
 - [glfw](https://github.com/glfw/glfw)
