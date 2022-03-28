@@ -1,18 +1,15 @@
 [submodule "geg/vendor/spdlog"]
 	path = geg/vendor/spdlog
-	url = git@github.com:gabime/spdlog.git
+	url = https://www.github.com/gabime/spdlog.git
 [submodule "geg/vendor/glfw"]
 	path = geg/vendor/glfw
-	url = git@github.com:glfw/glfw.git
+	url = https://www.github.com/glfw/glfw.git
 [submodule "geg/vendor/glm"]
 	path = geg/vendor/glm
-	url = git@github.com:g-truc/glm.git
+	url = https://www.github.com/g-truc/glm.git
 [submodule "geg/vendor/imgui"]
 	path = geg/vendor/imgui
-	url = git@github.com:thegeeko/imgui.git
+	url = https://www.github.com/thegeeko/imgui.git
 [submodule "geg/vendor/vma"]
 	path = geg/vendor/vma
-	url = git@github.com:GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
-[submodule "geg/vendor/assimp"]
-	path = geg/vendor/assimp
-	url = https://github.com/assimp/assimp
+	url = https://www.github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git

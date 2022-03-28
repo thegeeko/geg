@@ -19,6 +19,9 @@ namespace Geg {
 
 	VulkanRendererAPI::~VulkanRendererAPI() {
 		deInitSyncObjects();
+		for (auto fp : framePipelines) {
+			delete fp.second;
+		}
 	}
 
 	void VulkanRendererAPI::initSyncObjects() {
@@ -118,7 +121,7 @@ namespace Geg {
 		renderPassInfo.framebuffer = context->swapChain->getSwapChainFrameBuffers()[frames[nextFrame].index];
 		renderPassInfo.renderArea.offset = {0, 0};
 		renderPassInfo.renderArea.extent = context->swapChain->getSwapChainExtent();
-		VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+		VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
 
@@ -143,10 +146,13 @@ namespace Geg {
 		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
 		
 		// create a pipeline for the mesh
-		framePipelines.emplace_back(mesh->mesh.vbo, meshData.material->shader.shader);
+		size_t hash = meshData.material->shader.shaderHash;
+		if (framePipelines.find(hash) == framePipelines.end()) {
+			framePipelines[hash] = new VulkanPipeline(mesh->mesh.vbo, meshData.material->shader.shader);
+		}
 
 		// setup the vars
-		const VulkanPipeline& pipeline = framePipelines.back();
+		const VulkanPipeline& pipeline = *framePipelines[hash];
 		const auto commandBuffer = frames[nextFrame].commandBuffer;
 		const auto vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(mesh->mesh.vbo);
 		const auto ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(mesh->mesh.ibo);
@@ -271,7 +277,6 @@ namespace Geg {
 		// setup for the next frame 
 		nextFrame = (imageIndex + 1) % frames.size();
 		currentInFlightFrame = (currentInFlightFrame + 1) % VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT;
-		framePipelines.clear();
 	}
 
 } // namespace Geg

@@ -4,9 +4,10 @@ geg is a vulkan / DX12 game engine (currently vulkan only) I'm working on to und
 
 ## building
 
-should build on windows and linux .. tested on windows only .. (will test on linux from while to while)
+should build on windows and linux .. tested on linux only .. (will test on windows from while to while)
+you have to have vulkanSDK installed with debug libs if u want to build for debug
 
-you have to have vulkanSDK installed with debug libs if u wanna build for debug
+make sure to install `assimp / vulkanSDK or shaderc` and use amd pro drivers on linux or amdvlk not radv (open source drivers)
 
 you can build with :
 
@@ -14,7 +15,9 @@ you can build with :
 - Linux Clang / GCC
 
 ```bash
-git clone --recurse-submodules git@github.com:thegeeko/geg
+# for arch based distros
+sudo pacman -S assimp
+git clone --recurse-submodules https://www.github.com/thegeeko/geg
 cd geg
 mkdir build && cd build
 cmake .. && cmake --build

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(geg-engine)
 
+# ========= setup ================
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 set(GCC_COVERAGE_COMPILE_FLAGS "-fPIC")
-# set(MSVC_COVERAGE_COMPILE_FLAGS "")
+set(MSVC_COVERAGE_COMPILE_FLAGS "")
 
 if(NOT MSVC)
 	set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
@@ -11,54 +13,52 @@ else()
 	set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${MSVC_COVERAGE_COMPILE_FLAGS}")
 endif()
 
+# ================================
 
-# ========= graphics ==============
+# ========= deps ================
 # vulkan loader
 find_package(Vulkan REQUIRED)
 
-# other vulkan libs / shaderc + spirvcross
+# 3d models loading
+# find_package(Assimp REQUIRED)
 
-if(DEFINED ENV{VULKAN_SDK})
-	if (CMAKE_BUILD_TYPE MATCHES "Debug")
-		set(GEG_SHADERC_LIB "$ENV{VULKAN_SDK}/Lib/shaderc_combinedd.lib")
-	else()
-		set(GEG_SHADERC_LIB "$ENV{VULKAN_SDK}/Lib/shaderc_combined.lib")
-	endif()
-	message(STATUS ${GEG_SHADERC_LIB})
-else()
-	message(FATAL_ERROR "install VulkanSDK, and add to the env variable VULKAN_SDK")
-endif()
-# ==============================
+# shader compiliation
+find_package(Shaderc REQUIRED)
 
-# ============== glfw =========================
+# shader reflection
+add_subdirectory(vendor/spirv/reflect)
+
+# memroy allocator for vulkan
+add_subdirectory(vendor/vma)
+
+# windowing
 if(WIN32)
 	add_compile_definitions(_GLFW_WIN32=1)
-elseif(UNIX AND NOT APPLE)
-	add_compile_definitions(_GLFW_X11=1)
 endif()
-
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
+set(GLFW_USE_WAYLAND ON CACHE BOOL "" FORCE)
 add_subdirectory(vendor/glfw)
-# ==============================================
 
-# =============== assimp ============
-set(ASSIMP_NO_EXPORT OFF CACHE BOOL "" FORCE) 
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE) 
-add_subdirectory(vendor/assimp)
-# ===================================
-
+# logging
 add_subdirectory(vendor/spdlog)
+
+# math
 add_subdirectory(vendor/glm)
+
+# ui
 add_subdirectory(vendor/imgui)
-add_subdirectory(vendor/vma)
-add_subdirectory(vendor/spirv/reflect)
+
+# ECS
 add_subdirectory(vendor/entt)
 
-# ================== geg ====================
+# ===================================
+
+
+# =============== geg ===============
 # find all source files and headers
 file(
 	GLOB_RECURSE # recursive
@@ -69,10 +69,9 @@ file(
 add_library(geg STATIC ${GEG_SRC})
 # ===========================================
 
-# =============== deps ======================
-# vulkan .. vars should be defined by find vulkan or manually
-target_link_libraries(geg PUBLIC Vulkan::Vulkan) # loader
-target_link_libraries(geg PUBLIC ${GEG_SHADERC_LIB})
+# =============== linking deps ======================
+target_link_libraries(geg PUBLIC Vulkan::Vulkan)
+target_link_libraries(geg PUBLIC shaderc)
 
 target_link_libraries(geg PUBLIC spdlog)
 target_link_libraries(geg PUBLIC glfw)
@@ -90,13 +89,12 @@ target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # ==============================================================
 
 # ====================== geg build =============================
-# target_precompile_headers(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+target_precompile_headers(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 if(MSVC)
-	target_compile_options(geg PRIVATE "/FI ${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+	add_definitions("/FI ${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 	target_compile_options(geg PRIVATE "/MP 12")
 else()
 	# GCC or Clang
-	target_compile_options(geg PRIVATE "-include ${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
-	target_compile_options(geg PRIVATE "-j 12")
+	add_definitions(-include "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 endif()
 # ==========================================================

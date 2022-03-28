@@ -46,7 +46,7 @@ namespace Geg {
 		Scope<VulkanUniform> globalUbo;
 		GpuSceneData uboData;
 		// look into making this a cache system or smth
-		std::vector<VulkanPipeline> framePipelines;
+		std::unordered_map<size_t, VulkanPipeline*> framePipelines;
 
 		void initSyncObjects();
 		void deInitSyncObjects();

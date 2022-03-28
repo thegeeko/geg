@@ -6,6 +6,11 @@ namespace Geg {
 		vertSpv = compile(src.vert, shaderc_vertex_shader);
 		fragSpv = compile(src.frag, shaderc_fragment_shader);
 
+		size_t vertHash = std::hash<std::string>{}(src.vert);
+		size_t fragHash = std::hash<std::string>{}(src.frag);
+
+		shaderHash = vertHash ^ (fragHash << 1);
+
 		setup();
 	}
 

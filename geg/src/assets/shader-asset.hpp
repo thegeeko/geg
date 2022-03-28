@@ -13,6 +13,7 @@ namespace Geg {
 	public:
 		ShaderAsset() = default;
 		ShaderAsset(const ShaderSource& src);
+		size_t shaderHash;
 		Ref<Shader> shader;
 	private:
 		std::vector<uint32_t> vertSpv;

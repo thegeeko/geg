@@ -112,13 +112,13 @@ namespace Geg {
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		pushConstantRange.size = ShaderDataTypeSize(ShaderDataType::Mat4);
 		pushConstantRange.offset = 0;
-		
+
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = setsInfo.layouts.size();		// Optional
 		pipelineLayoutInfo.pSetLayouts = setsInfo.layouts.data();		 // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 1;		// Optional
-		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;		 // Optional
+		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;		// Optional
 
 		VkResult result = vkCreatePipelineLayout(
 				context->device->getDevice(),
@@ -128,15 +128,14 @@ namespace Geg {
 
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create pipline layout");
 
-		
 		VkPipelineShaderStageCreateInfo shaderStages[] = {
 				shader->getStages()[0],
 				shader->getStages()[1]};
-		
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = shader->getStages().size();
-		pipelineInfo.pStages = shaderStages; 
+		pipelineInfo.pStages = shaderStages;
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;
 		pipelineInfo.pViewportState = &viewportState;
@@ -159,11 +158,15 @@ namespace Geg {
 				nullptr,
 				&pipelineHandle);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create pipeline");
+		GEG_CORE_INFO("pipeline created");
 	}
 
 	VulkanPipeline::~VulkanPipeline() {
-		vkDestroyPipeline(context->device->getDevice(), pipelineHandle, nullptr);
-		vkDestroyPipelineLayout(context->device->getDevice(), layout, nullptr);
-		// GEG_CORE_INFO("Pipeline layout destroyed");
+		if (pipelineHandle != VK_NULL_HANDLE) {
+			vkDestroyPipeline(context->device->getDevice(), pipelineHandle, nullptr);
+			vkDestroyPipelineLayout(context->device->getDevice(), layout, nullptr);
+			GEG_CORE_INFO("Pipeline destroyed with data");
+		}
+		GEG_CORE_INFO("Pipeline destroyed no data");
 	}
 }		 // namespace Geg

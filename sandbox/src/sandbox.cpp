@@ -6,7 +6,7 @@ Level::Level() {
 	vase = scene.createEntity("vase");
 	another = scene.createEntity("another");
 
-	meshPath = "assets/models/colored_cube.obj";
+	meshPath = "assets/models/teapot.gltf";
 	Geg::MeshAsset mesh = Geg::MeshLoader::loadModel(meshPath);
 	vase.addComponent<Geg::MeshComponent>(mesh);
 	vase.getComponent<Geg::TransformComponent>().translation = {0, 0, -3};
@@ -52,7 +52,7 @@ void Level::drawComponents(Geg::Entity entity) {
 	if (entity.hasComponent<Geg::MeshRendererComponent>()) {
 
 		if (ImGui::Button("reload")) {
-			const Geg::ShaderAsset shader = Geg::ShaderLoader::load("C:/Projects/g/sandbox/shaders/shader.glsl");
+			const Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
 			entity.getComponent<Geg::MeshRendererComponent>().shader = shader;
 		}
 		if (ImGui::Button("load new shader")) {

@@ -5,7 +5,7 @@
 
 namespace Geg {
 
-	const int VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT = 3;
+	// const int VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT = 3;
 
 	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _windowPtr) {
 		// device and swapchain

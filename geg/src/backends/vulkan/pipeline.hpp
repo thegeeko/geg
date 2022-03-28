@@ -18,9 +18,9 @@ namespace Geg {
 		const VkPipelineLayout& getLayout() const { return layout; }
 
 	private:
-		VulkanGraphicsContext* context;
+		VulkanGraphicsContext* context = nullptr;
 
-		VkPipeline pipelineHandle;
-		VkPipelineLayout layout;
+		VkPipeline pipelineHandle = VK_NULL_HANDLE;
+		VkPipelineLayout layout = VK_NULL_HANDLE;
 	};
 } // namespace Geg

@@ -7,14 +7,13 @@ using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 using std::chrono::system_clock;
-using std::chrono::steady_clock;
 using std::chrono::time_point;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
 namespace Geg {
 		static bool timerInit = false; // check if this the first time
-		static time_point<steady_clock> startTime; // high reslotion timer for the engine
+		static time_point<high_resolution_clock> startTime; // high reslotion timer for the engine
 		static float lastFrameTime; // to calculate delta time
 
 		static long time; // time in s since time since epoch 

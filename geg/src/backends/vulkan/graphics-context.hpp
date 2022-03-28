@@ -13,7 +13,7 @@ namespace Geg {
 		VulkanGraphicsContext(GLFWwindow* window);
 		~VulkanGraphicsContext() override;
 
-		static const int MAX_FRAMES_IN_FLIGHT;
+		static constexpr int MAX_FRAMES_IN_FLIGHT = 3;
 
 		VulkanDevice* device;
 		VulkanSwapChain* swapChain;
