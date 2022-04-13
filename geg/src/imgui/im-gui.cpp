@@ -52,7 +52,7 @@ namespace Geg {
 		initInfo.ImageCount = context->swapChain->getSwapChainImages().size();
 		initInfo.CheckVkResultFn = checkVulkanErrors;
 
-		ImGui_ImplVulkan_Init(&initInfo, renderPass);
+		ImGui_ImplVulkan_Init(&initInfo, context->swapChain->getRenderPass());
 
 		// upload fonts, this is done by recording and submitting a one time use command buffer
 		// which can be done easily bye using some existing helper functions on the lve device object

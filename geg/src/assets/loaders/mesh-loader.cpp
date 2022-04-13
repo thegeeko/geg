@@ -39,7 +39,6 @@ namespace Geg {
 		for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
 			Vertex vertex{};
 			glm::vec3 vector;
-			glm::vec4 color;
 
 			// position
 			vector.x = mesh->mVertices[i].x;
@@ -55,12 +54,11 @@ namespace Geg {
 
 			// colors
 			if (mesh->mColors[0]) {
-				color.r = mesh->mColors[0][i].r;
-				color.g = mesh->mColors[0][i].g;
-				color.b = mesh->mColors[0][i].b;
-				color.a = mesh->mColors[0][i].a;
+				vector.r = mesh->mColors[0][i].r;
+				vector.g = mesh->mColors[0][i].g;
+				vector.b = mesh->mColors[0][i].b;
 			} else
-				vertex.color = {1, 1, 1, 1};
+				vertex.color = {1, 1, 1};
 
 			// texture cords
 			if (mesh->mTextureCoords[0]) {

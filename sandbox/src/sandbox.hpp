@@ -14,7 +14,7 @@ private:
 
 	Geg::Scene scene;
 	Geg::Entity vase;
-	Geg::Entity another;
+	Geg::Entity light;
 
 	void drawComponents(Geg::Entity entity);
 

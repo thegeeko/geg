@@ -3,17 +3,19 @@
 
 
 Level::Level() {
-	vase = scene.createEntity("vase");
-	another = scene.createEntity("another");
+	vase = scene.createEntity("teapot");
+	light = scene.createEntity("global light");
 
 	meshPath = "assets/models/teapot.gltf";
 	Geg::MeshAsset mesh = Geg::MeshLoader::loadModel(meshPath);
 	vase.addComponent<Geg::MeshComponent>(mesh);
 	vase.getComponent<Geg::TransformComponent>().translation = {0, 0, -3};
 
-	shaderPath = "assets/shaders/flat.glsl";
+	shaderPath = "assets/shaders/dir-light.glsl";
 	Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
 	vase.addComponent<Geg::MeshRendererComponent>(shader);
+
+	light.addComponent<Geg::GlobalLightComponent>(glm::vec4(1.f, -3.f, -1.f, 0.f));
 }
 
 void Level::drawComponents(Geg::Entity entity) {
@@ -65,6 +67,14 @@ void Level::drawComponents(Geg::Entity entity) {
 		}
 	}
 
+	ImGui::Separator();
+
+	if (entity.hasComponent<Geg::GlobalLightComponent>()) {
+		auto& light = entity.getComponent<Geg::GlobalLightComponent>();
+		ImGui::DragFloat3("light direction", &light.dir.x);
+		ImGui::ColorEdit3("light direction", &light.color.r);
+	}
+
 	ImGui::End();
 }
 
@@ -73,9 +83,7 @@ void Level::onEvent(Geg::Event& event) {
 }
 
 void Level::onUpdate(float deltaTime) {
-	Geg::Renderer::beginScene(camController.getCam());
-	scene.onUpdate(deltaTime);
-	Geg::Renderer::endScene();
+	scene.onUpdate(deltaTime, camController.getCam());
 }
 
 void Level::onUiUpdate(float deltaTime) {

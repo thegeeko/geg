@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-
+#include "vk_mem_alloc.h"
 #include "vulkan-device.hpp"
 
 namespace Geg {
@@ -14,7 +14,7 @@ namespace Geg {
 
 	class VulkanSwapChain {
 	public:
-		VulkanSwapChain(GLFWwindow* window, VulkanDevice* _device);
+		VulkanSwapChain(GLFWwindow* window, VulkanDevice* _device, VmaAllocator alloc);
 		~VulkanSwapChain();
 
 		[[nodiscard]] const VkSwapchainKHR& getSwapChain() const { return swapChain; }
@@ -27,11 +27,20 @@ namespace Geg {
 	private:
 		VulkanDevice* device;
 		GLFWwindow* window;
+		VmaAllocator vmaAllocator;
+
 		VkSwapchainKHR swapChain;
+
+		VkFormat swapChainImageFormat;
 		std::vector<VkImage> swapChainImages;
 		std::vector<VkImageView> swapChainImageViews;
 		std::vector<VkFramebuffer> swapChainFramebuffers;
-		VkFormat swapChainImageFormat;
+
+		VkImage depthImage;
+		VkFormat depthImageFormat;
+		VkImageView depthImageView;
+		VmaAllocation depthAllocation;
+
 		VkExtent2D swapChainExtent;
 		VkRenderPass renderPass;
 
@@ -42,5 +51,6 @@ namespace Geg {
 		void createImageViews();
 		void createRenderPass();
 		void createFramebuffers();
+		void createDepthResources();
 	};
-} // namespace Geg
+}		 // namespace Geg

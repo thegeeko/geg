@@ -108,12 +108,16 @@ namespace Geg {
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = 0; // Optional
-		beginInfo.pInheritanceInfo = nullptr; // Optional
+		beginInfo.flags = 0;		// Optional
+		beginInfo.pInheritanceInfo = nullptr;		 // Optional
 
 		result = vkBeginCommandBuffer(frames[nextFrame].commandBuffer, &beginInfo);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't begin a command buffer");
 		/* GEG_CORE_TRACE(" FRAME : Began command buffer"); */
+
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+		clearValues[1].depthStencil = {1.0f, 0};
 
 		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -121,9 +125,8 @@ namespace Geg {
 		renderPassInfo.framebuffer = context->swapChain->getSwapChainFrameBuffers()[frames[nextFrame].index];
 		renderPassInfo.renderArea.offset = {0, 0};
 		renderPassInfo.renderArea.extent = context->swapChain->getSwapChainExtent();
-		VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
+		renderPassInfo.clearValueCount = clearValues.size();
+		renderPassInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(frames[nextFrame].commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
@@ -144,7 +147,7 @@ namespace Geg {
 
 	void VulkanRendererAPI::drawMesh(const MeshComponent* mesh, MeshRenderData meshData) {
 		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
-		
+
 		// create a pipeline for the mesh
 		size_t hash = meshData.material->shader.shaderHash;
 		if (framePipelines.find(hash) == framePipelines.end()) {
@@ -175,6 +178,14 @@ namespace Geg {
 				0,
 				ShaderDataTypeSize(ShaderDataType::Mat4),
 				&meshData.modelMat->getTransform());
+
+		vkCmdPushConstants(
+				commandBuffer,
+				pipeline.getLayout(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				ShaderDataTypeSize(ShaderDataType::Mat4),
+				ShaderDataTypeSize(ShaderDataType::Mat4),
+				&meshData.modelMat->getNormMat());
 
 		VkBuffer vertexBuffers[] = {vbo->getBufferHandle()};
 		VkDeviceSize offsets[] = {0};
@@ -269,14 +280,14 @@ namespace Geg {
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
-		presentInfo.pResults = nullptr; // Optional
+		presentInfo.pResults = nullptr;		 // Optional
 
 		vkQueuePresentKHR(context->device->getPresentQueue(), &presentInfo);
 		vkQueueWaitIdle(context->device->getPresentQueue());
 
-		// setup for the next frame 
+		// setup for the next frame
 		nextFrame = (imageIndex + 1) % frames.size();
 		currentInFlightFrame = (currentInFlightFrame + 1) % VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT;
 	}
 
-} // namespace Geg
+}		 // namespace Geg

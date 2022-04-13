@@ -14,11 +14,12 @@ namespace Geg {
 		delete currentAPI;
 	}
 
-	void Renderer::beginScene(Camera cam){
+	void Renderer::beginScene(Camera cam, GlobalLightComponent& globalLight){
 		GpuSceneData currentScene;
 		currentScene.proj = cam.proj;
 		currentScene.view = cam.view;
 		currentScene.ProjView = cam.proj * cam.view;
+		currentScene.lightDir = globalLight.dir;
 
 		currentAPI->startFrame(currentScene);
 	}

@@ -110,7 +110,7 @@ namespace Geg {
 
 		VkPushConstantRange pushConstantRange{};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		pushConstantRange.size = ShaderDataTypeSize(ShaderDataType::Mat4);
+		pushConstantRange.size = ShaderDataTypeSize(ShaderDataType::Mat4) * 2;
 		pushConstantRange.offset = 0;
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -132,6 +132,18 @@ namespace Geg {
 				shader->getStages()[0],
 				shader->getStages()[1]};
 
+		VkPipelineDepthStencilStateCreateInfo depthStencil{};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.minDepthBounds = 0.0f;		 // Optional
+		depthStencil.maxDepthBounds = 1.0f;		 // Optional
+		depthStencil.stencilTestEnable = VK_FALSE;
+		depthStencil.front = {};		// Optional
+		depthStencil.back = {};		 // Optional
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = shader->getStages().size();
@@ -141,7 +153,7 @@ namespace Geg {
 		pipelineInfo.pViewportState = &viewportState;
 		pipelineInfo.pRasterizationState = &rasterizer;
 		pipelineInfo.pMultisampleState = &multisampling;
-		pipelineInfo.pDepthStencilState = nullptr;		// Optional
+		pipelineInfo.pDepthStencilState = &depthStencil;		// Optional
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = nullptr;		 // Optional
 		pipelineInfo.layout = layout;

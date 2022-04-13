@@ -89,7 +89,7 @@ target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # ==============================================================
 
 # ====================== geg build =============================
-target_precompile_headers(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
+# target_precompile_headers(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 if(MSVC)
 	add_definitions("/FI ${CMAKE_CURRENT_SOURCE_DIR}/src/geg-pch.hpp")
 	target_compile_options(geg PRIVATE "/MP 12")

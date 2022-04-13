@@ -10,7 +10,6 @@ namespace Geg {
 	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _windowPtr) {
 		// device and swapchain
 		device = new VulkanDevice(_windowPtr);
-		swapChain = new VulkanSwapChain(_windowPtr, device);
 
 		// command pool
 		QueueFamilyIndices queueFamilyIndices;
@@ -36,6 +35,8 @@ namespace Geg {
 		allocatorInfo.instance = device->getInstance();
 
 		vmaCreateAllocator(&allocatorInfo, &allocator);
+
+		swapChain = new VulkanSwapChain(_windowPtr, device, allocator);
 	}
 
 	VulkanGraphicsContext::~VulkanGraphicsContext() {

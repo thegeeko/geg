@@ -1,12 +1,14 @@
 #pragma once
 
-#include <memory.h>
-
 #include <cstdint>
+#include <memory>
+#include <vector>
 
 #define GEG_ENABLE_ASSERT
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
 
 #define GEG_USE_VULKAN
 
