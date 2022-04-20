@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+
 #include "backends/vulkan/renderer-api.hpp"
 #include "renderer/cams/perspective.hpp"
 #include "renderer/renderer-api.hpp"
@@ -6,25 +7,36 @@
 namespace Geg {
 	RendererAPI* Renderer::currentAPI = nullptr;
 
-	void Renderer::initAPI(){
+	void Renderer::initAPI() {
 		currentAPI = new VulkanRendererAPI;
 	}
 
-	void Renderer::deInitAPI(){
+	void Renderer::deInitAPI() {
 		delete currentAPI;
 	}
 
-	void Renderer::beginScene(Camera cam, GlobalLightComponent& globalLight){
-		GpuSceneData currentScene;
-		currentScene.proj = cam.proj;
-		currentScene.view = cam.view;
-		currentScene.ProjView = cam.proj * cam.view;
-		currentScene.lightDir = globalLight.dir;
+	void Renderer::beginScene(BeginSceneInfo sceneInfo) {
+		GpuSceneData cs;
 
-		currentAPI->startFrame(currentScene);
+		cs.proj = sceneInfo.cam->proj;
+		cs.view = sceneInfo.cam->view;
+		cs.ProjView = cs.proj * cs.view;
+
+		cs.globalLightDir = sceneInfo.globalLight->dir;
+		cs.globalLightColor = sceneInfo.globalLight->color;
+		cs.ambient = sceneInfo.globalLight->ambient;
+
+		int i = 0;
+		for (auto& pl : sceneInfo.pointLights) {
+			cs.pointLights[i].light = pl.light->color;
+			cs.pointLights[i].pos = {pl.pos->translation, 1.f};
+			i++;
+		}
+
+		currentAPI->startFrame(cs);
 	}
 
-	void Renderer::endScene(){
+	void Renderer::endScene() {
 		currentAPI->endFrame();
 	}
 

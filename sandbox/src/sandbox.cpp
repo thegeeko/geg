@@ -1,21 +1,42 @@
 #include "sandbox.hpp"
+
 #include "imgui.h"
 
-
 Level::Level() {
+	light = scene.createEntity("light 1");
+	light2 = scene.createEntity("light 2");
+
+	floor = scene.createEntity("floor");
 	vase = scene.createEntity("teapot");
-	light = scene.createEntity("global light");
 
 	meshPath = "assets/models/teapot.gltf";
-	Geg::MeshAsset mesh = Geg::MeshLoader::loadModel(meshPath);
-	vase.addComponent<Geg::MeshComponent>(mesh);
-	vase.getComponent<Geg::TransformComponent>().translation = {0, 0, -3};
-
 	shaderPath = "assets/shaders/dir-light.glsl";
-	Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
-	vase.addComponent<Geg::MeshRendererComponent>(shader);
 
+	vase.addComponent<Geg::MeshComponent>(meshPath);
+	vase.addComponent<Geg::MeshRendererComponent>(shaderPath);
+
+	auto& vaseTransform = vase.getComponent<Geg::TransformComponent>();
+	vaseTransform.translation = {0, 0, -25};
+	vaseTransform.rotation = {0, 0, 180};
+
+	meshPath = "assets/models/cube.obj";
+
+	floor.addComponent<Geg::MeshComponent>(meshPath);
+	floor.addComponent<Geg::MeshRendererComponent>(shaderPath);
+	auto& floorTransfrom = floor.getComponent<Geg::TransformComponent>();
+	floorTransfrom.translation = {0, 6, -30};
+	floorTransfrom.scale = {30, 1, 30};
+
+	light.addComponent<Geg::MeshComponent>(meshPath);
+	light.addComponent<Geg::MeshRendererComponent>(shaderPath);
 	light.addComponent<Geg::GlobalLightComponent>(glm::vec4(1.f, -3.f, -1.f, 0.f));
+	light.addComponent<Geg::PointLightComponent>(glm::vec4(1.f, 0.f, 0.f, 0.f));
+	light.getComponent<Geg::TransformComponent>().scale = {0.2, 0.2, 0.2};
+
+	light2.addComponent<Geg::MeshComponent>(meshPath);
+	light2.addComponent<Geg::MeshRendererComponent>(shaderPath);
+	light2.addComponent<Geg::PointLightComponent>(glm::vec4(1.f, 0.f, 0.f, 0.f));
+	light2.getComponent<Geg::TransformComponent>().scale = {0.2, 0.2, 0.2};
 }
 
 void Level::drawComponents(Geg::Entity entity) {
@@ -24,17 +45,20 @@ void Level::drawComponents(Geg::Entity entity) {
 
 	// draw transform
 	if (entity.hasComponent<Geg::TransformComponent>()) {
+		ImGui::Text("Transform Componenet :");
+
 		auto& trans = entity.getComponent<Geg::TransformComponent>();
 		ImGui::DragFloat3("Translation", &trans.translation[0]);
 		ImGui::DragFloat3("Scale", &trans.scale[0]);
 		ImGui::DragFloat3("Rotation", &trans.rotation[0]);
-
 	}
 
 	ImGui::Separator();
+	ImGui::Text("Mesh Componenet :");
 
 	// draw mesh
 	ImGui::InputText("mesh path", meshPath.data(), 256);
+
 	if (entity.hasComponent<Geg::MeshComponent>()) {
 		if (ImGui::Button("load new mesh")) {
 			const auto mesh = Geg::MeshLoader::loadModel(meshPath);
@@ -49,10 +73,10 @@ void Level::drawComponents(Geg::Entity entity) {
 	// draw renderer
 
 	ImGui::Separator();
+	ImGui::Text("Mesh Renderer Componenet :");
 
 	ImGui::InputText("shader path", shaderPath.data(), 256);
 	if (entity.hasComponent<Geg::MeshRendererComponent>()) {
-
 		if (ImGui::Button("reload")) {
 			const Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
 			entity.getComponent<Geg::MeshRendererComponent>().shader = shader;
@@ -68,11 +92,27 @@ void Level::drawComponents(Geg::Entity entity) {
 	}
 
 	ImGui::Separator();
+	ImGui::Text("Global Light Componenet :");
 
 	if (entity.hasComponent<Geg::GlobalLightComponent>()) {
 		auto& light = entity.getComponent<Geg::GlobalLightComponent>();
 		ImGui::DragFloat3("light direction", &light.dir.x);
-		ImGui::ColorEdit3("light direction", &light.color.r);
+
+		ImGui::ColorEdit3("light color", &light.color.r);
+		ImGui::SliderFloat("light intensity", &light.color.w, 0, 1);
+
+		ImGui::ColorEdit3("ambient color", &light.ambient.r);
+		ImGui::SliderFloat("ambient intensity", &light.ambient.w, 0, 1);
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Point Light Componenet :");
+
+	if (entity.hasComponent<Geg::PointLightComponent>()) {
+		auto& light = entity.getComponent<Geg::PointLightComponent>();
+
+		ImGui::ColorEdit3("point light color", &light.color.r);
+		ImGui::SliderFloat("point light intensity", &light.color.w, 0, 10);
 	}
 
 	ImGui::End();
@@ -83,11 +123,12 @@ void Level::onEvent(Geg::Event& event) {
 }
 
 void Level::onUpdate(float deltaTime) {
+	camController.update(deltaTime);
 	scene.onUpdate(deltaTime, camController.getCam());
 }
 
 void Level::onUiUpdate(float deltaTime) {
-	camController.handleUpdates();
+	camController.drawUi();
 
 	const auto view = scene.getReg().view<Geg::NameComponent>();
 	for (const auto e : view) {
@@ -98,10 +139,7 @@ void Level::onUiUpdate(float deltaTime) {
 
 		ImGuiTreeNodeFlags flags =
 				ImGuiTreeNodeFlags_OpenOnArrow |
-				ImGuiTreeNodeFlags_NoTreePushOnOpen | (
-					isActive ?
-						ImGuiTreeNodeFlags_Selected :
-						0);
+				ImGuiTreeNodeFlags_NoTreePushOnOpen | (isActive ? ImGuiTreeNodeFlags_Selected : 0);
 
 		ImGui::TreeNodeEx((void*)(uint64_t)id, flags, name.c_str());
 		if (ImGui::IsItemClicked()) {
@@ -112,7 +150,6 @@ void Level::onUiUpdate(float deltaTime) {
 			drawComponents(ent);
 		}
 	}
-
 }
 
 // main app

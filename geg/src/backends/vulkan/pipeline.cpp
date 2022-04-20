@@ -109,7 +109,7 @@ namespace Geg {
 		auto setsInfo = shader->getReflectionInfo();
 
 		VkPushConstantRange pushConstantRange{};
-		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		pushConstantRange.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
 		pushConstantRange.size = ShaderDataTypeSize(ShaderDataType::Mat4) * 2;
 		pushConstantRange.offset = 0;
 

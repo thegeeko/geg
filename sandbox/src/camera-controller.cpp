@@ -4,28 +4,65 @@
 
 #include "imgui.h"
 
-CamController::CamController() :
-	cam(fov, aspectRatio, 0.1f, 200.f) {
+CamController::CamController():
+		cam(fov, aspectRatio, 0.1f, 200.f) {
 }
 
-void CamController::handleUpdates() {
+void CamController::update(float dt) {
+	if (Geg::Input::isKeyPressed(GEG_KEY_W)) {
+		position.z += camSpeed * dt;
+		recalculateView();
+	}
+	if (Geg::Input::isKeyPressed(GEG_KEY_S)) {
+		position.z -= camSpeed * dt;
+		recalculateView();
+	}
+	if (Geg::Input::isKeyPressed(GEG_KEY_A)) {
+		position.x += camSpeed * dt;
+		recalculateView();
+	}
+	if (Geg::Input::isKeyPressed(GEG_KEY_D)) {
+		position.x -= camSpeed * dt;
+		recalculateView();
+	}
+	if (Geg::Input::isKeyPressed(GEG_KEY_LEFT_CONTROL)) {
+		position.y -= camSpeed * dt;
+		recalculateView();
+	}
+	if (Geg::Input::isKeyPressed(GEG_KEY_SPACE)) {
+		position.y += camSpeed * dt;
+		recalculateView();
+	}
+}
+
+void CamController::drawUi() {
 	ImGui::Begin("cam");
-	if (ImGui::CollapsingHeader("Rotation")) {
-		if (ImGui::SliderAngle("X", &rotation.x))
-			cam.view = glm::rotate(cam.view, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f));
-		if (ImGui::SliderAngle("Y", &rotation.y))
-			cam.view = glm::rotate(cam.view, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f));
-		if (ImGui::SliderAngle("Z", &rotation.z))
-			cam.view = glm::rotate(cam.view, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f));
+
+	ImGui::Text("Rotation :");
+	if (ImGui::SliderAngle("X", &rotation.x)) {
+		recalculateView();
+	}
+	if (ImGui::SliderAngle("Y", &rotation.y)) {
+		recalculateView();
+	}
+	if (ImGui::SliderAngle("Z", &rotation.z)) {
+		recalculateView();
 	}
 
-	if (ImGui::SliderFloat3("Cam Position", &position.x, -1, 1)) {
-		cam.view = glm::translate(original, position);
+	ImGui::Separator();
 
-		cam.view = glm::rotate(cam.view, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f));
-		cam.view = glm::rotate(cam.view, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f));
-		cam.view = glm::rotate(cam.view, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f));
+	ImGui::SliderFloat("cam speed", &camSpeed, 0, 10);
+
+	if (ImGui::DragFloat3("Cam Position", &position.x)) {
+		recalculateView();
 	}
 	ImGui::End();
+}
 
+void CamController::recalculateView() {
+	cam.view = glm::translate(glm::mat4(1.f), position);
+
+	cam.view = glm::rotate(cam.view, rotation.x, glm::vec3(1.f, 0.f, 0.f));
+	cam.view = glm::rotate(cam.view, rotation.y, glm::vec3(0.f, 1.f, 0.f));
+	cam.view = glm::rotate(cam.view, rotation.z, glm::vec3(0.f, 0.f, 1.f));
 }

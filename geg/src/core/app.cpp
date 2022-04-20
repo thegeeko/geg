@@ -1,4 +1,5 @@
 #include "app.hpp"
+
 #include "renderer/renderer.hpp"
 #include "time/time.hpp"
 
@@ -7,7 +8,6 @@ namespace Geg {
 
 	App::App() {
 		running = true;
-
 
 		// Setup window
 		WindowProps props{};
@@ -30,9 +30,14 @@ namespace Geg {
 	}
 
 	void App::onEvent(Event &e) {
-		/* GEG_INFO("Event : {}", e.toString()); */
-		Dispatcher dispatch(e);
-		dispatch.dispatch<WindowCloseEvent>(GEG_BIND_CB(App::closeCallback));
+		// GEG_INFO("Event : {}", e.toString());
+
+		Dispatcher::dispatch<WindowCloseEvent>(e, GEG_BIND_CB(App::closeCallback));
+		// Dispatcher::dispatch<WindowResizeEvent>(e, [&](const WindowResizeEvent& e) {
+			// window->getGraphicsContext()->windowResized(e.getW(), e.getH());
+			// return true;
+		// });
+
 		for (Layer *l : layerStack) {
 			l->onEvent(e);
 		}

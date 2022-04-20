@@ -27,10 +27,24 @@ namespace Geg {
 
 	void Scene::onUpdate(float deltaTime, Camera cam) {
 		// render stuff
+		BeginSceneInfo sc;
 
-		const auto lights = registry.view<GlobalLightComponent>();
-		auto& gl = lights.get<GlobalLightComponent>(lights.back());
-		Renderer::beginScene(cam, gl);
+		sc.cam = &cam;
+
+		const auto globalLight = registry.view<GlobalLightComponent>();
+		auto& gl = globalLight.get<GlobalLightComponent>(globalLight.back());
+		sc.globalLight = &gl;
+
+		const auto pLights = registry.group<PointLightComponent>(entt::get<TransformComponent>);
+		int i = 0;
+		for (const auto& entity : pLights) {
+			auto& pointLightComponent = pLights.get<PointLightComponent>(entity);
+			auto& transformComponent = pLights.get<TransformComponent>(entity);
+			sc.pointLights.emplace_back(&pointLightComponent, &transformComponent);
+			i++;
+		}
+
+		Renderer::beginScene(sc);
 
 		const auto group = registry.group<MeshRendererComponent>(entt::get<TransformComponent, MeshComponent>);
 		for (const auto& entity : group) {

@@ -9,7 +9,7 @@ namespace Geg {
 		int width, height;
 		std::string name;
 
-		WindowProps(int w = 1366, int h = 720, std::string n = "Geg"):
+		WindowProps(int w = 1920, int h = 1080, std::string n = "Geg"):
 				width(w), height(h), name(n){};
 	};
 

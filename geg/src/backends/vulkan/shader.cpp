@@ -66,7 +66,7 @@ namespace Geg {
 			auto builder = DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc);
 			for (int j = 0; j < reflectModule.descriptor_sets[i].binding_count; j++) {
 				VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-				VkShaderStageFlagBits stage = static_cast<VkShaderStageFlagBits>(reflectModule.shader_stage);
+				VkShaderStageFlagBits stage = VK_SHADER_STAGE_ALL_GRAPHICS;
 				builder.bindBuffer(j, type, stage);
 			}
 			VkDescriptorSetLayout layout{};

@@ -1,17 +1,45 @@
 #pragma once
 
+#include "ecs/components.hpp"
 #include "glm/fwd.hpp"
 #include "renderer-api.hpp"
-#include "ecs/components.hpp"
 #include "renderer/cams/perspective.hpp"
 
 namespace Geg {
+
+	constexpr uint32_t MAX_POINT_LIGHTS = 100;
+
+	struct PointLight {
+		PointLightComponent* light;
+		TransformComponent* pos;
+
+		PointLight() = default;
+		PointLight(PointLightComponent* l, TransformComponent* p):
+				light(l), pos(p){};
+	};
+
+	struct PointLightData {
+		glm::vec4 light = glm::vec4(0.f);
+		glm::vec4 pos = glm::vec4(0.f);
+	};
 
 	struct GpuSceneData {
 		glm::mat4 proj;
 		glm::mat4 view;
 		glm::mat4 ProjView;
-		glm::vec4 lightDir;
+
+		glm::vec4 globalLightDir;
+		glm::vec4 globalLightColor;
+		glm::vec4 ambient;
+
+		std::array<PointLightData, MAX_POINT_LIGHTS> pointLights;
+	};
+
+	struct BeginSceneInfo {
+		Camera* cam;
+		GlobalLightComponent* globalLight;
+
+		std::vector<PointLight> pointLights;
 	};
 
 	struct MeshRenderData {
@@ -24,12 +52,13 @@ namespace Geg {
 		static void initAPI();
 		static void deInitAPI();
 
-		static void beginScene(Camera cam, GlobalLightComponent& global);
+		static void beginScene(BeginSceneInfo sceneInfo);
 		static void endScene();
 		static void submit(const MeshComponent* mesh, MeshRenderData meshData);
 		static GraphicsAPI getAPI() { return GEG_CURRENT_API; }
+		static auto getApiHandel() { return currentAPI; };
 
 	private:
 		static RendererAPI* currentAPI;
 	};
-} // namespace Geg
+}		 // namespace Geg

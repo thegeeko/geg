@@ -95,12 +95,23 @@ namespace Geg {
 
 	struct GlobalLightComponent {
 		glm::vec4 dir;
-		glm::vec4 color;
+		glm::vec4 color = glm::vec4(1.f, 1.f, 1.f, 1.f);
+		glm::vec4 ambient = glm::vec4(1.f, 1.f, 1.f, 0.1f);
 
 		GlobalLightComponent() = default;
 		GlobalLightComponent(const GlobalLightComponent&) = default;
 		GlobalLightComponent(glm::vec4 _dir) {
 			dir = _dir;
+		};
+	};
+
+	struct PointLightComponent {
+		glm::vec4 color;		// w is intensity
+
+		PointLightComponent() = default;
+		PointLightComponent(const PointLightComponent&) = default;
+		PointLightComponent(glm::vec4 _color) {
+			color = _color;
 		};
 	};
 }		 // namespace Geg

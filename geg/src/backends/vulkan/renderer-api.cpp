@@ -64,7 +64,6 @@ namespace Geg {
 		for (int i = 0; i < frameBuffersCount; i++) {
 			VulkanFrame frame;
 			frame.index = i;
-			frame.globalUboOffset = 0;
 			frame.commandBuffer = commandBuffers[i];
 
 			VkFenceCreateInfo fenceInfo{};
@@ -174,7 +173,7 @@ namespace Geg {
 		vkCmdPushConstants(
 				commandBuffer,
 				pipeline.getLayout(),
-				VK_SHADER_STAGE_VERTEX_BIT,
+				VK_SHADER_STAGE_ALL_GRAPHICS,
 				0,
 				ShaderDataTypeSize(ShaderDataType::Mat4),
 				&meshData.modelMat->getTransform());
@@ -182,7 +181,7 @@ namespace Geg {
 		vkCmdPushConstants(
 				commandBuffer,
 				pipeline.getLayout(),
-				VK_SHADER_STAGE_VERTEX_BIT,
+				VK_SHADER_STAGE_ALL_GRAPHICS,
 				ShaderDataTypeSize(ShaderDataType::Mat4),
 				ShaderDataTypeSize(ShaderDataType::Mat4),
 				&meshData.modelMat->getNormMat());
@@ -204,6 +203,13 @@ namespace Geg {
 				0,
 				0,
 				0);
+	}
+
+	void VulkanRendererAPI::clearPipelineCache() {
+		for (auto& [hash, pipeline] : framePipelines) {
+			delete pipeline;
+		}
+		framePipelines.clear();
 	}
 
 	void VulkanRendererAPI::endFrame() {
@@ -268,6 +274,7 @@ namespace Geg {
 				1,
 				&submitInfo,
 				frames[imageIndex].fence);
+
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't submit draw command buffer");
 		vkQueueWaitIdle(context->device->getGraphicsQueue());
 

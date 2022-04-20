@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glm/fwd.hpp"
+#include "glm/matrix.hpp"
 
 namespace Geg {
 	class Camera {

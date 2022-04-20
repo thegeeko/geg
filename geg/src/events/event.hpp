@@ -37,12 +37,10 @@ namespace Geg {
 	};
 
 	class Dispatcher {
-	private:
-		Event& e;
 	public:
-		Dispatcher(Event& _e) : e(_e) {};
+		Dispatcher(Event& _e) {};
 		template<typename T, typename F>
-		void dispatch(const F& cb) {
+		static void dispatch(Event& e, const F& cb) {
 			if (e.getEventType() == T::staticEventType){ e.isHandeled = cb(static_cast<T&>(e)); }
 		}
 	};

@@ -40,7 +40,7 @@ namespace Geg {
 		desBuffInfo.range = padBufferSize(originalSize);
 
 		DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc)
-				.bindBuffer(0, &desBuffInfo, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT)
+				.bindBuffer(0, &desBuffInfo, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_ALL_GRAPHICS)
 				.build(descriptorSet, descriptorSetLayout);
 	}
 

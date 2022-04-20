@@ -12,7 +12,6 @@ namespace Geg {
 
 	struct VulkanFrame {
 		int index;
-		int globalUboOffset;
 
 		VkFence fence;
 		VkCommandBuffer commandBuffer;
@@ -30,6 +29,7 @@ namespace Geg {
 
 		void clear() override{};
 		void clear(glm::vec4 color) override{};
+		void clearPipelineCache();
 
 	private:
 		VulkanGraphicsContext* context;
@@ -45,7 +45,7 @@ namespace Geg {
 		// Global ubo
 		Scope<VulkanUniform> globalUbo;
 		GpuSceneData uboData;
-		// look into making this a cache system or smth
+
 		std::unordered_map<size_t, VulkanPipeline*> framePipelines;
 
 		void initSyncObjects();
