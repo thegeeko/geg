@@ -18,18 +18,22 @@ namespace Geg {
 		void write(const void* data, size_t size, int instance = 1);
 		void bindAtOffset(const VulkanPipeline& pipline, VkCommandBuffer cmd, uint32_t instances);
 
+		VkDescriptorSet descriptorSet;
+
 	private:
 		VulkanGraphicsContext* context;
 
 		int instancesCount = 0;
+		int setIndex = -1;
 		size_t fullSize;
 		size_t originalSize;
 		VkBuffer bufferHandle;
 		VmaAllocation allocationHandle;
 
-		VkDescriptorSet descriptorSet;
 		VkDescriptorSetLayout descriptorSetLayout;
 
 		size_t padBufferSize(size_t bufferSize);
+
+		static int uboCount;
 	};
 }		 // namespace Geg

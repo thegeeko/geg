@@ -106,7 +106,7 @@ namespace Geg {
 		dynamicState.dynamicStateCount = 2;
 		dynamicState.pDynamicStates = dynamicStates;
 
-		auto setsInfo = shader->getReflectionInfo();
+		auto& setsInfo = shader->getReflectionInfo();
 
 		VkPushConstantRange pushConstantRange{};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;

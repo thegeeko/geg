@@ -42,8 +42,9 @@ namespace Geg {
 		uint32_t currentInFlightFrame = 0;
 		uint32_t nextFrame = 0;
 
-		// Global ubo
-		Scope<VulkanUniform> globalUbo;
+		// ubos
+		Scope<VulkanUniform> globalUbo = nullptr;
+		Scope<VulkanUniform> objectUbo = nullptr;
 		GpuSceneData uboData;
 
 		std::unordered_map<size_t, VulkanPipeline*> framePipelines;
@@ -52,7 +53,7 @@ namespace Geg {
 		void deInitSyncObjects();
 
 		void initGlobalUbo();
-		void deInitGlobalUbo(){};
+//		void deInitGlobalUbo(){};
 
 		// helpers
 		void beginRecording();

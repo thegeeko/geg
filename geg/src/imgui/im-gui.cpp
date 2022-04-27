@@ -1,6 +1,6 @@
 #include "im-gui.hpp"
 
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 #include "imgui.h"
 #include "vendor/imgui/backends/imgui_impl_glfw.h"
@@ -15,20 +15,19 @@ namespace Geg {
 
 	ImGuiLayer::~ImGuiLayer() {
 		detach();
-	};
+	}
 
 	void ImGuiLayer::attach() {
-
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		(void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;		 // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;		// Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-		// Setup Dear ImGui style
+		//		 Setup Dear ImGui style
 		ImGui::StyleColorsLight();
 		/* ImGui::StyleColorsClassic(); */
 
@@ -143,7 +142,6 @@ namespace Geg {
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't craete render pass");
 	}
 
-
 	void ImGuiLayer::initFrame() {
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -163,4 +161,4 @@ namespace Geg {
 			ImGui::RenderPlatformWindowsDefault();
 		}
 	}
-} // namespace Geg
+}		 // namespace Geg

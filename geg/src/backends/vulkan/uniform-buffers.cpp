@@ -7,12 +7,14 @@
 #include "core/logger.hpp"
 
 namespace Geg {
+	int VulkanUniform::uboCount = 0;
+
 	VulkanUniform::VulkanUniform(int _instancesCount, size_t size) {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
 		instancesCount = _instancesCount;
 		originalSize = size;
-		fullSize = _instancesCount * padBufferSize(originalSize);
+		fullSize = instancesCount * padBufferSize(originalSize);
 
 		VkBufferCreateInfo buffInfo{};
 		buffInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -42,6 +44,9 @@ namespace Geg {
 		DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc)
 				.bindBuffer(0, &desBuffInfo, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_ALL_GRAPHICS)
 				.build(descriptorSet, descriptorSetLayout);
+
+		setIndex = uboCount;
+		uboCount++;
 	}
 
 	VulkanUniform::~VulkanUniform() {
@@ -60,6 +65,11 @@ namespace Geg {
 		char* mappingAddr;
 		vmaMapMemory(context->allocator, allocationHandle, (void**)&mappingAddr);
 
+		// if (setIndex == 1) {
+		// 	// fill with 1
+		//  return;
+		// }
+
 		mappingAddr += (instance - 1) * padBufferSize(originalSize);
 
 		memcpy(mappingAddr, data, size);
@@ -72,7 +82,7 @@ namespace Geg {
 				cmd,
 				VK_PIPELINE_BIND_POINT_GRAPHICS,
 				pipline.getLayout(),
-				0,
+				setIndex,
 				1,
 				&descriptorSet,
 				1,

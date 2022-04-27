@@ -23,7 +23,7 @@ namespace Geg {
 	class MeshAsset {
 	public:
 		MeshAsset() = default;
-		MeshAsset(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
+		MeshAsset(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
 
 		// should change this from shared pointer ..
 		Ref<VertexBuffer> vbo;
@@ -33,7 +33,7 @@ namespace Geg {
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
-		// setup the vbo and ibo
+		// set up the vbo and ibo
 		void setup();
 	};
 } // namespace Geg

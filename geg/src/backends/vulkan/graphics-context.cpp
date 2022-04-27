@@ -1,15 +1,16 @@
 #include "graphics-context.hpp"
+#include "renderer/renderer.hpp"
+#include "backends/vulkan/renderer-api.hpp"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
 namespace Geg {
 
-	// const int VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT = 3;
-
-	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _windowPtr) {
+	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _window):
+			window(_window) {
 		// device and swapchain
-		device = new VulkanDevice(_windowPtr);
+		device = new VulkanDevice(window);
 
 		// command pool
 		QueueFamilyIndices queueFamilyIndices;
@@ -36,19 +37,30 @@ namespace Geg {
 
 		vmaCreateAllocator(&allocatorInfo, &allocator);
 
-		swapChain = new VulkanSwapChain(_windowPtr, device, allocator);
+		swapChain = new VulkanSwapChain(window, device, allocator);
 	}
 
 	VulkanGraphicsContext::~VulkanGraphicsContext() {
 		delete descriptorLayoutCache;
 		delete descriptorsAlloc;
+		delete swapChain;
 		vmaDestroyAllocator(allocator);
 		vkDestroyCommandPool(device->getDevice(), commandPool, nullptr);
-		delete swapChain;
 		delete device;
 	}
 
+	void VulkanGraphicsContext::windowResized(int width, int height) {
+		// @FIXME I need to do this .. it crashes rn
+
+		GEG_CORE_TRACE("Window resize {} / {}", width, height);
+		// auto apiHandle = dynamic_cast<VulkanRendererAPI*>(Renderer::getApiHandel());
+		// vkDeviceWaitIdle(device->getDevice());
+		// swapChain->handleResize();
+		// apiHandle->clearPipelineCache();
+	}
+
 	// Static helper functions
+
 	/**
 	 * @brief
 	 * 	creates staging buffer and map it and copy the data and the make a copy command to move

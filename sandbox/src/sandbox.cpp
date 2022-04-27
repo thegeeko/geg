@@ -77,14 +77,13 @@ void Level::drawComponents(Geg::Entity entity) {
 
 	ImGui::InputText("shader path", shaderPath.data(), 256);
 	if (entity.hasComponent<Geg::MeshRendererComponent>()) {
+	auto& meshRenderer = entity.getComponent<Geg::MeshRendererComponent>();
 		if (ImGui::Button("reload")) {
 			const Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
-			entity.getComponent<Geg::MeshRendererComponent>().shader = shader;
+			meshRenderer.shader = shader;
 		}
-		if (ImGui::Button("load new shader")) {
-			const Geg::ShaderAsset shader = Geg::ShaderLoader::load(shaderPath);
-			entity.getComponent<Geg::MeshRendererComponent>().shader = shader;
-		}
+		ImGui::ColorEdit3("color", &meshRenderer.color[0]);
+		ImGui::DragFloat("sharpness", &meshRenderer.color[3]);
 	} else {
 		if (ImGui::Button("Add mesh renderer component")) {
 			entity.addComponent<Geg::MeshRendererComponent>(shaderPath);

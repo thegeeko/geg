@@ -26,6 +26,7 @@ namespace Geg {
 	struct GpuSceneData {
 		glm::mat4 proj;
 		glm::mat4 view;
+		glm::mat4 invView;
 		glm::mat4 ProjView;
 
 		glm::vec4 globalLightDir;
@@ -52,7 +53,7 @@ namespace Geg {
 		static void initAPI();
 		static void deInitAPI();
 
-		static void beginScene(BeginSceneInfo sceneInfo);
+		static void beginScene(const BeginSceneInfo& sceneInfo);
 		static void endScene();
 		static void submit(const MeshComponent* mesh, MeshRenderData meshData);
 		static GraphicsAPI getAPI() { return GEG_CURRENT_API; }

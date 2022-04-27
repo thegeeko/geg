@@ -7,55 +7,7 @@ namespace Geg {
 
 	VulkanSwapChain::VulkanSwapChain(GLFWwindow* _window, VulkanDevice* _device, VmaAllocator alloc):
 			device(_device), window(_window), vmaAllocator(alloc) {
-		SwapChainSupportDetails supportDetails;
-		querySwapChainSupport(supportDetails);
-		GEG_CORE_ASSERT(!supportDetails.formats.empty() && !supportDetails.presentModes.empty(), "Swap chain formats and present modes arn't supported");
-
-		VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(supportDetails.formats);
-		VkPresentModeKHR presentMode = chooseSwapPresentMode(supportDetails.presentModes);
-		VkExtent2D extent = chooseSwapExtent(supportDetails.capabilities);
-		unsigned int imageCount = supportDetails.capabilities.minImageCount + 1;
-		if (supportDetails.capabilities.maxImageCount > 0 && imageCount > supportDetails.capabilities.maxImageCount) {
-			imageCount = supportDetails.capabilities.maxImageCount;
-		}
-
-		QueueFamilyIndices indices;
-		device->findQueueFamilies(device->getPhysicalDevice(), indices);
-		uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
-
-		VkSwapchainCreateInfoKHR createInfo{};
-		createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		createInfo.surface = device->getSurface();
-		createInfo.minImageCount = imageCount;
-		createInfo.imageFormat = surfaceFormat.format;
-		createInfo.imageColorSpace = surfaceFormat.colorSpace;
-		createInfo.imageExtent = extent;
-		createInfo.imageArrayLayers = 1;
-		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-		createInfo.preTransform = supportDetails.capabilities.currentTransform;
-		createInfo.presentMode = presentMode;
-		createInfo.clipped = VK_TRUE;
-		createInfo.oldSwapchain = VK_NULL_HANDLE;
-		if (indices.graphicsFamily != indices.presentFamily) {
-			createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-			createInfo.queueFamilyIndexCount = 2;
-			createInfo.pQueueFamilyIndices = queueFamilyIndices;
-		} else {
-			createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			createInfo.queueFamilyIndexCount = 0;
-			createInfo.pQueueFamilyIndices = nullptr;
-		}
-
-		VkResult result = vkCreateSwapchainKHR(device->getDevice(), &createInfo, nullptr, &swapChain);
-		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't craete swap chain error code : ", result);
-
-		vkGetSwapchainImagesKHR(device->getDevice(), swapChain, &imageCount, nullptr);
-		swapChainImages.resize(imageCount);
-		vkGetSwapchainImagesKHR(device->getDevice(), swapChain, &imageCount, swapChainImages.data());
-		swapChainImageFormat = surfaceFormat.format;
-		swapChainExtent = extent;
-
+		createSwapChain();
 		createDepthResources();
 		createImageViews();
 		createRenderPass();
@@ -65,15 +17,7 @@ namespace Geg {
 	}
 
 	VulkanSwapChain::~VulkanSwapChain() {
-		for (auto framebuffer : swapChainFramebuffers) {
-			vkDestroyFramebuffer(device->getDevice(), framebuffer, nullptr);
-		}
-		for (auto imageView : swapChainImageViews) {
-			vkDestroyImageView(device->getDevice(), imageView, nullptr);
-		}
-		vkDestroyRenderPass(device->getDevice(), renderPass, nullptr);
-		vkDestroySwapchainKHR(device->getDevice(), swapChain, nullptr);
-		GEG_CORE_INFO("Swap chain destroyed");
+		cleanUp();
 	}
 
 	void VulkanSwapChain::querySwapChainSupport(SwapChainSupportDetails& details) {
@@ -131,6 +75,58 @@ namespace Geg {
 
 			return actualExtent;
 		}
+	}
+
+	void VulkanSwapChain::createSwapChain() {
+		SwapChainSupportDetails supportDetails;
+		querySwapChainSupport(supportDetails);
+		GEG_CORE_ASSERT(!supportDetails.formats.empty() && !supportDetails.presentModes.empty(), "Swap chain formats and present modes arn't supported");
+
+		VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(supportDetails.formats);
+		VkPresentModeKHR presentMode = chooseSwapPresentMode(supportDetails.presentModes);
+		VkExtent2D extent = chooseSwapExtent(supportDetails.capabilities);
+
+		unsigned int imageCount = supportDetails.capabilities.minImageCount + 1;
+		if (supportDetails.capabilities.maxImageCount > 0 && imageCount > supportDetails.capabilities.maxImageCount) {
+			imageCount = supportDetails.capabilities.maxImageCount;
+		}
+
+		QueueFamilyIndices indices;
+		device->findQueueFamilies(device->getPhysicalDevice(), indices);
+		uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+
+		VkSwapchainCreateInfoKHR createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+		createInfo.surface = device->getSurface();
+		createInfo.minImageCount = imageCount;
+		createInfo.imageFormat = surfaceFormat.format;
+		createInfo.imageColorSpace = surfaceFormat.colorSpace;
+		createInfo.imageExtent = extent;
+		createInfo.imageArrayLayers = 1;
+		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		createInfo.preTransform = supportDetails.capabilities.currentTransform;
+		createInfo.presentMode = presentMode;
+		createInfo.clipped = VK_TRUE;
+		createInfo.oldSwapchain = VK_NULL_HANDLE;
+		if (indices.graphicsFamily != indices.presentFamily) {
+			createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+			createInfo.queueFamilyIndexCount = 2;
+			createInfo.pQueueFamilyIndices = queueFamilyIndices;
+		} else {
+			createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			createInfo.queueFamilyIndexCount = 0;
+			createInfo.pQueueFamilyIndices = nullptr;
+		}
+
+		VkResult result = vkCreateSwapchainKHR(device->getDevice(), &createInfo, nullptr, &swapChain);
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't craete swap chain error code : ", result);
+
+		vkGetSwapchainImagesKHR(device->getDevice(), swapChain, &imageCount, nullptr);
+		swapChainImages.resize(imageCount);
+		vkGetSwapchainImagesKHR(device->getDevice(), swapChain, &imageCount, swapChainImages.data());
+		swapChainImageFormat = surfaceFormat.format;
+		swapChainExtent = extent;
 	}
 
 	void VulkanSwapChain::createImageViews() {
@@ -283,6 +279,31 @@ namespace Geg {
 		result = vkCreateImageView(device->getDevice(), &viewInfo, nullptr, &depthImageView);
 		if (result != VK_SUCCESS)
 			GEG_CORE_ERROR("Can't create depth image views");
+	}
+
+	void VulkanSwapChain::cleanUp() {
+		for (auto framebuffer : swapChainFramebuffers) {
+			vkDestroyFramebuffer(device->getDevice(), framebuffer, nullptr);
+		}
+		for (auto imageView : swapChainImageViews) {
+			vkDestroyImageView(device->getDevice(), imageView, nullptr);
+		}
+		vkDestroyImageView(device->getDevice(), depthImageView, nullptr);
+		vmaDestroyImage(vmaAllocator, depthImage, depthAllocation);
+		vkDestroyRenderPass(device->getDevice(), renderPass, nullptr);
+		vkDestroySwapchainKHR(device->getDevice(), swapChain, nullptr);
+		GEG_CORE_INFO("Swap chain destroyed");
+	}
+
+	void VulkanSwapChain::handleResize() {
+		cleanUp();
+		createSwapChain();
+		createDepthResources();
+		createImageViews();
+		createRenderPass();
+		createFramebuffers();
+
+		GEG_CORE_INFO("swap chain created");
 	}
 
 }		 // namespace Geg

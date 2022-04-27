@@ -62,18 +62,42 @@ namespace Geg {
 	}
 
 	void VulkanShader::reflectOn(SpvReflectShaderModule reflectModule) {
-		for (int i = 0; i < reflectModule.descriptor_set_count; i++) {
-			auto builder = DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc);
-			for (int j = 0; j < reflectModule.descriptor_sets[i].binding_count; j++) {
-				VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+		uint32_t count = 0;
+
+		// get sets count
+		auto result = spvReflectEnumerateDescriptorSets(&reflectModule, &count, NULL);
+		GEG_CORE_ASSERT(result == SPV_REFLECT_RESULT_SUCCESS, "Error when reflecting on shaders");
+
+		// get sets
+		std::vector<SpvReflectDescriptorSet*> sets(count);
+		result = spvReflectEnumerateDescriptorSets(&reflectModule, &count, sets.data());
+		GEG_CORE_ASSERT(result == SPV_REFLECT_RESULT_SUCCESS, "Error when reflecting on shaders");
+
+		reflectionInfo.layouts.resize(sets.size());
+		for (size_t i_set = 0; i_set < sets.size(); ++i_set) {
+			// start builder for the current set
+			auto builder =
+					DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc);
+			const SpvReflectDescriptorSet& refl_set = *(sets[i_set]);
+
+			for (uint32_t i_binding = 0; i_binding < refl_set.binding_count; ++i_binding) {
+				const SpvReflectDescriptorBinding& refl_binding = *(refl_set.bindings[i_binding]);
+
+				uint32_t binding = refl_binding.binding;
+				auto type = static_cast<VkDescriptorType>(refl_binding.descriptor_type);
+				if (type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+					type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 				VkShaderStageFlagBits stage = VK_SHADER_STAGE_ALL_GRAPHICS;
-				builder.bindBuffer(j, type, stage);
+
+				// add the current binding
+				builder.bindBuffer(binding, type, stage);
 			}
-			VkDescriptorSetLayout layout{};
+
+			VkDescriptorSetLayout layout;
 			builder.build(layout);
-			reflectionInfo.layouts.push_back(layout);
+			reflectionInfo.layouts[i_set] = layout;
 		}
-	};
+	}
 
 	void VulkanShader::bind() const {};
 	void VulkanShader::unBind() const {};

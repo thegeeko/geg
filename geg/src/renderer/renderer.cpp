@@ -15,11 +15,12 @@ namespace Geg {
 		delete currentAPI;
 	}
 
-	void Renderer::beginScene(BeginSceneInfo sceneInfo) {
+	void Renderer::beginScene(const BeginSceneInfo& sceneInfo) {
 		GpuSceneData cs;
 
 		cs.proj = sceneInfo.cam->proj;
 		cs.view = sceneInfo.cam->view;
+		cs.invView = glm::inverse(sceneInfo.cam->view);
 		cs.ProjView = cs.proj * cs.view;
 
 		cs.globalLightDir = sceneInfo.globalLight->dir;

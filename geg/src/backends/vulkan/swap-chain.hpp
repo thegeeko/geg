@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
+
 #include "vk_mem_alloc.h"
 #include "vulkan-device.hpp"
 
@@ -23,6 +24,8 @@ namespace Geg {
 		[[nodiscard]] const VkFormat& getSwapChainImageFormat() const { return swapChainImageFormat; }
 		[[nodiscard]] const std::vector<VkFramebuffer>& getSwapChainFrameBuffers() const { return swapChainFramebuffers; }
 		[[nodiscard]] const std::vector<VkImage>& getSwapChainImages() const { return swapChainImages; }
+
+		void handleResize();
 
 	private:
 		VulkanDevice* device;
@@ -48,9 +51,12 @@ namespace Geg {
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		void createSwapChain();
 		void createImageViews();
 		void createRenderPass();
 		void createFramebuffers();
 		void createDepthResources();
+		void cleanUp();
 	};
 }		 // namespace Geg

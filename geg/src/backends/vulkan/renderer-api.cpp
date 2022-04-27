@@ -153,6 +153,11 @@ namespace Geg {
 			framePipelines[hash] = new VulkanPipeline(mesh->mesh.vbo, meshData.material->shader.shader);
 		}
 
+		// object UBO
+		if (!objectUbo)
+			objectUbo = std::make_unique<VulkanUniform>(VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT, sizeof(meshData.material->color));
+		objectUbo->write(&meshData.material->color[0], sizeof(glm::vec4), currentInFlightFrame);
+
 		// setup the vars
 		const VulkanPipeline& pipeline = *framePipelines[hash];
 		const auto commandBuffer = frames[nextFrame].commandBuffer;
@@ -166,6 +171,11 @@ namespace Geg {
 				pipeline.getPipelineHandle());
 
 		globalUbo->bindAtOffset(
+				pipeline,
+				commandBuffer,
+				currentInFlightFrame);
+
+		objectUbo->bindAtOffset(
 				pipeline,
 				commandBuffer,
 				currentInFlightFrame);

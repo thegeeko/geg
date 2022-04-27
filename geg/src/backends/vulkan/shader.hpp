@@ -35,6 +35,6 @@ namespace Geg {
 		void unBind() const override;
 
 		const std::vector<VkPipelineShaderStageCreateInfo> getStages() const { return shaderStages; };
-		const ReflectionInfo getReflectionInfo() const { return reflectionInfo; };
+		const ReflectionInfo& getReflectionInfo() const { return reflectionInfo; };
 	};
 }		 // namespace Geg

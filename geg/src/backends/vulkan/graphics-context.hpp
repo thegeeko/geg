@@ -10,10 +10,12 @@ namespace Geg {
 
 	class VulkanGraphicsContext: public GraphicsContext {
 	public:
-		VulkanGraphicsContext(GLFWwindow* window);
+		VulkanGraphicsContext(GLFWwindow* _window);
 		~VulkanGraphicsContext() override;
 
-		static constexpr int MAX_FRAMES_IN_FLIGHT = 3;
+		static constexpr int MAX_FRAMES_IN_FLIGHT = 1;
+
+		GLFWwindow* window;
 
 		VulkanDevice* device;
 		VulkanSwapChain* swapChain;
@@ -26,6 +28,7 @@ namespace Geg {
 		void deInit();
 
 		void swapBuffers() override{};
+		void windowResized(int width, int height) override;
 
 		// memory related
 		static void uploadDataToGpuMem(void* data, size_t size, VkBuffer bufferHandle);

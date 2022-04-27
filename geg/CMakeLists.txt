@@ -12,7 +12,6 @@ if(NOT MSVC)
 else()
 	set(CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${MSVC_COVERAGE_COMPILE_FLAGS}")
 endif()
-
 # ================================
 
 # ========= deps ================
@@ -20,7 +19,7 @@ endif()
 find_package(Vulkan REQUIRED)
 
 # 3d models loading
-# find_package(Assimp REQUIRED)
+#find_package(Assimp REQUIRED)
 
 # shader compiliation
 find_package(Shaderc REQUIRED)
@@ -31,7 +30,7 @@ add_subdirectory(vendor/spirv/reflect)
 # memroy allocator for vulkan
 add_subdirectory(vendor/vma)
 
-# windowing
+# glfw
 if(WIN32)
 	add_compile_definitions(_GLFW_WIN32=1)
 endif()
@@ -43,17 +42,12 @@ set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
 set(GLFW_USE_WAYLAND ON CACHE BOOL "" FORCE)
 add_subdirectory(vendor/glfw)
 
-# logging
+
 add_subdirectory(vendor/spdlog)
-
-# math
 add_subdirectory(vendor/glm)
-
-# ui
 add_subdirectory(vendor/imgui)
-
-# ECS
 add_subdirectory(vendor/entt)
+add_subdirectory(vendor/stb-image)
 
 # ===================================
 
