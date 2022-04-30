@@ -53,10 +53,12 @@ namespace Geg {
 			auto& meshr = group.get<MeshRendererComponent>(entity);
 
 			MeshRenderData renderData{};
-			renderData.material = &meshr;
-			renderData.modelMat = &trans;
+			renderData.id = (uint32_t)entity;
+			renderData.meshC = &mesh;
+			renderData.rendererC = &meshr;
+			renderData.transformC = &trans;
 
-			Renderer::submit(&mesh, renderData);
+			Renderer::submit(renderData);
 		}
 
 		Renderer::endScene();

@@ -9,12 +9,11 @@
 namespace Geg {
 	int VulkanUniform::uboCount = 0;
 
-	VulkanUniform::VulkanUniform(int _instancesCount, size_t size) {
+	VulkanUniform::VulkanUniform(int _setIndex, size_t size, int _instancesCount):
+			setIndex(_setIndex), instancesCount(_instancesCount), instanceSize(size) {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
-		instancesCount = _instancesCount;
-		originalSize = size;
-		fullSize = instancesCount * padBufferSize(originalSize);
+		fullSize = instancesCount * padBufferSize(instanceSize);
 
 		VkBufferCreateInfo buffInfo{};
 		buffInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -39,13 +38,12 @@ namespace Geg {
 		VkDescriptorBufferInfo desBuffInfo{};
 		desBuffInfo.buffer = bufferHandle;
 		desBuffInfo.offset = 0;
-		desBuffInfo.range = padBufferSize(originalSize);
+		desBuffInfo.range = padBufferSize(instanceSize);
 
 		DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc)
 				.bindBuffer(0, &desBuffInfo, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_ALL_GRAPHICS)
 				.build(descriptorSet, descriptorSetLayout);
 
-		setIndex = uboCount;
 		uboCount++;
 	}
 
@@ -59,25 +57,20 @@ namespace Geg {
 	 *  will copy to the first instance by default
 	 * @param data pointer to the src
 	 * @param size
-	 * @param instance starts from 1.
+	 * @param instance starts from 0.
 	 */
 	void VulkanUniform::write(const void* data, size_t size, int instance) {
 		char* mappingAddr;
 		vmaMapMemory(context->allocator, allocationHandle, (void**)&mappingAddr);
 
-		// if (setIndex == 1) {
-		// 	// fill with 1
-		//  return;
-		// }
-
-		mappingAddr += (instance - 1) * padBufferSize(originalSize);
+		mappingAddr += instance * padBufferSize(instanceSize);
 
 		memcpy(mappingAddr, data, size);
 		vmaUnmapMemory(context->allocator, allocationHandle);
 	}
 
-	void VulkanUniform::bindAtOffset(const VulkanPipeline& pipline, VkCommandBuffer cmd, uint32_t instance) {
-		uint32_t offset = instance * padBufferSize(originalSize);
+	void VulkanUniform::bindAtOffset(const VulkanPipeline& pipline, VkCommandBuffer cmd, uint32_t instance) const {
+		uint32_t offset = instance * padBufferSize(instanceSize);
 		vkCmdBindDescriptorSets(
 				cmd,
 				VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -95,7 +88,7 @@ namespace Geg {
 	 * @param bufferSize original buffer size
 	 * @return size_t the size after padding
 	 */
-	size_t VulkanUniform::padBufferSize(size_t bufferSize) {
+	size_t VulkanUniform::padBufferSize(size_t bufferSize) const {
 		// Calculate required alignment based on minimum device offset alignment
 		auto gpuProperties = context->device->getGpuProperties();
 		size_t minUboAlignment = gpuProperties.limits.minUniformBufferOffsetAlignment;

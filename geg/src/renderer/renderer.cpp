@@ -41,8 +41,8 @@ namespace Geg {
 		currentAPI->endFrame();
 	}
 
-	void Renderer::submit(const MeshComponent* mesh, MeshRenderData meshData) {
-		currentAPI->drawMesh(mesh, meshData);
+	void Renderer::submit(const MeshRenderData& meshData) {
+		currentAPI->drawMesh(meshData);
 	}
 
 }		 // namespace Geg

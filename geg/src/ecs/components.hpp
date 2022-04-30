@@ -81,7 +81,7 @@ namespace Geg {
 
 	struct MeshRendererComponent {
 		ShaderAsset shader;
-		glm::vec4 color; // w is sharpness
+		glm::vec4 color = glm::vec4(5); // w is sharpness
 
 		MeshRendererComponent() = default;
 		MeshRendererComponent(const MeshRendererComponent&) = default;

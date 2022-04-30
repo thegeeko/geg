@@ -22,13 +22,18 @@ namespace Geg {
 		VulkanRendererAPI();
 		~VulkanRendererAPI() override;
 
-		void startFrame(GpuSceneData _uboData) override;
+		void startFrame(const GpuSceneData& _uboData) override;
 		void endFrame() override;
 		
-		void drawMesh(const MeshComponent* mesh, MeshRenderData meshData) override;
+		void drawMesh(const MeshRenderData& meshData) override;
 
-		void clear() override{};
-		void clear(glm::vec4 color) override{};
+		void clear() override{ 
+			// will implement this later
+		};
+		void clear(glm::vec4 color) override{
+			// will implement this later
+		};
+
 		void clearPipelineCache();
 
 	private:
@@ -43,17 +48,16 @@ namespace Geg {
 		uint32_t nextFrame = 0;
 
 		// ubos
-		Scope<VulkanUniform> globalUbo = nullptr;
-		Scope<VulkanUniform> objectUbo = nullptr;
 		GpuSceneData uboData;
+		Scope<VulkanUniform> globalUbo = nullptr;
+		std::unordered_map<uint32_t, Scope<VulkanUniform>> objectUbo;
 
-		std::unordered_map<size_t, VulkanPipeline*> framePipelines;
+		std::unordered_map<size_t, Scope<VulkanPipeline>> pipelineCache;
 
 		void initSyncObjects();
 		void deInitSyncObjects();
 
 		void initGlobalUbo();
-//		void deInitGlobalUbo(){};
 
 		// helpers
 		void beginRecording();

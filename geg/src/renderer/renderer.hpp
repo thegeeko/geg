@@ -44,8 +44,10 @@ namespace Geg {
 	};
 
 	struct MeshRenderData {
-		TransformComponent* modelMat;
-		MeshRendererComponent* material;
+		uint32_t id;
+		MeshComponent* meshC;
+		TransformComponent* transformC;
+		MeshRendererComponent* rendererC;
 	};
 
 	class Renderer {
@@ -55,7 +57,7 @@ namespace Geg {
 
 		static void beginScene(const BeginSceneInfo& sceneInfo);
 		static void endScene();
-		static void submit(const MeshComponent* mesh, MeshRenderData meshData);
+		static void submit(const MeshRenderData& meshData);
 		static GraphicsAPI getAPI() { return GEG_CURRENT_API; }
 		static auto getApiHandel() { return currentAPI; };
 

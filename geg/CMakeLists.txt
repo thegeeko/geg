@@ -28,6 +28,8 @@ find_package(Shaderc REQUIRED)
 add_subdirectory(vendor/spirv/reflect)
 
 # memroy allocator for vulkan
+set(VMA_DEBUG_ALWAYS_DEDICATED_MEMORY ON CACHE BOOL "" FORCE)
+set(VMA_DEBUG_INITIALIZE_ALLOCATIONS OFF CACHE BOOL "" FORCE)
 add_subdirectory(vendor/vma)
 
 # glfw
@@ -48,7 +50,6 @@ add_subdirectory(vendor/glm)
 add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/entt)
 add_subdirectory(vendor/stb-image)
-
 # ===================================
 
 

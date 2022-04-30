@@ -19,9 +19,7 @@ namespace Geg {
 
 	VulkanRendererAPI::~VulkanRendererAPI() {
 		deInitSyncObjects();
-		for (auto fp : framePipelines) {
-			delete fp.second;
-		}
+		clearPipelineCache();
 	}
 
 	void VulkanRendererAPI::initSyncObjects() {
@@ -44,7 +42,9 @@ namespace Geg {
 		}
 
 		// Command buffers
-		VkCommandBuffer* commandBuffers = new VkCommandBuffer[frameBuffersCount];
+		// there's no leak here cuz the command buffers pool will
+		// automaticaly free all command buffers allocated from it
+		auto* commandBuffers = new VkCommandBuffer[frameBuffersCount];
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool = context->commandPool;
@@ -61,8 +61,8 @@ namespace Geg {
 		// Frames
 		frames.resize(frameBuffersCount);
 
-		for (int i = 0; i < frameBuffersCount; i++) {
-			VulkanFrame frame;
+		int i = 0;
+		for (auto& frame : frames) {
 			frame.index = i;
 			frame.commandBuffer = commandBuffers[i];
 
@@ -73,7 +73,7 @@ namespace Geg {
 			result = vkCreateFence(context->device->getDevice(), &fenceInfo, nullptr, &frame.fence);
 			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a fences")
 
-			frames[i] = frame;
+			i++;
 		}
 
 		// busy fences
@@ -81,7 +81,7 @@ namespace Geg {
 	}
 
 	void VulkanRendererAPI::initGlobalUbo() {
-		globalUbo = std::make_unique<VulkanUniform>(VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT, sizeof(GpuSceneData));
+		globalUbo = std::make_unique<VulkanUniform>(0, sizeof(GpuSceneData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
 		uboData = GpuSceneData{};
 	}
 
@@ -95,9 +95,9 @@ namespace Geg {
 		}
 	}
 
-	void VulkanRendererAPI::startFrame(GpuSceneData _uboData) {
+	void VulkanRendererAPI::startFrame(const GpuSceneData& _uboData) {
 		uboData = _uboData;
-		globalUbo->write(&uboData, sizeof(uboData), currentInFlightFrame + 1);
+		globalUbo->write(&uboData, sizeof(uboData), currentInFlightFrame);
 
 		beginRecording();
 	}
@@ -144,25 +144,26 @@ namespace Geg {
 		ImGui_ImplVulkan_RenderDrawData(drawdata, frames[nextFrame].commandBuffer);
 	}
 
-	void VulkanRendererAPI::drawMesh(const MeshComponent* mesh, MeshRenderData meshData) {
+	void VulkanRendererAPI::drawMesh(const MeshRenderData& meshData) {
 		GEG_CORE_ASSERT(context, "You should call Renderer::beginScene() first");
 
 		// create a pipeline for the mesh
-		size_t hash = meshData.material->shader.shaderHash;
-		if (framePipelines.find(hash) == framePipelines.end()) {
-			framePipelines[hash] = new VulkanPipeline(mesh->mesh.vbo, meshData.material->shader.shader);
+		size_t hash = meshData.rendererC->shader.shaderHash;
+		if (pipelineCache.find(hash) == pipelineCache.end()) {
+			pipelineCache[hash] = std::make_unique<VulkanPipeline>(meshData.meshC->mesh.vbo, meshData.rendererC->shader.shader);
 		}
 
 		// object UBO
-		if (!objectUbo)
-			objectUbo = std::make_unique<VulkanUniform>(VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT, sizeof(meshData.material->color));
-		objectUbo->write(&meshData.material->color[0], sizeof(glm::vec4), currentInFlightFrame);
+		if (objectUbo.find(meshData.id) == objectUbo.end())
+			objectUbo[meshData.id] = std::make_unique<VulkanUniform>(1, sizeof(meshData.rendererC->color), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
+
+		objectUbo[meshData.id]->write(&meshData.rendererC->color, sizeof(meshData.rendererC->color), currentInFlightFrame);
 
 		// setup the vars
-		const VulkanPipeline& pipeline = *framePipelines[hash];
+		const VulkanPipeline& pipeline = *pipelineCache[hash];
 		const auto commandBuffer = frames[nextFrame].commandBuffer;
-		const auto vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(mesh->mesh.vbo);
-		const auto ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(mesh->mesh.ibo);
+		const auto vbo = std::dynamic_pointer_cast<VulkanVertexBuffer>(meshData.meshC->mesh.vbo);
+		const auto ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(meshData.meshC->mesh.ibo);
 
 		// record commands
 		vkCmdBindPipeline(
@@ -175,7 +176,7 @@ namespace Geg {
 				commandBuffer,
 				currentInFlightFrame);
 
-		objectUbo->bindAtOffset(
+		objectUbo[meshData.id]->bindAtOffset(
 				pipeline,
 				commandBuffer,
 				currentInFlightFrame);
@@ -186,7 +187,7 @@ namespace Geg {
 				VK_SHADER_STAGE_ALL_GRAPHICS,
 				0,
 				ShaderDataTypeSize(ShaderDataType::Mat4),
-				&meshData.modelMat->getTransform());
+				&meshData.transformC->getTransform());
 
 		vkCmdPushConstants(
 				commandBuffer,
@@ -194,7 +195,7 @@ namespace Geg {
 				VK_SHADER_STAGE_ALL_GRAPHICS,
 				ShaderDataTypeSize(ShaderDataType::Mat4),
 				ShaderDataTypeSize(ShaderDataType::Mat4),
-				&meshData.modelMat->getNormMat());
+				&meshData.transformC->getNormMat());
 
 		VkBuffer vertexBuffers[] = {vbo->getBufferHandle()};
 		VkDeviceSize offsets[] = {0};
@@ -216,11 +217,8 @@ namespace Geg {
 	}
 
 	void VulkanRendererAPI::clearPipelineCache() {
-		for (auto& [hash, pipeline] : framePipelines) {
-			delete pipeline;
-		}
-		framePipelines.clear();
-	}
+		pipelineCache.clear();
+	};
 
 	void VulkanRendererAPI::endFrame() {
 		oncePerFrame();

@@ -2,7 +2,6 @@
 
 #include <cstring>
 #include <set>
-#include <vulkan/vulkan.hpp>
 
 #ifdef GEG_DEBUG_ENABLED
 static const bool enableValidationLayers = true;
@@ -142,7 +141,7 @@ namespace Geg {
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create window surface");
 	}
 
-	void VulkanDevice::populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
+	void VulkanDevice::populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const{
 		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 		createInfo.messageSeverity =
 				VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -163,14 +162,17 @@ namespace Geg {
 		QueueFamilyIndices queueFam;
 		findQueueFamilies(devices[0], queueFam);
 
-		GEG_CORE_ASSERT(queueFam.vaiable, "No vaiable queue families");
+		GEG_CORE_ASSERT(queueFam.viable, "No vaiable queue families");
 		GEG_CORE_ASSERT(checkDeviceExtentionSupport(devices[0]), "Your gpu doesn't support swap chain extension");
 
 		physicalDevice = devices[0];
 		vkGetPhysicalDeviceProperties(physicalDevice, &gpuProperties);
+
+		GEG_CORE_INFO("Using {} gpu", gpuProperties.deviceName);
+		GEG_CORE_INFO("Using Vulkan Version {}", gpuProperties.apiVersion);
 	}
 
-	bool VulkanDevice::checkValidationLayerSupport() {
+	bool VulkanDevice::checkValidationLayerSupport() const {
 		unsigned int layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -195,12 +197,12 @@ namespace Geg {
 		return true;
 	}
 
-	bool VulkanDevice::checkDeviceExtentionSupport(VkPhysicalDevice device) {
+	bool VulkanDevice::checkDeviceExtentionSupport(const VkPhysicalDevice& physicalDevice) const {
 		uint32_t extensionCount;
-		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+		vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
 
 		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+		vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, availableExtensions.data());
 
 		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
@@ -211,7 +213,7 @@ namespace Geg {
 		return requiredExtensions.empty();
 	}
 
-	std::vector<const char*> VulkanDevice::getRequiredExtensions() {
+	std::vector<const char*> VulkanDevice::getRequiredExtensions() const {
 		unsigned int glfwExtensionCount = 0;
 		const char** glfwExtensions;
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -226,7 +228,7 @@ namespace Geg {
 	}
 
 	void VulkanDevice::findQueueFamilies(const VkPhysicalDevice& physicalDevice, QueueFamilyIndices& queue) const {
-		if (queue.vaiable) { return; }
+		if (queue.viable) { return; }
 
 		unsigned int queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
@@ -237,7 +239,8 @@ namespace Geg {
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
 
 		int i = 0;
-		bool foundGF = false, foundPF = false;
+		bool foundGF = false;
+		bool foundPF = false;
 		for (const auto& queueFamily : queueFamilies) {
 			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				queue.graphicsFamily = i;
@@ -254,7 +257,7 @@ namespace Geg {
 			i++;
 		}
 
-		queue.vaiable = foundGF && foundPF;
+		queue.viable = foundGF && foundPF;
 	}
 
 }		 // namespace Geg

@@ -20,7 +20,7 @@ namespace Geg {
 		cleanUp();
 	}
 
-	void VulkanSwapChain::querySwapChainSupport(SwapChainSupportDetails& details) {
+	void VulkanSwapChain::querySwapChainSupport(SwapChainSupportDetails& details) const {
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device->getPhysicalDevice(), device->getSurface(), &details.capabilities);
 
 		unsigned int formatCount;
@@ -40,7 +40,7 @@ namespace Geg {
 		}
 	}
 
-	VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+	VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const {
 		for (const auto& availableFormat : availableFormats) {
 			if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 				return availableFormat;
@@ -49,7 +49,7 @@ namespace Geg {
 		return availableFormats[0];
 	}
 
-	VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+	VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const {
 		for (const auto& availablePresentMode : availablePresentModes) {
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
 				return availablePresentMode;
@@ -59,11 +59,12 @@ namespace Geg {
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 
-	VkExtent2D VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+	VkExtent2D VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const {
 		if (capabilities.currentExtent.width != UINT32_MAX) {
 			return capabilities.currentExtent;
 		} else {
-			int width, height;
+			int width;
+			int height;
 			glfwGetFramebufferSize(window, &width, &height);
 
 			VkExtent2D actualExtent = {

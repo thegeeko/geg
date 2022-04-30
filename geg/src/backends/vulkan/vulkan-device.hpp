@@ -1,7 +1,6 @@
 #pragma once
 
-#include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 #include "GLFW/glfw3.h"
 #include "renderer/graphics-context.hpp"
@@ -11,7 +10,7 @@ namespace Geg {
 		unsigned int graphicsFamily;
 		unsigned int presentFamily;
 
-		bool vaiable = false;
+		bool viable = false;
 	};
 
 	class VulkanDevice {
@@ -41,7 +40,7 @@ namespace Geg {
 			} else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
 				GEG_CORE_INFO(_CallbackData->pMessage);
 			} else {
-				GEG_CORE_TRACE(_CallbackData->pMessage);
+				// GEG_CORE_TRACE(_CallbackData->pMessage);
 			}
 			return VK_FALSE;
 		}
@@ -62,13 +61,13 @@ namespace Geg {
 		const std::vector<const char*> deviceExtensions = {
 				VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-		bool checkValidationLayerSupport();
-		bool checkDeviceExtentionSupport(VkPhysicalDevice device);
-		std::vector<const char*> getRequiredExtensions();
+		bool checkValidationLayerSupport() const;
+		bool checkDeviceExtentionSupport(const VkPhysicalDevice& physicalDevice) const;
+		std::vector<const char*> getRequiredExtensions() const;
 		void createInstance();
 		void setupDebugMessenger();
 		void createSurface();
-		void populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+		void populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const;
 		void pickPhysicalDevice();
 	};
 }		 // namespace Geg

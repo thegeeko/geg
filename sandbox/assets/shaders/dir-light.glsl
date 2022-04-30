@@ -11,6 +11,8 @@ layout(location = 0) out vec3 color;
 layout(location = 1) out vec4 ws_pos;
 layout(location = 2) out vec3 ws_norm;
 
+const int MAX_POINT_LIGHT = 100;
+
 struct pLight {
 	vec4 color;
 	vec4 pos;
@@ -31,7 +33,7 @@ layout(set = 0, binding = 0) uniform  GlobalUbo{
 	vec4 globalLightColor;
 	vec4 ambient;
 
-	pLight lights[100];
+	pLight lights[MAX_POINT_LIGHT];
 } ubo;
 
 layout(set = 1, binding = 0) uniform  ObjectUbo{
@@ -42,7 +44,7 @@ void main() {
 	// converting to world space
 	ws_pos = push.model * vec4(inPosition, 1.0);
 	ws_norm = normalize(mat3(push.norm) * inNormal);
-	color = mat.color.xyz;
+	color = inColor;
 
 	gl_Position = ubo.projView * ws_pos;
 }
@@ -115,7 +117,7 @@ void main() {
 		vec3 half_angle = normalize(light_dir + VIEW_DIR);
 		float blinn_term = dot(ws_NORM, half_angle);
 		blinn_term = clamp(blinn_term, 0, 1);
-		blinn_term = pow(blinn_term, 512);
+		blinn_term = pow(blinn_term, mat.color.w);
 		specular_light += light_intensity * blinn_term;
 	}
 
