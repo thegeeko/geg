@@ -3,10 +3,10 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/shader.hpp"
 #include "backends/vulkan/uniform-buffers.hpp"
-#include "core/core.hpp"
 #include "glm/fwd.hpp"
 #include "renderer/renderer-api.hpp"
 #include "renderer/renderer.hpp"
+#include "texture.hpp"
 
 namespace Geg {
 
@@ -24,14 +24,14 @@ namespace Geg {
 
 		void startFrame(const GpuSceneData& _uboData) override;
 		void endFrame() override;
-		
+
 		void drawMesh(const MeshRenderData& meshData) override;
 
-		void clear() override{ 
-			// will implement this later
+		void clear() override{
+				// will implement this later
 		};
 		void clear(glm::vec4 color) override{
-			// will implement this later
+				// will implement this later
 		};
 
 		void clearPipelineCache();
@@ -48,11 +48,14 @@ namespace Geg {
 		uint32_t nextFrame = 0;
 
 		// ubos
-		GpuSceneData uboData;
+		GpuSceneData globalUboData;
 		Scope<VulkanUniform> globalUbo = nullptr;
+		GpuModelData objectUboData;
 		std::unordered_map<uint32_t, Scope<VulkanUniform>> objectUbo;
 
 		std::unordered_map<size_t, Scope<VulkanPipeline>> pipelineCache;
+
+		VulkanTexture dummyTexture;
 
 		void initSyncObjects();
 		void deInitSyncObjects();

@@ -10,6 +10,7 @@ layout(location = 3) in vec2 inUv;
 layout(location = 0) out vec3 color;
 layout(location = 1) out vec4 ws_pos;
 layout(location = 2) out vec3 ws_norm;
+layout(location = 3) out vec2 uv;
 
 const int MAX_POINT_LIGHT = 100;
 
@@ -38,13 +39,17 @@ layout(set = 0, binding = 0) uniform  GlobalUbo{
 
 layout(set = 1, binding = 0) uniform  ObjectUbo{
 	vec4 color;
+	bool useTexture;
 } mat;
+
+layout(set = 2, binding = 0) uniform sampler2D tex;
 
 void main() {
 	// converting to world space
 	ws_pos = push.model * vec4(inPosition, 1.0);
 	ws_norm = normalize(mat3(push.norm) * inNormal);
 	color = inColor;
+	uv = inUv;
 
 	gl_Position = ubo.projView * ws_pos;
 }
@@ -53,9 +58,10 @@ void main() {
 
 #version 450
 
-layout(location = 0) in vec3 color;
+layout(location = 0) in vec3 in_color;
 layout(location = 1) in vec4 ws_pos;
 layout(location = 2) in vec3 ws_norm;
+layout(location = 3) in vec2 uv;
 
 layout(location = 0) out vec4 out_color;
 
@@ -86,7 +92,10 @@ layout(set = 0, binding = 0) uniform  GlobalUbo{
 
 layout(set = 1, binding = 0) uniform  ObjectUbo{
 	vec4 color;
+	bool useTexture;
 } mat;
+
+layout(set = 2, binding = 0) uniform sampler2D tex;
 
 void main() {
 
@@ -121,6 +130,14 @@ void main() {
 		specular_light += light_intensity * blinn_term;
 	}
 
+	vec3 color;
+	if(mat.useTexture) {
+		color = texture(tex, uv).xyz;
+	} else {
+		color = in_color;
+	}
+	
 	vec3 frag_color = ambient_light * color + diffuse_light * color + specular_light * color;
+	
 	out_color = vec4(frag_color, 1);
 }

@@ -41,9 +41,9 @@ namespace Geg {
 
 	class Shader {
 	public:
-		virtual ~Shader(){};
+		virtual ~Shader() = default;
 		virtual void bind() const = 0;
 		virtual void unBind() const = 0;
-		static Shader* create(std::vector<uint32_t> vertSrc, std::vector<uint32_t> fragSrc);
+		static Shader* create(const std::vector<uint32_t>& vertSrc, const std::vector<uint32_t>& fragSrc);
 	};
 }		 // namespace Geg

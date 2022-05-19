@@ -28,13 +28,13 @@ namespace Geg {
 		void reflectOn(SpvReflectShaderModule reflectModule);
 
 	public:
-		VulkanShader(std::vector<uint32_t> vertSrc, std::vector<uint32_t> fragSrc);
-		virtual ~VulkanShader();
+		VulkanShader(const std::vector<uint32_t>& vertSrc, const std::vector<uint32_t>& fragSrc);
+		~VulkanShader() override;
 
 		void bind() const override;
 		void unBind() const override;
 
-		const std::vector<VkPipelineShaderStageCreateInfo> getStages() const { return shaderStages; };
+		const std::vector<VkPipelineShaderStageCreateInfo>& getStages() const { return shaderStages; };
 		const ReflectionInfo& getReflectionInfo() const { return reflectionInfo; };
 	};
 }		 // namespace Geg

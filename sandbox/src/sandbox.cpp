@@ -11,6 +11,7 @@ Level::Level() {
 
 	meshPath = "assets/models/teapot.gltf";
 	shaderPath = "assets/shaders/dir-light.glsl";
+	std::string texPath = "assets/textures/texture.jpg";
 
 	vase.addComponent<Geg::MeshComponent>(meshPath);
 	vase.addComponent<Geg::MeshRendererComponent>(shaderPath);
@@ -29,9 +30,10 @@ Level::Level() {
 
 	light.addComponent<Geg::MeshComponent>(meshPath);
 	light.addComponent<Geg::MeshRendererComponent>(shaderPath);
+	light.getComponent<Geg::MeshRendererComponent>().tex = Geg::Ref<Geg::Texture>(Geg::Texture::create(texPath));
 	light.addComponent<Geg::GlobalLightComponent>(glm::vec4(1.f, -3.f, -1.f, 0.f));
 	light.addComponent<Geg::PointLightComponent>(glm::vec4(1.f, 0.f, 0.f, 0.f));
-	light.getComponent<Geg::TransformComponent>().scale = {0.2, 0.2, 0.2};
+	// light.getComponent<Geg::TransformComponent>().scale = {0.2, 0.2, 0.2};
 
 	light2.addComponent<Geg::MeshComponent>(meshPath);
 	light2.addComponent<Geg::MeshRendererComponent>(shaderPath);
@@ -84,6 +86,7 @@ void Level::drawComponents(Geg::Entity entity) {
 		}
 		ImGui::ColorEdit3("color", &meshRenderer.color[0]);
 		ImGui::DragFloat("sharpness", &meshRenderer.color[3]);
+		ImGui::Checkbox("use textures", &meshRenderer.useTex);
 	} else {
 		if (ImGui::Button("Add mesh renderer component")) {
 			entity.addComponent<Geg::MeshRendererComponent>(shaderPath);

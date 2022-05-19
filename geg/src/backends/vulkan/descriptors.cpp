@@ -246,7 +246,7 @@ namespace Geg {
 		return *this;
 	}
 
-	DescriptorBuilder& DescriptorBuilder::bindBuffer(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags) {
+	DescriptorBuilder& DescriptorBuilder::bindImage(uint32_t binding, VkDescriptorImageInfo* bufferInfo, VkDescriptorType type, VkShaderStageFlags stageFlags) {
 		// create the descriptor binding for the layout
 		VkDescriptorSetLayoutBinding newBinding{};
 
@@ -259,6 +259,46 @@ namespace Geg {
 		bindings.push_back(newBinding);
 
 		// create the descriptor write
+		VkWriteDescriptorSet newWrite{};
+		newWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		newWrite.pNext = nullptr;
+
+		newWrite.descriptorCount = 1;
+		newWrite.descriptorType = type;
+		newWrite.pImageInfo = bufferInfo;
+		newWrite.dstBinding = binding;
+
+		writes.push_back(newWrite);
+		return *this;
+	}
+
+	DescriptorBuilder& DescriptorBuilder::bindBuffer(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags) {
+		// create the descriptor binding for the layout
+		VkDescriptorSetLayoutBinding newBinding{};
+
+		newBinding.descriptorCount = 1;
+		newBinding.descriptorType = type;
+		newBinding.pImmutableSamplers = nullptr;
+		newBinding.stageFlags = stageFlags;
+		newBinding.binding = binding;
+
+		bindings.push_back(newBinding);
+
+		return *this;
+	}
+
+	DescriptorBuilder& DescriptorBuilder::bindImage(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags) {
+		// create the descriptor binding for the layout
+		VkDescriptorSetLayoutBinding newBinding{};
+
+		newBinding.descriptorCount = 1;
+		newBinding.descriptorType = type;
+		newBinding.pImmutableSamplers = nullptr;
+		newBinding.stageFlags = stageFlags;
+		newBinding.binding = binding;
+
+		bindings.push_back(newBinding);
+
 		return *this;
 	}
 

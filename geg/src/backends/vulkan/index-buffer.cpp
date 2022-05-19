@@ -6,7 +6,7 @@ namespace Geg {
 			size(_size),
 			indecies(_indecies) {
 		createBufferAndAllocateMem();
-		context->uploadDataToGpuMem(indecies, static_cast<size_t>(size), bufferHandle);
+		context->uploadDataToBuffer(indecies, static_cast<size_t>(size), bufferHandle);
 	}
 
 	VulkanIndexBuffer::~VulkanIndexBuffer() {

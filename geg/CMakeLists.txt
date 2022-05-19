@@ -76,6 +76,7 @@ target_link_libraries(geg PUBLIC VulkanMemoryAllocator)
 target_link_libraries(geg PUBLIC sprivReflect)
 target_link_libraries(geg PUBLIC assimp)
 target_link_libraries(geg PUBLIC entt)
+target_link_libraries(geg PUBLIC stbimage)
 # ==============================================
 
 # =================== include dir ==============================

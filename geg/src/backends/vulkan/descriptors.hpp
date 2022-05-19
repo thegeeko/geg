@@ -82,6 +82,7 @@ namespace Geg {
 		DescriptorBuilder& bindBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
 		DescriptorBuilder& bindBuffer(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags);
 		DescriptorBuilder& bindImage(uint32_t binding, VkDescriptorImageInfo* imageInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
+		DescriptorBuilder& bindImage(uint32_t binding, VkDescriptorType type, VkShaderStageFlags stageFlags);
 
 		bool build(VkDescriptorSet& set, VkDescriptorSetLayout& layout);
 		bool build(VkDescriptorSetLayout& layout);

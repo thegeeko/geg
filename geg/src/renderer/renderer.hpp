@@ -23,6 +23,7 @@ namespace Geg {
 		glm::vec4 pos = glm::vec4(0.f);
 	};
 
+	// global ubo
 	struct GpuSceneData {
 		glm::mat4 proj;
 		glm::mat4 view;
@@ -34,6 +35,12 @@ namespace Geg {
 		glm::vec4 ambient;
 
 		std::array<PointLightData, MAX_POINT_LIGHTS> pointLights;
+	};
+
+	//object ubo
+	struct GpuModelData {
+		glm::vec4 color;
+		bool useTex;
 	};
 
 	struct BeginSceneInfo {

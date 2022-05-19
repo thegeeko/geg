@@ -7,12 +7,12 @@ namespace Geg {
 	struct BufferElement {
 		ShaderDataType type;
 		int size;
-		uint32_t offset;
+		uint32_t offset = 0;
 		bool normalized;
 
 		BufferElement() = default;
 		BufferElement(ShaderDataType _type, bool _normalized = false):
-				type(_type), size(ShaderDataTypeSize(type)), offset(0), normalized(_normalized) {}
+				type(_type), size(ShaderDataTypeSize(type)), normalized(_normalized) {}
 		[[nodiscard]] uint8_t getComponentCount() const {
 			switch (type) {
 				case ShaderDataType::Float: return 1;
@@ -26,7 +26,7 @@ namespace Geg {
 				case ShaderDataType::Int3: return 3;
 				case ShaderDataType::Int4: return 4;
 				case ShaderDataType::Bool: return 1;
-				case ShaderDataType::None: {
+				default: {
 					GEG_CORE_ERROR("can't get component count of unknown type");
 					return 0;
 				}
@@ -36,9 +36,8 @@ namespace Geg {
 
 	class BufferLayout {
 	public:
-		BufferLayout():
-				stride(0){};
-		void add(ShaderDataType dataType, bool normlized);
+		BufferLayout() = default;
+		void add(ShaderDataType dataType, bool normalized);
 		[[nodiscard]] int getStride() const { return stride; }
 		[[nodiscard]] const std::vector<BufferElement> &getElements() const { return elements; }
 
@@ -48,7 +47,7 @@ namespace Geg {
 		std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
 
 	private:
-		int stride;
+		int stride = 0;
 		std::vector<BufferElement> elements;
 	};
 

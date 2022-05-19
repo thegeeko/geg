@@ -9,6 +9,7 @@
 #include "glm/ext/quaternion_common.hpp"
 #include "glm/fwd.hpp"
 #include "glm/matrix.hpp"
+#include "renderer/texture.hpp"
 
 namespace Geg {
 	struct NameComponent {
@@ -81,7 +82,9 @@ namespace Geg {
 
 	struct MeshRendererComponent {
 		ShaderAsset shader;
-		glm::vec4 color = glm::vec4(5); // w is sharpness
+		Ref<Texture> tex = nullptr;
+		bool useTex = false;
+		glm::vec4 color = glm::vec4(5);		 // w is sharpness
 
 		MeshRendererComponent() = default;
 		MeshRendererComponent(const MeshRendererComponent&) = default;

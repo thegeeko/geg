@@ -6,7 +6,7 @@ namespace Geg {
 			size(_size),
 			vertices(_vertices) {
 		createBufferAndAllocateMem();
-		context->uploadDataToGpuMem(vertices, static_cast<size_t>(size), bufferHandle);
+		context->uploadDataToBuffer(vertices, static_cast<size_t>(size), bufferHandle);
 	}
 
 	VulkanVertexBuffer::~VulkanVertexBuffer() {

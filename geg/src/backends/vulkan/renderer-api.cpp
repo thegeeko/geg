@@ -82,7 +82,7 @@ namespace Geg {
 
 	void VulkanRendererAPI::initGlobalUbo() {
 		globalUbo = std::make_unique<VulkanUniform>(0, sizeof(GpuSceneData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
-		uboData = GpuSceneData{};
+		globalUboData = GpuSceneData{};
 	}
 
 	void VulkanRendererAPI::deInitSyncObjects() {
@@ -96,8 +96,8 @@ namespace Geg {
 	}
 
 	void VulkanRendererAPI::startFrame(const GpuSceneData& _uboData) {
-		uboData = _uboData;
-		globalUbo->write(&uboData, sizeof(uboData), currentInFlightFrame);
+		globalUboData = _uboData;
+		globalUbo->write(&globalUboData, sizeof(globalUboData), currentInFlightFrame);
 
 		beginRecording();
 	}
@@ -155,9 +155,11 @@ namespace Geg {
 
 		// object UBO
 		if (objectUbo.find(meshData.id) == objectUbo.end())
-			objectUbo[meshData.id] = std::make_unique<VulkanUniform>(1, sizeof(meshData.rendererC->color), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
+			objectUbo[meshData.id] = std::make_unique<VulkanUniform>(1, sizeof(GpuModelData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
 
-		objectUbo[meshData.id]->write(&meshData.rendererC->color, sizeof(meshData.rendererC->color), currentInFlightFrame);
+		objectUboData.color = meshData.rendererC->color;
+		objectUboData.useTex = meshData.rendererC->useTex;
+		objectUbo[meshData.id]->write(&objectUboData, sizeof(objectUboData), currentInFlightFrame);
 
 		// setup the vars
 		const VulkanPipeline& pipeline = *pipelineCache[hash];
@@ -180,6 +182,13 @@ namespace Geg {
 				pipeline,
 				commandBuffer,
 				currentInFlightFrame);
+
+		if (meshData.rendererC->useTex) {
+			const auto tex = std::dynamic_pointer_cast<VulkanTexture>(meshData.rendererC->tex);
+			tex->bindAtOffset(pipeline, commandBuffer, 2);
+		} else {
+			dummyTexture.bindAtOffset(pipeline, commandBuffer, 2);
+		}
 
 		vkCmdPushConstants(
 				commandBuffer,

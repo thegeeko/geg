@@ -8,7 +8,7 @@
 #include "spirv_reflect.h"
 
 namespace Geg {
-	VulkanShader::VulkanShader(std::vector<uint32_t> vertSrc, std::vector<uint32_t> fragSrc) {
+	VulkanShader::VulkanShader(const std::vector<uint32_t>& vertSrc, const std::vector<uint32_t>& fragSrc) {
 		GraphicsContext* _context = App::get().getWindow().getGraphicsContext();
 		context = dynamic_cast<VulkanGraphicsContext*>(_context);
 
@@ -78,6 +78,7 @@ namespace Geg {
 			// start builder for the current set
 			auto builder =
 					DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc);
+
 			const SpvReflectDescriptorSet& refl_set = *(sets[i_set]);
 
 			for (uint32_t i_binding = 0; i_binding < refl_set.binding_count; ++i_binding) {
