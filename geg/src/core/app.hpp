@@ -7,7 +7,7 @@
 // the main class which every game required
 // to drives from and it's a singleton
 
-namespace Geg {
+namespace geg {
 	class App {
 	public:
 		App();
@@ -36,4 +36,4 @@ namespace Geg {
 	// the engine will call it .. check main-entry.hpp
 	App *createApp();
 
-}		 // namespace Geg
+}		 // namespace geg

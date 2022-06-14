@@ -7,7 +7,7 @@
 #include "core/core.hpp"
 #include "spirv_reflect.h"
 
-namespace Geg {
+namespace geg {
 	VulkanShader::VulkanShader(const std::vector<uint32_t>& vertSrc, const std::vector<uint32_t>& fragSrc) {
 		GraphicsContext* _context = App::get().getWindow().getGraphicsContext();
 		context = dynamic_cast<VulkanGraphicsContext*>(_context);
@@ -102,4 +102,4 @@ namespace Geg {
 
 	void VulkanShader::bind() const {};
 	void VulkanShader::unBind() const {};
-}		 // namespace Geg
+}		 // namespace geg

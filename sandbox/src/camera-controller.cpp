@@ -9,27 +9,27 @@ CamController::CamController():
 }
 
 void CamController::update(float dt) {
-	if (Geg::Input::isKeyPressed(GEG_KEY_W)) {
+	if (geg::Input::isKeyPressed(GEG_KEY_W)) {
 		position.z += camSpeed * dt;
 		recalculateView();
 	}
-	if (Geg::Input::isKeyPressed(GEG_KEY_S)) {
+	if (geg::Input::isKeyPressed(GEG_KEY_S)) {
 		position.z -= camSpeed * dt;
 		recalculateView();
 	}
-	if (Geg::Input::isKeyPressed(GEG_KEY_A)) {
+	if (geg::Input::isKeyPressed(GEG_KEY_A)) {
 		position.x += camSpeed * dt;
 		recalculateView();
 	}
-	if (Geg::Input::isKeyPressed(GEG_KEY_D)) {
+	if (geg::Input::isKeyPressed(GEG_KEY_D)) {
 		position.x -= camSpeed * dt;
 		recalculateView();
 	}
-	if (Geg::Input::isKeyPressed(GEG_KEY_LEFT_CONTROL)) {
+	if (geg::Input::isKeyPressed(GEG_KEY_LEFT_CONTROL)) {
 		position.y -= camSpeed * dt;
 		recalculateView();
 	}
-	if (Geg::Input::isKeyPressed(GEG_KEY_SPACE)) {
+	if (geg::Input::isKeyPressed(GEG_KEY_SPACE)) {
 		position.y += camSpeed * dt;
 		recalculateView();
 	}

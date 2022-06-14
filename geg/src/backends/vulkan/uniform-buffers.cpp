@@ -6,7 +6,7 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "core/logger.hpp"
 
-namespace Geg {
+namespace geg {
 	int VulkanUniform::uboCount = 0;
 
 	VulkanUniform::VulkanUniform(int _setIndex, size_t size, int _instancesCount):
@@ -99,4 +99,4 @@ namespace Geg {
 		}
 		return alignedSize;
 	}
-}		 // namespace Geg
+}		 // namespace geg

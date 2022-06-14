@@ -6,7 +6,7 @@
 #include "renderer/buffers.hpp"
 #include "vk_mem_alloc.h"
 
-namespace Geg {
+namespace geg {
 	class VulkanIndexBuffer: public IndexBuffer {
 	public:
 		VulkanIndexBuffer(uint32_t* _indecies, uint32_t _size);
@@ -32,4 +32,4 @@ namespace Geg {
 		void createInputAttributeDescription();
 		void createBufferAndAllocateMem();
 	};
-}		 // namespace Geg
+}		 // namespace geg

@@ -3,7 +3,7 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "renderer.hpp"
 
-namespace Geg {
+namespace geg {
 	GraphicsContext* GraphicsContext::create(GLFWwindow* _windowPtr) {
 		switch (Renderer::getAPI()) {
 			case GraphicsAPI::Vulkan:
@@ -12,4 +12,4 @@ namespace Geg {
 				GEG_CORE_ERROR("you must use renderer api");
 		}
 	}
-}		 // namespace Geg
+}		 // namespace geg

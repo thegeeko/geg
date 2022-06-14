@@ -5,7 +5,7 @@
 #include "GLFW/glfw3.h"
 #include "renderer/graphics-context.hpp"
 
-namespace Geg {
+namespace geg {
 	struct QueueFamilyIndices {
 		unsigned int graphicsFamily;
 		unsigned int presentFamily;
@@ -70,4 +70,4 @@ namespace Geg {
 		void populateDebugMessengerCreationInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const;
 		void pickPhysicalDevice();
 	};
-}		 // namespace Geg
+}		 // namespace geg

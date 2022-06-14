@@ -6,7 +6,7 @@
 #include "vk_mem_alloc.h"
 #include "vulkan-device.hpp"
 
-namespace Geg {
+namespace geg {
 
 	class VulkanGraphicsContext: public GraphicsContext {
 	public:
@@ -39,4 +39,4 @@ namespace Geg {
 		static VkCommandBuffer beginSingleTimeCommand();
 		static void endSingleTimeCommand(VkCommandBuffer commandBuffer);
 	};
-}		 // namespace Geg
+}		 // namespace geg

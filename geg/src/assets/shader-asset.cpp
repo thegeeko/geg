@@ -1,6 +1,6 @@
 ﻿#include "shader-asset.hpp"
 
-namespace Geg {
+namespace geg {
 
 	ShaderAsset::ShaderAsset(const ShaderSource& src) {
 		vertSpv = compile(src.vert, shaderc_vertex_shader);
@@ -29,4 +29,4 @@ namespace Geg {
 	void ShaderAsset::setup() {
 		shader = Ref<Shader>(Shader::create(vertSpv, fragSpv));
 	}
-} // namespace Geg
+} // namespace geg

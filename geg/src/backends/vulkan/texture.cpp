@@ -2,7 +2,7 @@
 
 #include "stb_image.h"
 
-namespace Geg {
+namespace geg {
 	VulkanTexture::VulkanTexture() {
 		GraphicsContext* _context = App::get().getWindow().getGraphicsContext();
 		context = dynamic_cast<VulkanGraphicsContext*>(_context);
@@ -24,8 +24,9 @@ namespace Geg {
 		desImageInfo.sampler = textureSampler;
 
 		DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc)
-				.bindImage(0, &desImageInfo, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_ALL_GRAPHICS)
-				.build(descriptorSet, descriptorSetLayout);
+			.bindImage(
+				0, &desImageInfo, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_ALL_GRAPHICS)
+			.build(descriptorSet, descriptorSetLayout);
 
 		GEG_CORE_WARN("created texture");
 	}
@@ -53,8 +54,9 @@ namespace Geg {
 		desImageInfo.sampler = textureSampler;
 
 		DescriptorBuilder::begin(context->descriptorLayoutCache, context->descriptorsAlloc)
-				.bindImage(0, &desImageInfo, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_ALL_GRAPHICS)
-				.build(descriptorSet, descriptorSetLayout);
+			.bindImage(
+				0, &desImageInfo, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_ALL_GRAPHICS)
+			.build(descriptorSet, descriptorSetLayout);
 
 		GEG_CORE_WARN("created texture");
 	}
@@ -67,20 +69,19 @@ namespace Geg {
 		GEG_CORE_WARN("deleted texture");
 	}
 
-	void* VulkanTexture::getHandler() {
-		return &descriptorSet;
-	}
+	void* VulkanTexture::getHandler() { return &descriptorSet; }
 
-	void VulkanTexture::bindAtOffset(const VulkanPipeline& pipeline, VkCommandBuffer cmd, uint32_t setNumber) const {
+	void VulkanTexture::bindAtOffset(
+		const VulkanPipeline& pipeline, VkCommandBuffer cmd, uint32_t setNumber) const {
 		vkCmdBindDescriptorSets(
-				cmd,
-				VK_PIPELINE_BIND_POINT_GRAPHICS,
-				pipeline.getLayout(),
-				setNumber,
-				1,
-				&descriptorSet,
-				0,
-				nullptr);
+			cmd,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipeline.getLayout(),
+			setNumber,
+			1,
+			&descriptorSet,
+			0,
+			nullptr);
 	}
 
 	void VulkanTexture::createImage(const uint8_t* imageData, uint32_t width, uint32_t height) {
@@ -103,7 +104,8 @@ namespace Geg {
 		VmaAllocationCreateInfo allocInfo = {};
 		allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-		vmaCreateImage(context->allocator, &imageInfo, &allocInfo, &imageHandle, &allocationHandle, nullptr);
+		vmaCreateImage(
+			context->allocator, &imageInfo, &allocInfo, &imageHandle, &allocationHandle, nullptr);
 	}
 
 	void VulkanTexture::createImageViews() {
@@ -118,7 +120,8 @@ namespace Geg {
 		viewInfo.subresourceRange.baseArrayLayer = 0;
 		viewInfo.subresourceRange.layerCount = 1;
 
-		VkResult result = vkCreateImageView(context->device->getDevice(), &viewInfo, nullptr, &imageView);
+		VkResult result =
+			vkCreateImageView(context->device->getDevice(), &viewInfo, nullptr, &imageView);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create image views for a texture");
 	}
 
@@ -141,7 +144,8 @@ namespace Geg {
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = 0.0f;
 
-		VkResult result = vkCreateSampler(context->device->getDevice(), &samplerInfo, nullptr, &textureSampler);
+		VkResult result =
+			vkCreateSampler(context->device->getDevice(), &samplerInfo, nullptr, &textureSampler);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create texture sampler");
 	}
-}		 // namespace Geg
+}		 // namespace geg

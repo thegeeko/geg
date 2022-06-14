@@ -2,7 +2,7 @@
 
 #include "shader.hpp"
 
-namespace Geg {
+namespace geg {
 	VulkanPipeline::VulkanPipeline(
 			const Ref<VertexBuffer>& _vbo,
 			const Ref<Shader>& _shader) {
@@ -181,4 +181,4 @@ namespace Geg {
 		}
 		GEG_CORE_INFO("Pipeline destroyed no data");
 	}
-}		 // namespace Geg
+}		 // namespace geg

@@ -2,11 +2,13 @@
 
 #include <algorithm>
 #include <cstdint>
+#include "core/logger.hpp"
 
-namespace Geg {
+namespace geg {
 
-	VulkanSwapChain::VulkanSwapChain(GLFWwindow* _window, VulkanDevice* _device, VmaAllocator alloc):
-			device(_device), window(_window), vmaAllocator(alloc) {
+	VulkanSwapChain::VulkanSwapChain(GLFWwindow* _window, VulkanDevice* _device, VmaAllocator alloc)
+		: device(_device), window(_window), vmaAllocator(alloc) {
+
 		createSwapChain();
 		createDepthResources();
 		createImageViews();
@@ -16,44 +18,52 @@ namespace Geg {
 		GEG_CORE_INFO("swap chain created");
 	}
 
-	VulkanSwapChain::~VulkanSwapChain() {
-		cleanUp();
-	}
+	VulkanSwapChain::~VulkanSwapChain() { cleanUp(); }
 
 	void VulkanSwapChain::querySwapChainSupport(SwapChainSupportDetails& details) const {
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device->getPhysicalDevice(), device->getSurface(), &details.capabilities);
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+			device->getPhysicalDevice(), device->getSurface(), &details.capabilities);
 
 		unsigned int formatCount;
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device->getPhysicalDevice(), device->getSurface(), &formatCount, nullptr);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(
+			device->getPhysicalDevice(), device->getSurface(), &formatCount, nullptr);
 
 		if (formatCount != 0) {
 			details.formats.resize(formatCount);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(device->getPhysicalDevice(), device->getSurface(), &formatCount, details.formats.data());
+			vkGetPhysicalDeviceSurfaceFormatsKHR(
+				device->getPhysicalDevice(), device->getSurface(), &formatCount, details.formats.data());
 		}
 
 		unsigned int presentModeCount;
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device->getPhysicalDevice(), device->getSurface(), &presentModeCount, nullptr);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(
+			device->getPhysicalDevice(), device->getSurface(), &presentModeCount, nullptr);
 
 		if (presentModeCount != 0) {
 			details.presentModes.resize(presentModeCount);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(device->getPhysicalDevice(), device->getSurface(), &presentModeCount, details.presentModes.data());
+			vkGetPhysicalDeviceSurfacePresentModesKHR(
+				device->getPhysicalDevice(),
+				device->getSurface(),
+				&presentModeCount,
+				details.presentModes.data());
 		}
 	}
 
-	VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const {
+	VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(
+		const std::vector<VkSurfaceFormatKHR>& availableFormats) const {
 		for (const auto& availableFormat : availableFormats) {
-			if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+			if (
+				availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
+				availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 				return availableFormat;
 			}
 		}
 		return availableFormats[0];
 	}
 
-	VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const {
+	VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(
+		const std::vector<VkPresentModeKHR>& availablePresentModes) const {
 		for (const auto& availablePresentMode : availablePresentModes) {
-			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-				return availablePresentMode;
-			}
+			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) { return availablePresentMode; }
 		}
 
 		return VK_PRESENT_MODE_FIFO_KHR;
@@ -67,12 +77,14 @@ namespace Geg {
 			int height;
 			glfwGetFramebufferSize(window, &width, &height);
 
-			VkExtent2D actualExtent = {
-					static_cast<uint32_t>(width),
-					static_cast<uint32_t>(height)};
+			VkExtent2D actualExtent = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 
-			actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-			actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+			actualExtent.width = std::clamp(
+				actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+			actualExtent.height = std::clamp(
+				actualExtent.height,
+				capabilities.minImageExtent.height,
+				capabilities.maxImageExtent.height);
 
 			return actualExtent;
 		}
@@ -81,14 +93,20 @@ namespace Geg {
 	void VulkanSwapChain::createSwapChain() {
 		SwapChainSupportDetails supportDetails;
 		querySwapChainSupport(supportDetails);
-		GEG_CORE_ASSERT(!supportDetails.formats.empty() && !supportDetails.presentModes.empty(), "Swap chain formats and present modes arn't supported");
+		GEG_CORE_ASSERT(
+			!supportDetails.formats.empty() && !supportDetails.presentModes.empty(),
+			"Swap chain formats and present modes arn't supported");
 
 		VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(supportDetails.formats);
 		VkPresentModeKHR presentMode = chooseSwapPresentMode(supportDetails.presentModes);
 		VkExtent2D extent = chooseSwapExtent(supportDetails.capabilities);
 
+		GEG_CORE_WARN("Swapchain created \n w:{}, h:{}", extent.width, extent.height);
+
 		unsigned int imageCount = supportDetails.capabilities.minImageCount + 1;
-		if (supportDetails.capabilities.maxImageCount > 0 && imageCount > supportDetails.capabilities.maxImageCount) {
+		if (
+			supportDetails.capabilities.maxImageCount > 0 &&
+			imageCount > supportDetails.capabilities.maxImageCount) {
 			imageCount = supportDetails.capabilities.maxImageCount;
 		}
 
@@ -148,8 +166,13 @@ namespace Geg {
 			createInfo.subresourceRange.baseArrayLayer = 0;
 			createInfo.subresourceRange.layerCount = 1;
 
-			VkResult result = vkCreateImageView(device->getDevice(), &createInfo, nullptr, &swapChainImageViews[i]);
-			GEG_CORE_ASSERT(result == VK_SUCCESS, "can't create image view for image index {} in the swap chain images", i);
+			VkResult result =
+				vkCreateImageView(device->getDevice(), &createInfo, nullptr, &swapChainImageViews[i]);
+			GEG_CORE_ASSERT(
+				result == VK_SUCCESS,
+				"can't create image view for image index "
+				"{} in the swap chain images",
+				i);
 		}
 	}
 
@@ -192,9 +215,12 @@ namespace Geg {
 		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 		dependency.dstSubpass = 0;
 		dependency.srcAccessMask = 0;
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		dependency.srcStageMask =
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependency.dstStageMask =
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependency.dstAccessMask =
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 		std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
 
@@ -207,7 +233,8 @@ namespace Geg {
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
-		VkResult result = vkCreateRenderPass(device->getDevice(), &renderPassInfo, nullptr, &renderPass);
+		VkResult result =
+			vkCreateRenderPass(device->getDevice(), &renderPassInfo, nullptr, &renderPass);
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "can't craete render pass");
 	}
 
@@ -215,9 +242,7 @@ namespace Geg {
 		swapChainFramebuffers.resize(swapChainImageViews.size());
 
 		for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-			std::array<VkImageView, 2> attachments = {
-					swapChainImageViews[i],
-					depthImageView};
+			std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageView};
 
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -228,7 +253,8 @@ namespace Geg {
 			framebufferInfo.height = swapChainExtent.height;
 			framebufferInfo.layers = 1;
 
-			VkResult result = vkCreateFramebuffer(device->getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+			VkResult result = vkCreateFramebuffer(
+				device->getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
 			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create frame buffers");
 		}
 	}
@@ -252,8 +278,7 @@ namespace Geg {
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 		VkResult result = vkCreateImage(device->getDevice(), &imageInfo, nullptr, &depthImage);
-		if (result != VK_SUCCESS)
-			GEG_CORE_ERROR("Can't create a depth buffer");
+		if (result != VK_SUCCESS) GEG_CORE_ERROR("Can't create a depth buffer");
 
 		VkMemoryRequirements memRequirements;
 		vkGetImageMemoryRequirements(device->getDevice(), depthImage, &memRequirements);
@@ -262,9 +287,9 @@ namespace Geg {
 		allocationInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 		allocationInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		result = vmaCreateImage(vmaAllocator, &imageInfo, &allocationInfo, &depthImage, &depthAllocation, nullptr);
-		if (result != VK_SUCCESS)
-			GEG_CORE_ERROR("Can't allocate a depth image");
+		result = vmaCreateImage(
+			vmaAllocator, &imageInfo, &allocationInfo, &depthImage, &depthAllocation, nullptr);
+		if (result != VK_SUCCESS) GEG_CORE_ERROR("Can't allocate a depth image");
 
 		VkImageViewCreateInfo viewInfo{};
 		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -278,8 +303,7 @@ namespace Geg {
 		viewInfo.subresourceRange.layerCount = 1;
 
 		result = vkCreateImageView(device->getDevice(), &viewInfo, nullptr, &depthImageView);
-		if (result != VK_SUCCESS)
-			GEG_CORE_ERROR("Can't create depth image views");
+		if (result != VK_SUCCESS) GEG_CORE_ERROR("Can't create depth image views");
 	}
 
 	void VulkanSwapChain::cleanUp() {
@@ -296,15 +320,29 @@ namespace Geg {
 		GEG_CORE_INFO("Swap chain destroyed");
 	}
 
-	void VulkanSwapChain::handleResize() {
-		cleanUp();
+	void VulkanSwapChain::handleResize(int width, int height) {
+		if (width == 0 || height == 0) { return; }
+		if (width == swapChainExtent.width && height == swapChainExtent.height) { return; }
+
+		vkDeviceWaitIdle(device->getDevice());
+
+		for (auto framebuffer : swapChainFramebuffers) {
+			vkDestroyFramebuffer(device->getDevice(), framebuffer, nullptr);
+		}
+		for (auto imageView : swapChainImageViews) {
+			vkDestroyImageView(device->getDevice(), imageView, nullptr);
+		}
+		vkDestroyImageView(device->getDevice(), depthImageView, nullptr);
+		vmaDestroyImage(vmaAllocator, depthImage, depthAllocation);
+		vkDestroySwapchainKHR(device->getDevice(), swapChain, nullptr);
+
 		createSwapChain();
 		createDepthResources();
 		createImageViews();
-		createRenderPass();
+		/* createRenderPass(); */
 		createFramebuffers();
 
-		GEG_CORE_INFO("swap chain created");
+		GEG_CORE_WARN("swap chain recreated");
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

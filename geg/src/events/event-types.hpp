@@ -6,7 +6,7 @@
                             EventType eventType = ev;\
                             [[nodiscard]] EventType getEventType() const override {return eventType;}
 
-namespace Geg {
+namespace geg {
 
 	// ---------------------- window & app events ---------------------------------------------------- //
 	class WindowCloseEvent : public Event {

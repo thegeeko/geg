@@ -2,7 +2,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-namespace Geg {
+namespace geg {
 	MeshAsset::MeshAsset(std::vector<Vertex>& _vertices, std::vector<uint32_t>& _indices):
 			vertices(_vertices), indices(_indices) {
 		setup();
@@ -13,4 +13,4 @@ namespace Geg {
 		ibo = Ref<IndexBuffer>(IndexBuffer::create(indices.data(), indices.size() * sizeof indices[0]));
 		vbo->setLayout(Vertex::getLayout());
 	}
-}		 // namespace Geg
+}		 // namespace geg

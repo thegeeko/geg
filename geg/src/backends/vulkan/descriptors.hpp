@@ -4,7 +4,7 @@
 
 #include "backends/vulkan/vulkan-device.hpp"
 
-namespace Geg {
+namespace geg {
 	class DescriptorAllocator {
 	public:
 		DescriptorAllocator(VulkanDevice* _device);
@@ -97,4 +97,4 @@ namespace Geg {
 		DescriptorAllocator* alloc;
 	};
 
-}		 // namespace Geg
+}		 // namespace geg

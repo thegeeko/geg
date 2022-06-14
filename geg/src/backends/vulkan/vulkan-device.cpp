@@ -9,7 +9,7 @@ static const bool enableValidationLayers = true;
 static const bool enableValidationLayers = false;
 #endif
 
-namespace Geg {
+namespace geg {
 
 	static VkResult CreateDebugUtilsMessengerEXT(
 			VkInstance instance,
@@ -260,4 +260,4 @@ namespace Geg {
 		queue.viable = foundGF && foundPF;
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

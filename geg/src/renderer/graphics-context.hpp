@@ -2,7 +2,7 @@
 
 #include "GLFW/glfw3.h"
 
-namespace Geg {
+namespace geg {
 	class GraphicsContext {
 	public:
 		virtual ~GraphicsContext() = default;
@@ -12,4 +12,4 @@ namespace Geg {
 		static GraphicsContext* create(GLFWwindow* _windowPtr);
 		
 	};
-}		 // namespace Geg
+}		 // namespace geg

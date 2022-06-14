@@ -1,13 +1,13 @@
 #include "geg-pch.hpp"
 
-extern Geg::App* Geg::createApp();
+extern geg::App* geg::createApp();
 
 int main() {
-	Geg::Logger::init();
+	geg::Logger::init();
 	GEG_CORE_INFO("Hi :3");
 	GEG_INFO("Hi :3");
 
-	auto appIns = Geg::createApp();
+	auto appIns = geg::createApp();
 	appIns->start();
 	delete appIns;
 }

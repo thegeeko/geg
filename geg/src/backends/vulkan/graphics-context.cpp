@@ -6,10 +6,9 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
-namespace Geg {
+namespace geg {
 
-	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _window):
-			window(_window) {
+	VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* _window): window(_window) {
 		// device and swapchain
 		device = new VulkanDevice(window);
 
@@ -54,10 +53,12 @@ namespace Geg {
 		// @FIXME I need to do this .. it crashes rn
 
 		GEG_CORE_TRACE("Window resize {} / {}", width, height);
-		// auto apiHandle = dynamic_cast<VulkanRendererAPI*>(Renderer::getApiHandel());
-		// vkDeviceWaitIdle(device->getDevice());
-		// swapChain->handleResize();
-		// apiHandle->clearPipelineCache();
+		
+
+		auto apiHandle = dynamic_cast<VulkanRendererAPI*>(Renderer::getApiHandel());
+		vkDeviceWaitIdle(device->getDevice());
+		apiHandle->clearPipelineCache();
+		swapChain->handleResize(width, height);
 	}
 
 	//============= Static helper functions ======================
@@ -70,9 +71,10 @@ namespace Geg {
 	 * @param size the size of the data
 	 * @param bufferHandle vulkan buffer handle which the data will be copied to
 	 */
-	void VulkanGraphicsContext::uploadDataToBuffer(const void* data, size_t size, VkBuffer bufferHandle) {
-		auto context = dynamic_cast<VulkanGraphicsContext*>(
-				App::get().getWindow().getGraphicsContext());
+	void VulkanGraphicsContext::uploadDataToBuffer(
+		const void* data, size_t size, VkBuffer bufferHandle) {
+		auto context =
+			dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -82,19 +84,14 @@ namespace Geg {
 
 		VmaAllocationCreateInfo allocInfo = {};
 		allocInfo.usage = VMA_MEMORY_USAGE_CPU_COPY;
-		allocInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-															VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+		allocInfo.requiredFlags =
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 		VkBuffer stagingBuffer;
 		VmaAllocation stagingAlloc;
 
 		VkResult result = vmaCreateBuffer(
-				context->allocator,
-				&bufferInfo,
-				&allocInfo,
-				&stagingBuffer,
-				&stagingAlloc,
-				nullptr);
+			context->allocator, &bufferInfo, &allocInfo, &stagingBuffer, &stagingAlloc, nullptr);
 
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create staging buffer");
 
@@ -108,56 +105,6 @@ namespace Geg {
 		vmaDestroyBuffer(context->allocator, stagingBuffer, stagingAlloc);
 	}
 
-	void VulkanGraphicsContext::uploadDataToImage(const void* data, size_t size, VkImage imageHandle, uint32_t width, uint32_t height) {
-		auto context = dynamic_cast<VulkanGraphicsContext*>(
-				App::get().getWindow().getGraphicsContext());
-
-		VkBufferCreateInfo bufferInfo{};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = size;
-		bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		VmaAllocationCreateInfo allocInfo = {};
-		allocInfo.usage = VMA_MEMORY_USAGE_CPU_COPY;
-		allocInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-															VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		VkBuffer stagingBuffer;
-		VmaAllocation stagingAlloc;
-
-		VkResult result = vmaCreateBuffer(
-				context->allocator,
-				&bufferInfo,
-				&allocInfo,
-				&stagingBuffer,
-				&stagingAlloc,
-				nullptr);
-
-		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create staging buffer");
-
-		void* mappingAddr;
-		vmaMapMemory(context->allocator, stagingAlloc, &mappingAddr);
-		memcpy(mappingAddr, data, size);
-		vmaUnmapMemory(context->allocator, stagingAlloc);
-
-		transitionImageLayout(
-				imageHandle,
-				VK_FORMAT_R8G8B8A8_SRGB,
-				VK_IMAGE_LAYOUT_UNDEFINED,
-				VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-		copyBufferToImage(stagingBuffer, imageHandle, width, height);
-
-		vmaDestroyBuffer(context->allocator, stagingBuffer, stagingAlloc);
-
-		transitionImageLayout(
-				imageHandle,
-				VK_FORMAT_R8G8B8A8_SRGB,
-				VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	}
-
 	/**
 	 * @brief
 	 * 	record a copy command from @param srcBuffer to @param dstBuffer
@@ -166,7 +113,8 @@ namespace Geg {
 	 * @param dstBuffer
 	 * @param size
 	 */
-	void VulkanGraphicsContext::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+	void VulkanGraphicsContext::copyBuffer(
+		VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
 		auto commandBuffer = beginSingleTimeCommand();
 
 		VkBufferCopy copyRegion{};
@@ -179,7 +127,54 @@ namespace Geg {
 		endSingleTimeCommand(commandBuffer);
 	}
 
-	void VulkanGraphicsContext::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+	void VulkanGraphicsContext::uploadDataToImage(
+		const void* data, size_t size, VkImage imageHandle, uint32_t width, uint32_t height) {
+		auto context =
+			dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
+
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VmaAllocationCreateInfo allocInfo = {};
+		allocInfo.usage = VMA_MEMORY_USAGE_CPU_COPY;
+		allocInfo.requiredFlags =
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+		VkBuffer stagingBuffer;
+		VmaAllocation stagingAlloc;
+
+		VkResult result = vmaCreateBuffer(
+			context->allocator, &bufferInfo, &allocInfo, &stagingBuffer, &stagingAlloc, nullptr);
+
+		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create staging buffer");
+
+		void* mappingAddr;
+		vmaMapMemory(context->allocator, stagingAlloc, &mappingAddr);
+		memcpy(mappingAddr, data, size);
+		vmaUnmapMemory(context->allocator, stagingAlloc);
+
+		transitionImageLayout(
+			imageHandle,
+			VK_FORMAT_R8G8B8A8_SRGB,
+			VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		copyBufferToImage(stagingBuffer, imageHandle, width, height);
+
+		vmaDestroyBuffer(context->allocator, stagingBuffer, stagingAlloc);
+
+		transitionImageLayout(
+			imageHandle,
+			VK_FORMAT_R8G8B8A8_SRGB,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+
+	void VulkanGraphicsContext::transitionImageLayout(
+		VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
 		VkCommandBuffer commandBuffer = beginSingleTimeCommand();
 		VkImageMemoryBarrier barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -197,13 +192,16 @@ namespace Geg {
 		VkPipelineStageFlags srcStage;
 		VkPipelineStageFlags dstStage;
 
-		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+		if (
+			oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
 			barrier.srcAccessMask = 0;
 			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 			srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-		} else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+		} else if (
+			oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+			newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
@@ -213,22 +211,13 @@ namespace Geg {
 			GEG_CORE_ERROR("Unsupported image transition");
 		}
 
-		vkCmdPipelineBarrier(
-				commandBuffer,
-				srcStage,
-				dstStage,
-				0,
-				0,
-				nullptr,
-				0,
-				nullptr,
-				1,
-				&barrier);
+		vkCmdPipelineBarrier(commandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
 		endSingleTimeCommand(commandBuffer);
 	}
 
-	void VulkanGraphicsContext::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+	void VulkanGraphicsContext::copyBufferToImage(
+		VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 		VkCommandBuffer commandBuffer = beginSingleTimeCommand();
 		VkBufferImageCopy region{};
 		region.bufferOffset = 0;
@@ -241,18 +230,10 @@ namespace Geg {
 		region.imageSubresource.layerCount = 1;
 
 		region.imageOffset = {0, 0, 0};
-		region.imageExtent = {
-				width,
-				height,
-				1};
+		region.imageExtent = {width, height, 1};
 
 		vkCmdCopyBufferToImage(
-				commandBuffer,
-				buffer,
-				image,
-				VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				1,
-				&region);
+			commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
 		endSingleTimeCommand(commandBuffer);
 	}
@@ -265,8 +246,8 @@ namespace Geg {
 	 * @return VkCommandBuffer
 	 */
 	VkCommandBuffer VulkanGraphicsContext::beginSingleTimeCommand() {
-		auto context = dynamic_cast<VulkanGraphicsContext*>(
-				App::get().getWindow().getGraphicsContext());
+		auto context =
+			dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -291,8 +272,8 @@ namespace Geg {
 	 * @param commandBuffer the command to be
 	 */
 	void VulkanGraphicsContext::endSingleTimeCommand(VkCommandBuffer commandBuffer) {
-		auto context = dynamic_cast<VulkanGraphicsContext*>(
-				App::get().getWindow().getGraphicsContext());
+		auto context =
+			dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 
 		vkEndCommandBuffer(commandBuffer);
 
@@ -306,4 +287,4 @@ namespace Geg {
 
 		vkFreeCommandBuffers(context->device->getDevice(), context->commandPool, 1, &commandBuffer);
 	}
-}		 // namespace Geg
+}		 // namespace geg

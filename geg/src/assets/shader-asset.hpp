@@ -3,7 +3,7 @@
 
 #include "shaderc/shaderc.hpp"
 
-namespace Geg {
+namespace geg {
 	struct ShaderSource {
 		std::string vert;
 		std::string frag;
@@ -22,4 +22,4 @@ namespace Geg {
 		std::vector<uint32_t> compile(const std::string& src, shaderc_shader_kind shader);
 		void setup();
 	};
-} // namespace Geg
+} // namespace geg

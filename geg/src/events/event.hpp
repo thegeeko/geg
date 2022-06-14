@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Geg {
+namespace geg {
 
 	enum class EventType {
 		None = 0,

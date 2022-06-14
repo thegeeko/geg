@@ -11,7 +11,7 @@ using std::chrono::time_point;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
-namespace Geg {
+namespace geg {
 		static bool timerInit = false; // check if this the first time
 		static time_point<high_resolution_clock> startTime; // high reslotion timer for the engine
 		static float lastFrameTime; // to calculate delta time
@@ -44,20 +44,20 @@ namespace Geg {
 
 			lastFrameTime = gegTime;
 
-			if (Geg::Input::isKeyPressed(GEG_KEY_SPACE)) {
+			if (geg::Input::isKeyPressed(GEG_KEY_SPACE)) {
 				GEG_CORE_INFO("----------- TIME ------------");
 				GEG_CORE_TRACE("Time : {}", std::to_string(Time::getTime()));
 				GEG_CORE_TRACE("TimeMs : {}", Time::getTimeMs());
-				GEG_CORE_TRACE("EngineTime : {}", std::to_string(Time::getGegTime()));
-				GEG_CORE_TRACE("EngineTimeMs : {}", Time::getGegTimeMs());
+				GEG_CORE_TRACE("EngineTime : {}", std::to_string(Time::getgegTime()));
+				GEG_CORE_TRACE("EngineTimeMs : {}", Time::getgegTimeMs());
 				GEG_CORE_TRACE("EngineDeltaTime : {}", Time::getDeltaTime());
 			}
 		}
 
 		const long& Time::getTime() { return time; };
 		const long& Time::getTimeMs() { return timeMs; };
-		const double& Time::getGegTime() { return gegTime; };
-		const double& Time::getGegTimeMs() { return gegTimeMs; };
+		const double& Time::getgegTime() { return gegTime; };
+		const double& Time::getgegTimeMs() { return gegTimeMs; };
 		const float& Time::getDeltaTime() { return deltaTime; };
 
-}		 // namespace Geg::Time
+}		 // namespace geg::Time

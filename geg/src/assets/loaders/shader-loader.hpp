@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "assets/shader-asset.hpp"
 
-namespace Geg {
+namespace geg {
 	class ShaderLoader {
 	public:
 		static ShaderAsset load(const std::string& path);
@@ -11,4 +11,4 @@ namespace Geg {
 		std::pair<uint32_t, uint32_t> vertexIndexes{0, 0}; // start - end
 		std::pair<uint32_t, uint32_t> fragmentIndexes{0, 0}; // start - end
 	};
-} // namespace Geg
+} // namespace geg

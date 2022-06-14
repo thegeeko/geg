@@ -3,7 +3,7 @@
 #include "geg-pch.hpp"
 #include "renderer/buffers.hpp"
 
-namespace Geg {
+namespace geg {
 	struct Vertex {
 		glm::vec3 position;
 		glm::vec3 color;
@@ -36,4 +36,4 @@ namespace Geg {
 		// set up the vbo and ibo
 		void setup();
 	};
-} // namespace Geg
+} // namespace geg

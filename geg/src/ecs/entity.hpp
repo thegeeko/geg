@@ -3,7 +3,7 @@
 #include "scene.hpp"
 #include "entt.hpp"
 
-namespace Geg {
+namespace geg {
 
 	class Entity {
 	public:

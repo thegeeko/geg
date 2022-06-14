@@ -5,7 +5,7 @@
 #include "renderer-api.hpp"
 #include "renderer/cams/perspective.hpp"
 
-namespace Geg {
+namespace geg {
 
 	constexpr uint32_t MAX_POINT_LIGHTS = 100;
 
@@ -71,4 +71,4 @@ namespace Geg {
 	private:
 		static RendererAPI* currentAPI;
 	};
-}		 // namespace Geg
+}		 // namespace geg

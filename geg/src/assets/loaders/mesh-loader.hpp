@@ -3,7 +3,7 @@
 #include "assets/mesh-asset.hpp"
 #include "assimp/scene.h"
 
-namespace Geg {
+namespace geg {
 	class MeshLoader {
 	public:
 		static MeshAsset loadModel(const std::string& path);
@@ -17,4 +17,4 @@ namespace Geg {
 		void processNodes(aiNode* node, const aiScene* scene);
 		void processMesh(aiMesh* mesh, const aiScene* scene);
 	};
-} // namespace Geg
+} // namespace geg

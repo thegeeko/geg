@@ -9,7 +9,7 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "backends/vulkan/pipeline.hpp"
 
-namespace Geg {
+namespace geg {
 	class VulkanUniform {
 	public:
 		VulkanUniform(int _setIndex, size_t size, int _instancesCount);
@@ -35,4 +35,4 @@ namespace Geg {
 
 		static int uboCount;
 	};
-}		 // namespace Geg
+}		 // namespace geg

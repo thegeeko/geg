@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include "backends/vulkan/graphics-context.hpp"
 
-namespace Geg {
+namespace geg {
 
 	static void checkVulkanErrors(VkResult result) {
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "IMGUI ERR : ", result);
@@ -30,4 +30,4 @@ namespace Geg {
 		VkRenderPass renderPass;
 		std::vector<VkCommandBuffer> commandBuffers;
 	};
-}		 // namespace Geg
+}		 // namespace geg

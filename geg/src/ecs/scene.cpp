@@ -4,7 +4,7 @@
 #include "entity.hpp"
 #include "renderer/renderer.hpp"
 
-namespace Geg {
+namespace geg {
 	Scene::Scene() {}
 
 	Scene::~Scene() {}
@@ -63,4 +63,4 @@ namespace Geg {
 
 		Renderer::endScene();
 	}
-}		 // namespace Geg
+}		 // namespace geg

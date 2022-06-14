@@ -2,7 +2,7 @@
 
 #include "shader.hpp"
 
-namespace Geg {
+namespace geg {
 
 	struct BufferElement {
 		ShaderDataType type;
@@ -71,4 +71,4 @@ namespace Geg {
 		virtual void unbind() const = 0;
 		static IndexBuffer *create(uint32_t *indices, uint32_t size);
 	};
-}		 // namespace Geg
+}		 // namespace geg

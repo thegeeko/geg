@@ -1,5 +1,5 @@
 #include "event.hpp"
 
-namespace Geg::EvMan {
+namespace geg::EvMan {
 
 }

@@ -1,6 +1,6 @@
 #include "index-buffer.hpp"
 
-namespace Geg {
+namespace geg {
 	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* _indecies, uint32_t _size):
 			context(dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext())),
 			size(_size),
@@ -38,4 +38,4 @@ namespace Geg {
 		GEG_CORE_INFO("Created index buffer");
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

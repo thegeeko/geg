@@ -1,6 +1,6 @@
 #include "vertex-buffer.hpp"
 
-namespace Geg {
+namespace geg {
 	VulkanVertexBuffer::VulkanVertexBuffer(float* _vertices, unsigned int _size):
 			context(dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext())),
 			size(_size),
@@ -159,4 +159,4 @@ namespace Geg {
 		}
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

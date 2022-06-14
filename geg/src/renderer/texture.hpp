@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Geg {
+namespace geg {
 	class Texture {
 	public:
 		virtual ~Texture() = default;
@@ -8,4 +8,4 @@ namespace Geg {
 
 		static Texture* create(const std::string& path);
 	};
-}		 // namespace Geg
+}		 // namespace geg

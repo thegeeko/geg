@@ -44,7 +44,7 @@
 		return this->fn(std::forward<decltype(args)>(args)...); \
 	}
 
-namespace Geg {
+namespace geg {
 
 	template<typename T>
 	using Scope = std::unique_ptr<T>;
@@ -66,8 +66,8 @@ namespace Geg {
 		std::vector<char> readFileAsBinary(const std::string &filePath);
 	}		 // namespace Utils
 
-}		 // namespace Geg
+}		 // namespace geg
 
 #ifdef GEG_USE_VULKAN
-const Geg::GraphicsAPI GEG_CURRENT_API = Geg::GraphicsAPI::Vulkan;
+const geg::GraphicsAPI GEG_CURRENT_API = geg::GraphicsAPI::Vulkan;
 #endif

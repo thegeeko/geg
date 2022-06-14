@@ -2,7 +2,7 @@
 
 #include "glm/matrix.hpp"
 
-namespace Geg {
+namespace geg {
 	class Camera {
 	public:
 		Camera(float fov, float aspectRatio, float near, float far);
@@ -16,4 +16,4 @@ namespace Geg {
 	private:
 		glm::mat4 projView{};
 	};
-}		 // namespace Geg
+}		 // namespace geg

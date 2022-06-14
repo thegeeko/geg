@@ -6,7 +6,7 @@
 #include "vendor/imgui/backends/imgui_impl_glfw.h"
 #include "vendor/imgui/backends/imgui_impl_vulkan.h"
 
-namespace Geg {
+namespace geg {
 	ImGuiLayer::ImGuiLayer() {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
 		window = App::get().getWindow().getRawWindow();
@@ -161,4 +161,4 @@ namespace Geg {
 			ImGui::RenderPlatformWindowsDefault();
 		}
 	}
-}		 // namespace Geg
+}		 // namespace geg

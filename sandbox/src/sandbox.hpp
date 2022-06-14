@@ -4,7 +4,7 @@
 #include "camera-controller.hpp"
 #include "ecs/entity.hpp"
 
-class Level: public Geg::Layer {
+class Level: public geg::Layer {
 private:
 	CamController camController;
 
@@ -12,22 +12,22 @@ private:
 	std::string shaderPath = std::string(" ", 256);
 	uint32_t activeId;
 
-	Geg::Scene scene;
-	Geg::Entity vase;
-	Geg::Entity light;
-	Geg::Entity light2;
-	Geg::Entity floor;
+	geg::Scene scene;
+	geg::Entity vase;
+	geg::Entity light;
+	geg::Entity light2;
+	geg::Entity floor;
 
-	void drawComponents(Geg::Entity entity);
+	void drawComponents(geg::Entity entity);
 
 public:
 	Level();
-	void onEvent(Geg::Event& event) override;
+	void onEvent(geg::Event& event) override;
 	void onUpdate(float deltaTime) override;
 	void onUiUpdate(float deltaTime) override;
 };
 
-class sandboxApp: public Geg::App {
+class sandboxApp: public geg::App {
 	Level* lvl;
 
 public:

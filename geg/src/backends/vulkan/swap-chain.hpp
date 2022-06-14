@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 #include "vk_mem_alloc.h"
 #include "vulkan-device.hpp"
 
-namespace Geg {
+namespace geg {
 
 	struct SwapChainSupportDetails {
 		VkSurfaceCapabilitiesKHR capabilities;
@@ -22,10 +22,12 @@ namespace Geg {
 		[[nodiscard]] const VkRenderPass& getRenderPass() const { return renderPass; }
 		[[nodiscard]] const VkExtent2D& getSwapChainExtent() const { return swapChainExtent; }
 		[[nodiscard]] const VkFormat& getSwapChainImageFormat() const { return swapChainImageFormat; }
-		[[nodiscard]] const std::vector<VkFramebuffer>& getSwapChainFrameBuffers() const { return swapChainFramebuffers; }
+		[[nodiscard]] const std::vector<VkFramebuffer>& getSwapChainFrameBuffers() const {
+			return swapChainFramebuffers;
+		}
 		[[nodiscard]] const std::vector<VkImage>& getSwapChainImages() const { return swapChainImages; }
 
-		void handleResize();
+		void handleResize(int width, int height);
 
 	private:
 		VulkanDevice* device;
@@ -48,8 +50,10 @@ namespace Geg {
 		VkRenderPass renderPass;
 
 		void querySwapChainSupport(SwapChainSupportDetails& details) const;
-		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
-		VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+		VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+			const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
+		VkPresentModeKHR chooseSwapPresentMode(
+			const std::vector<VkPresentModeKHR>& availablePresentModes) const;
 		VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 
 		void createSwapChain();
@@ -59,4 +63,4 @@ namespace Geg {
 		void createDepthResources();
 		void cleanUp();
 	};
-}		 // namespace Geg
+}		 // namespace geg

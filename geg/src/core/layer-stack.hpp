@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Geg {
+namespace geg {
 	class LayerStack {
 	public:
 		LayerStack() = default;
@@ -24,4 +24,4 @@ namespace Geg {
 		std::vector<Layer *> layers;
 		unsigned int layerInsertIndex = 0;
 	};
-}		 // namespace Geg
+}		 // namespace geg

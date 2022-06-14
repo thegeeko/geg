@@ -5,7 +5,7 @@
 
 #include "assimp/Importer.hpp"
 
-namespace Geg {
+namespace geg {
 	MeshAsset MeshLoader::loadModel(const std::string& path) {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(
@@ -79,4 +79,4 @@ namespace Geg {
 				indices.push_back(face.mIndices[j]);
 		}
 	}
-} // namespace Geg
+} // namespace geg

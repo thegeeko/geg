@@ -11,7 +11,7 @@
 #include "glm/matrix.hpp"
 #include "renderer/texture.hpp"
 
-namespace Geg {
+namespace geg {
 	struct NameComponent {
 		std::string name;
 
@@ -118,4 +118,4 @@ namespace Geg {
 			color = _color;
 		};
 	};
-}		 // namespace Geg
+}		 // namespace geg

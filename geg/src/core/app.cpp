@@ -3,7 +3,7 @@
 #include "renderer/renderer.hpp"
 #include "time/time.hpp"
 
-namespace Geg {
+namespace geg {
 	App *App::i_Ins = nullptr;
 
 	App::App() {
@@ -16,9 +16,9 @@ namespace Geg {
 
 		i_Ins = this;		 // Singleton
 
+		// @FIXME
 		// Init rendering api
 		// this should be owned by the graphics context
-		// will fix
 		Renderer::initAPI();
 
 		// Setup imgui
@@ -74,4 +74,4 @@ namespace Geg {
 		return true;
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

@@ -1,6 +1,6 @@
 #include "window.hpp"
 
-namespace Geg {
+namespace geg {
 	static uint8_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char *description) {
@@ -139,4 +139,4 @@ namespace Geg {
 		/* state ? glfwSwapInterval(1) : glfwSwapInterval(0); */
 		info.VSync = state;
 	}
-}		 // namespace Geg
+}		 // namespace geg

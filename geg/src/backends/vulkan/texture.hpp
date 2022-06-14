@@ -3,7 +3,7 @@
 #include "backends/vulkan/pipeline.hpp"
 #include "renderer/texture.hpp"
 
-namespace Geg {
+namespace geg {
 	class VulkanTexture: public Texture {
 	public:
 		VulkanTexture();		// creates dummy texture
@@ -33,4 +33,4 @@ namespace Geg {
 		void createImageViews();
 		void createTextureSampler();
 	};
-}		 // namespace Geg
+}		 // namespace geg

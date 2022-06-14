@@ -2,7 +2,7 @@
 
 #include "core/logger.hpp"
 
-namespace Geg {
+namespace geg {
 
 	enum class ShaderDataType {
 		None = 0,
@@ -46,4 +46,4 @@ namespace Geg {
 		virtual void unBind() const = 0;
 		static Shader* create(const std::vector<uint32_t>& vertSrc, const std::vector<uint32_t>& fragSrc);
 	};
-}		 // namespace Geg
+}		 // namespace geg

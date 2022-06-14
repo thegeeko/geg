@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Geg {
+namespace geg {
 	class Layer {
 	public:
 		Layer(const std::string &name = "Layer"):
@@ -18,4 +18,4 @@ namespace Geg {
 		std::string debugName;
 	};
 
-}		 // namespace Geg
+}		 // namespace geg

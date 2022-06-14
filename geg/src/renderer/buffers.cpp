@@ -4,7 +4,7 @@
 #include "backends/vulkan/index-buffer.hpp"
 #include "renderer.hpp"
 
-namespace Geg {
+namespace geg {
 
 	VertexBuffer *VertexBuffer::create(float *vertices, unsigned int size) {
 		switch (Renderer::getAPI()) {
@@ -26,4 +26,4 @@ namespace Geg {
 		elements.push_back(newElement);
 		stride += ShaderDataTypeSize(dataType);
 	}
-}		 // namespace Geg
+}		 // namespace geg

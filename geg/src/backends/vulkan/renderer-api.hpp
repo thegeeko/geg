@@ -8,7 +8,7 @@
 #include "renderer/renderer.hpp"
 #include "texture.hpp"
 
-namespace Geg {
+namespace geg {
 
 	struct VulkanFrame {
 		int index;
@@ -67,4 +67,4 @@ namespace Geg {
 		void endRecording();
 		void oncePerFrame();
 	};
-}		 // namespace Geg
+}		 // namespace geg

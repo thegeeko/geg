@@ -4,7 +4,7 @@
 #include "renderer/cams/perspective.hpp"
 #include "renderer/renderer-api.hpp"
 
-namespace Geg {
+namespace geg {
 	RendererAPI* Renderer::currentAPI = nullptr;
 
 	void Renderer::initAPI() {
@@ -45,4 +45,4 @@ namespace Geg {
 		currentAPI->drawMesh(meshData);
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

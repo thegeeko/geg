@@ -1,6 +1,6 @@
 ﻿#include "shader-loader.hpp"
 
-namespace Geg {
+namespace geg {
 
 	const std::string VERTEX_FLAG = "vertex";
 	const std::string FRAGMENT_FLAG = "fragment";

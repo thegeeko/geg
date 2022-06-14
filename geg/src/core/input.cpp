@@ -1,5 +1,5 @@
 #include "input.hpp"
 
-namespace Geg::Input {
+namespace geg::Input {
 
 }

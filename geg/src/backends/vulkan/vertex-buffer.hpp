@@ -6,7 +6,7 @@
 #include "renderer/buffers.hpp"
 #include "vk_mem_alloc.h"
 
-namespace Geg {
+namespace geg {
 	class VulkanVertexBuffer: public VertexBuffer {
 	public:
 		VulkanVertexBuffer(float* vertices, unsigned int size);
@@ -42,4 +42,4 @@ namespace Geg {
 		void createInputAttributeDescription();
 		void createBufferAndAllocateMem();
 	};
-}		 // namespace Geg
+}		 // namespace geg

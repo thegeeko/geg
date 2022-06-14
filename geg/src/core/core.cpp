@@ -6,7 +6,7 @@
 #define GLM_ENABLE_EXPERMENTAL ;
 #include "glm/gtx/hash.hpp"
 
-namespace Geg {
+namespace geg {
 
 	namespace Utils {
 		std::string readFileAsString(const std::string &filePath) {
@@ -42,4 +42,4 @@ namespace Geg {
 
 	}		 // namespace Utils
 
-}		 // namespace Geg
+}		 // namespace geg

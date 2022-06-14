@@ -2,7 +2,7 @@
 
 #include "app.hpp"
 
-namespace Geg::Input {
+namespace geg::Input {
 	static bool isKeyPressed(int keyCode) {
 		return glfwGetKey(App::get().getWindow().getRawWindow(), keyCode);
 	}
@@ -16,4 +16,4 @@ namespace Geg::Input {
 		glfwGetCursorPos(App::get().getWindow().getRawWindow(), &x, &y);
 		return {(float)x, (float)y};
 	}
-}		 // namespace Geg::Input
+}		 // namespace geg::Input

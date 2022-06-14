@@ -6,7 +6,7 @@
 #include "backends/vulkan/graphics-context.hpp"
 #include "renderer/shader.hpp"
 
-namespace Geg {
+namespace geg {
 	class VulkanShader: public Shader {
 	private:
 		VulkanGraphicsContext* context;
@@ -37,4 +37,4 @@ namespace Geg {
 		const std::vector<VkPipelineShaderStageCreateInfo>& getStages() const { return shaderStages; };
 		const ReflectionInfo& getReflectionInfo() const { return reflectionInfo; };
 	};
-}		 // namespace Geg
+}		 // namespace geg

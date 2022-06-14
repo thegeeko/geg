@@ -2,7 +2,7 @@
 
 #include "ecs/components.hpp"
 
-namespace Geg {
+namespace geg {
 	struct GpuSceneData;
 	struct MeshRenderData;
 
@@ -19,4 +19,4 @@ namespace Geg {
 		virtual void drawMesh(const MeshRenderData& meshData) = 0;
 		
 	};
-}		 // namespace Geg
+}		 // namespace geg

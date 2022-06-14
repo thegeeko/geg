@@ -3,13 +3,13 @@
 #include "GLFW/glfw3.h"
 #include "renderer/graphics-context.hpp"
 
-namespace Geg {
+namespace geg {
 
 	struct WindowProps {
 		int width, height;
 		std::string name;
 
-		WindowProps(int w = 1920, int h = 1080, std::string n = "Geg"):
+		WindowProps(int w = 1920, int h = 1080, std::string n = "geg"):
 				width(w), height(h), name(n){};
 	};
 
@@ -39,4 +39,4 @@ namespace Geg {
 
 		WindowInfo info;
 	};
-}		 // namespace Geg
+}		 // namespace geg

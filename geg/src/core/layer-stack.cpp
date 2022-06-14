@@ -1,6 +1,6 @@
 #include "layer-stack.hpp"
 
-namespace Geg {
+namespace geg {
 	LayerStack::~LayerStack() {
 		for (Layer *layer : layers) {
 			layer->onDetach();

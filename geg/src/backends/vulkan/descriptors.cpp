@@ -1,6 +1,6 @@
 #include "descriptors.hpp"
 
-namespace Geg {
+namespace geg {
 
 	// helper function to create pools
 	VkDescriptorPool createPool(VkDevice device, const DescriptorAllocator::PoolSizes& poolSizes, int count, VkDescriptorPoolCreateFlags flags) {
@@ -339,4 +339,4 @@ namespace Geg {
 		return true;
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

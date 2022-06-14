@@ -9,7 +9,7 @@
 #include "renderer/renderer.hpp"
 #include "vendor/imgui/backends/imgui_impl_vulkan.h"
 
-namespace Geg {
+namespace geg {
 
 	VulkanRendererAPI::VulkanRendererAPI() {
 		context = dynamic_cast<VulkanGraphicsContext*>(App::get().getWindow().getGraphicsContext());
@@ -34,10 +34,12 @@ namespace Geg {
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 		for (size_t i = 0; i < VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT; i++) {
-			result = vkCreateSemaphore(context->device->getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
+			result = vkCreateSemaphore(
+				context->device->getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
 			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a semaphore");
 
-			result = vkCreateSemaphore(context->device->getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
+			result = vkCreateSemaphore(
+				context->device->getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
 			GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't create a semaphore");
 		}
 
@@ -51,10 +53,7 @@ namespace Geg {
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocInfo.commandBufferCount = frameBuffersCount;
 
-		result = vkAllocateCommandBuffers(
-				context->device->getDevice(),
-				&allocInfo,
-				commandBuffers);
+		result = vkAllocateCommandBuffers(context->device->getDevice(), &allocInfo, commandBuffers);
 
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't allocate command buffers")
 
@@ -81,7 +80,8 @@ namespace Geg {
 	}
 
 	void VulkanRendererAPI::initGlobalUbo() {
-		globalUbo = std::make_unique<VulkanUniform>(0, sizeof(GpuSceneData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
+		globalUbo = std::make_unique<VulkanUniform>(
+			0, sizeof(GpuSceneData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
 		globalUboData = GpuSceneData{};
 	}
 
@@ -121,13 +121,15 @@ namespace Geg {
 		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassInfo.renderPass = context->swapChain->getRenderPass();
-		renderPassInfo.framebuffer = context->swapChain->getSwapChainFrameBuffers()[frames[nextFrame].index];
+		renderPassInfo.framebuffer =
+			context->swapChain->getSwapChainFrameBuffers()[frames[nextFrame].index];
 		renderPassInfo.renderArea.offset = {0, 0};
 		renderPassInfo.renderArea.extent = context->swapChain->getSwapChainExtent();
 		renderPassInfo.clearValueCount = clearValues.size();
 		renderPassInfo.pClearValues = clearValues.data();
 
-		vkCmdBeginRenderPass(frames[nextFrame].commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(
+			frames[nextFrame].commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
 
 	void VulkanRendererAPI::endRecording() {
@@ -150,12 +152,14 @@ namespace Geg {
 		// create a pipeline for the mesh
 		size_t hash = meshData.rendererC->shader.shaderHash;
 		if (pipelineCache.find(hash) == pipelineCache.end()) {
-			pipelineCache[hash] = std::make_unique<VulkanPipeline>(meshData.meshC->mesh.vbo, meshData.rendererC->shader.shader);
+			pipelineCache[hash] = std::make_unique<VulkanPipeline>(
+				meshData.meshC->mesh.vbo, meshData.rendererC->shader.shader);
 		}
 
 		// object UBO
 		if (objectUbo.find(meshData.id) == objectUbo.end())
-			objectUbo[meshData.id] = std::make_unique<VulkanUniform>(1, sizeof(GpuModelData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
+			objectUbo[meshData.id] = std::make_unique<VulkanUniform>(
+				1, sizeof(GpuModelData), VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT);
 
 		objectUboData.color = meshData.rendererC->color;
 		objectUboData.useTex = meshData.rendererC->useTex;
@@ -168,20 +172,11 @@ namespace Geg {
 		const auto ibo = std::dynamic_pointer_cast<VulkanIndexBuffer>(meshData.meshC->mesh.ibo);
 
 		// record commands
-		vkCmdBindPipeline(
-				commandBuffer,
-				VK_PIPELINE_BIND_POINT_GRAPHICS,
-				pipeline.getPipelineHandle());
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineHandle());
 
-		globalUbo->bindAtOffset(
-				pipeline,
-				commandBuffer,
-				currentInFlightFrame);
+		globalUbo->bindAtOffset(pipeline, commandBuffer, currentInFlightFrame);
 
-		objectUbo[meshData.id]->bindAtOffset(
-				pipeline,
-				commandBuffer,
-				currentInFlightFrame);
+		objectUbo[meshData.id]->bindAtOffset(pipeline, commandBuffer, currentInFlightFrame);
 
 		if (meshData.rendererC->useTex) {
 			const auto tex = std::dynamic_pointer_cast<VulkanTexture>(meshData.rendererC->tex);
@@ -191,43 +186,31 @@ namespace Geg {
 		}
 
 		vkCmdPushConstants(
-				commandBuffer,
-				pipeline.getLayout(),
-				VK_SHADER_STAGE_ALL_GRAPHICS,
-				0,
-				ShaderDataTypeSize(ShaderDataType::Mat4),
-				&meshData.transformC->getTransform());
+			commandBuffer,
+			pipeline.getLayout(),
+			VK_SHADER_STAGE_ALL_GRAPHICS,
+			0,
+			ShaderDataTypeSize(ShaderDataType::Mat4),
+			&meshData.transformC->getTransform());
 
 		vkCmdPushConstants(
-				commandBuffer,
-				pipeline.getLayout(),
-				VK_SHADER_STAGE_ALL_GRAPHICS,
-				ShaderDataTypeSize(ShaderDataType::Mat4),
-				ShaderDataTypeSize(ShaderDataType::Mat4),
-				&meshData.transformC->getNormMat());
+			commandBuffer,
+			pipeline.getLayout(),
+			VK_SHADER_STAGE_ALL_GRAPHICS,
+			ShaderDataTypeSize(ShaderDataType::Mat4),
+			ShaderDataTypeSize(ShaderDataType::Mat4),
+			&meshData.transformC->getNormMat());
 
 		VkBuffer vertexBuffers[] = {vbo->getBufferHandle()};
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-		vkCmdBindIndexBuffer(
-				commandBuffer,
-				ibo->getBufferHandle(),
-				0,
-				VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(commandBuffer, ibo->getBufferHandle(), 0, VK_INDEX_TYPE_UINT32);
 
-		vkCmdDrawIndexed(
-				commandBuffer,
-				ibo->getCount(),
-				1,
-				0,
-				0,
-				0);
+		vkCmdDrawIndexed(commandBuffer, ibo->getCount(), 1, 0, 0, 0);
 	}
 
-	void VulkanRendererAPI::clearPipelineCache() {
-		pipelineCache.clear();
-	};
+	void VulkanRendererAPI::clearPipelineCache() { pipelineCache.clear(); };
 
 	void VulkanRendererAPI::endFrame() {
 		oncePerFrame();
@@ -237,30 +220,22 @@ namespace Geg {
 
 		// Wait for the previous frame
 		vkWaitForFences(
-				context->device->getDevice(),
-				1,
-				&frames[imageIndex].fence,
-				VK_TRUE,
-				UINT64_MAX);
+			context->device->getDevice(), 1, &frames[imageIndex].fence, VK_TRUE, UINT64_MAX);
 
 		// Get the next image
 		vkAcquireNextImageKHR(
-				context->device->getDevice(),
-				context->swapChain->getSwapChain(),
-				UINT64_MAX,
-				imageAvailableSemaphores[currentInFlightFrame],
-				VK_NULL_HANDLE,
-				&imageIndex);
+			context->device->getDevice(),
+			context->swapChain->getSwapChain(),
+			UINT64_MAX,
+			imageAvailableSemaphores[currentInFlightFrame],
+			VK_NULL_HANDLE,
+			&imageIndex);
 
 		// Check if another frame is using the image
 		if (busyFences[imageIndex] != VK_NULL_HANDLE) {
 			// wait for that frame to finish
 			vkWaitForFences(
-					context->device->getDevice(),
-					1,
-					&busyFences[imageIndex],
-					VK_TRUE,
-					UINT64_MAX);
+				context->device->getDevice(), 1, &busyFences[imageIndex], VK_TRUE, UINT64_MAX);
 		}
 
 		// Add the mark the image with the fences of the current frame
@@ -280,17 +255,11 @@ namespace Geg {
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
-		vkResetFences(
-				context->device->getDevice(),
-				1,
-				&frames[imageIndex].fence);
+		vkResetFences(context->device->getDevice(), 1, &frames[imageIndex].fence);
 
 		// submit the queue with the current frame's fence
-		VkResult result = vkQueueSubmit(
-				context->device->getGraphicsQueue(),
-				1,
-				&submitInfo,
-				frames[imageIndex].fence);
+		VkResult result =
+			vkQueueSubmit(context->device->getGraphicsQueue(), 1, &submitInfo, frames[imageIndex].fence);
 
 		GEG_CORE_ASSERT(result == VK_SUCCESS, "Can't submit draw command buffer");
 		vkQueueWaitIdle(context->device->getGraphicsQueue());
@@ -314,4 +283,4 @@ namespace Geg {
 		currentInFlightFrame = (currentInFlightFrame + 1) % VulkanGraphicsContext::MAX_FRAMES_IN_FLIGHT;
 	}
 
-}		 // namespace Geg
+}		 // namespace geg

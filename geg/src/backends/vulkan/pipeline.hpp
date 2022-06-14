@@ -6,7 +6,7 @@
 #include "backends/vulkan/vertex-buffer.hpp"
 #include "renderer/shader.hpp"
 
-namespace Geg {
+namespace geg {
 	class VulkanPipeline {
 	public:
 		VulkanPipeline(
@@ -23,4 +23,4 @@ namespace Geg {
 		VkPipeline pipelineHandle = VK_NULL_HANDLE;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 	};
-} // namespace Geg
+} // namespace geg

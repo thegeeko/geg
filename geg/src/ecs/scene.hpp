@@ -3,7 +3,7 @@
 #include "entt.hpp"
 #include "renderer/cams/perspective.hpp"
 
-namespace Geg {
+namespace geg {
 	class Entity;
 
 	class Scene {
@@ -20,4 +20,4 @@ namespace Geg {
 		entt::registry registry;
 		friend class Entity;
 	};
-} // namespace Geg
+} // namespace geg

@@ -1,5 +1,4 @@
-﻿---
-BasedOnStyle: Google
+﻿BasedOnStyle: Google
 AccessModifierOffset: "-2"
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveMacros: "true"
@@ -26,30 +25,30 @@ BreakAfterJavaFieldAnnotations: "false"
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: "false"
-BreakConstructorInitializers: AfterColon
+BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: AfterColon
 BreakStringLiterals: "true"
-ColumnLimit: "0"
+ColumnLimit: "100"
 CompactNamespaces: "false"
 ConstructorInitializerAllOnOneLineOrOnePerLine: "false"
-ConstructorInitializerIndentWidth: "4"
-ContinuationIndentWidth: "4"
+ConstructorInitializerIndentWidth: "2"
+ContinuationIndentWidth: "2"
 Cpp11BracedListStyle: "true"
-DerivePointerAlignment: "true"
+DerivePointerAlignment: "false"
 DisableFormat: "false"
 FixNamespaceComments: "true"
 IncludeBlocks: Regroup
-IndentCaseLabels: "true"
+IndentCaseLabels: "false"
 IndentPPDirectives: BeforeHash
 IndentWidth: "2"
 IndentWrappedFunctionNames: "true"
-KeepEmptyLinesAtTheStartOfBlocks: "false"
+KeepEmptyLinesAtTheStartOfBlocks: "true"
 Language: Cpp
 MaxEmptyLinesToKeep: "1"
 NamespaceIndentation: All
 PointerAlignment: Left
 ReflowComments: "true"
-SortIncludes: "true"
+SortIncludes: "false"
 SortUsingDeclarations: "true"
 SpaceAfterCStyleCast: "false"
 SpaceAfterLogicalNot: "false"
@@ -66,6 +65,6 @@ SpacesInAngles: "false"
 SpacesInCStyleCastParentheses: "false"
 SpacesInParentheses: "false"
 SpacesInSquareBrackets: "false"
-# Standard: Cpp20
+Standard: Cpp11
 TabWidth: "2"
 UseTab: Always
