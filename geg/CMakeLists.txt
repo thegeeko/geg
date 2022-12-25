@@ -3,7 +3,6 @@ project(geg-engine)
 
 # ========= setup ================
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 set(GCC_COVERAGE_COMPILE_FLAGS "-fPIC")
 set(MSVC_COVERAGE_COMPILE_FLAGS "")
 
@@ -19,10 +18,15 @@ endif()
 find_package(Vulkan REQUIRED)
 
 # 3d models loading
-#find_package(Assimp REQUIRED)
+find_package(Assimp REQUIRED)
 
 # shader compiliation
-find_package(Shaderc REQUIRED)
+# find_package(Shaderc REQUIRED)
+set(SHADERC_SKIP_INSTALL ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_TESTS ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_EXAMPLES ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_COPYRIGHT_CHECK ON CACHE BOOL "" FORCE)
+add_subdirectory(vendor/shaderc)
 
 # shader reflection
 add_subdirectory(vendor/spirv/reflect)
@@ -80,6 +84,10 @@ target_link_libraries(geg PUBLIC stbimage)
 # ==============================================
 
 # =================== include dir ==============================
+if(UNIX)
+  target_include_directories(geg PUBLIC "/usr/local/include")
+  # target_include_directories(geg PUBLIC "/opt/homebrew/include")
+endif()
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(geg PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # ==============================================================

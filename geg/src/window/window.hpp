@@ -6,11 +6,11 @@
 namespace Geg {
 
 	struct WindowProps {
-		int width, height;
+		bool fullscreen;
+		bool windowedFullscreen;
+		int width;
+		int height;
 		std::string name;
-
-		WindowProps(int w = 1920, int h = 1080, std::string n = "Geg"):
-				width(w), height(h), name(n){};
 	};
 
 	class Window {

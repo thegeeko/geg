@@ -11,6 +11,8 @@ namespace Geg {
 
 		// Setup window
 		WindowProps props{};
+    props.windowedFullscreen = true;
+    props.name = "Geg App";
 		window = std::make_unique<Window>(props);
 		window->setEventCallback(GEG_BIND_CB(App::onEvent));
 

@@ -1,5 +1,8 @@
 #include "window.hpp"
 
+#include "GLFW/glfw3.h"
+#include "core/core.hpp"
+
 namespace Geg {
 	static uint8_t s_GLFWWindowCount = 0;
 
@@ -8,24 +11,38 @@ namespace Geg {
 	}
 
 	Window::Window(WindowProps &props) {
-		info.name = props.name;
-		info.height = props.height;
-		info.width = props.width;
-
 		if (s_GLFWWindowCount == 0) {
 			bool success = glfwInit();
 			GEG_CORE_ASSERT(success, "Could not initialize GLFW!");
 
+			if (props.windowedFullscreen || props.fullscreen) {
+				const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+				glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+				glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+				glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+				glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+				info.name = props.name;
+				info.height = mode->height;
+        info.width = mode->width;
+			} else {
+				info.name = props.name;
+				info.height = props.height;
+				info.width = props.width;
+			}
+
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-			glfwSetErrorCallback(GLFWErrorCallback);
 			windowPtr = glfwCreateWindow(
-					props.width,
-					props.height,
+					info.width,
+					info.height,
 					props.name.c_str(),
 					nullptr,
 					nullptr);
 			++s_GLFWWindowCount;
+
+      GEG_ASSERT(windowPtr, "Failed to create window");
 
 			context = GraphicsContext::create(windowPtr);
 			context->init();
@@ -110,7 +127,6 @@ namespace Geg {
 
 			glfwSetCharCallback(windowPtr, [](GLFWwindow *window, uint32_t keycode) {
 				WindowInfo &wi = *(WindowInfo *)glfwGetWindowUserPointer(window);
-
 				KeyTappedEvent e(keycode);
 				wi.eventCallback(e);
 			});

@@ -1,6 +1,7 @@
 #include "sandbox.hpp"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 
 Level::Level() {
 	light = scene.createEntity("light 1");
@@ -131,6 +132,10 @@ void Level::onUpdate(float deltaTime) {
 
 void Level::onUiUpdate(float deltaTime) {
 	camController.drawUi();
+
+	ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+	ImGui::Text("FPS: %f", 1.f / deltaTime);
+	ImGui::End();
 
 	const auto view = scene.getReg().view<Geg::NameComponent>();
 	for (const auto e : view) {

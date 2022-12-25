@@ -13,3 +13,6 @@
 [submodule "geg/vendor/vma"]
 	path = geg/vendor/vma
 	url = https://www.github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "geg/vendor/shaderc"]
+	path = geg/vendor/shaderc
+	url = https://github.com/google/shaderc.git
