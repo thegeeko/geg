@@ -2,6 +2,9 @@
 
 geg is a vulkan / DX12 game engine (currently vulkan only) I'm working on to understand how game engines structured and exploring this area of game/systems dev it's written in C++17 and glsl for shaders
 
+https://user-images.githubusercontent.com/36560490/228439882-3eda3bc9-bbdb-443b-89f8-9b0916de6a7a.mp4
+
+
 ## building
 
 should build on windows and linux .. tested on linux only .. (will test on windows from while to while)
